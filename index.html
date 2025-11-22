@@ -1,1 +1,787 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Mini ERP</title><link rel='stylesheet' href='src/css/style.css'></head><body><h1>Mini ERP</h1><script src='src/js/app.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mini ERP con PDF – Full Version (Fundaciones incl.)</title>
+
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; max-width: 1000px; }
+  label { font-weight: bold; margin-top: 10px; display: block; }
+  input, select, button { padding: 6px; width: 100%; margin-top: 3px; box-sizing: border-box; }
+  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+  th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+  th { background: #f4f4f4; }
+  button { cursor: pointer; }
+  .hidden { display: none; }
+  .error { color: red; font-weight: bold; }
+
+  .btn {
+    padding: 6px 12px;
+    margin: 5px;
+    cursor: pointer;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+  .btn-danger { background: #d9534f; }
+  .btn-success { background: #28a745; }
+
+  .flex-row {
+    display: flex;
+    gap: 10px;
+  }
+  .flex-row > div { flex: 1; }
+
+  /* Modal / Fundaciones */
+  #modalFundacion {
+    position: fixed;
+    top: 0; left: 0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .modalContent {
+    background: white;
+    padding: 18px;
+    border-radius: 6px;
+    width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .sucursal-box {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+    background:#fafafa;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .inline-btn { width: auto; padding:6px 10px; margin-left:8px; display:inline-block; vertical-align: middle; }
+
+  /* small responsive */
+  @media (max-width: 700px) {
+    .grid2 { grid-template-columns: 1fr; }
+    .modalContent { width: 95%; }
+    input, select, button { width: 100%; }
+  }
+
+  /* Print area (hidden) */
+  #printArea { display:none; }
+</style>
+</head>
+
+<body>
+
+<h1>Mini ERP - Login</h1>
+
+<div id="loginSection">
+  <label>Usuario:</label>
+  <input type="text" id="usernameLogin" placeholder="usuario">
+  <label>Contraseña:</label>
+  <input type="password" id="passwordLogin" placeholder="contraseña">
+  <button class="btn" id="btnLogin">Ingresar</button>
+  <p id="errorLogin" class="error hidden">Credenciales incorrectas</p>
+</div>
+
+<!-- ============================================================= -->
+<!--                   SECCIÓN PRINCIPAL DEL ERP                   -->
+<!-- ============================================================= -->
+
+<div id="erpSection" class="hidden">
+
+  <p>Bienvenido: <b id="userDisplay"></b> (<span id="roleDisplay"></span>)</p>
+  <button class="btn-danger btn" id="btnLogout">Cerrar sesión</button>
+
+  <!-- ================= Usuarios (Admin) =================== -->
+  <div id="adminUsersSection" class="hidden">
+    <h2>Usuarios</h2>
+
+    <label>Nuevo usuario:</label>
+    <input type="text" id="newUser" placeholder="usuario nuevo">
+    <label>Contraseña:</label>
+    <input type="password" id="newPass" placeholder="contraseña">
+    <label>Rol:</label>
+    <select id="newRole">
+      <option value="administrador">Administrador</option>
+      <option value="creador">Creador</option>
+    </select>
+
+    <button class="btn-success btn" id="addUserBtn">Agregar usuario</button>
+
+    <table>
+      <thead><tr><th>Usuario</th><th>Rol</th><th>Acción</th></tr></thead>
+      <tbody id="usersTable"></tbody>
+    </table>
+  </div>
+
+  <!-- =================== Flete / Peaje ===================== -->
+  <div id="adminConfigSection" class="hidden">
+    <h2>Configuración</h2>
+
+    <h3>Fletes</h3>
+    <input type="text" id="newFleteNombre" placeholder="Nombre flete">
+    <input type="number" id="newFleteValor" placeholder="Valor">
+    <button id="addFleteBtn" class="btn-success btn">Agregar Flete</button>
+
+    <table>
+      <thead><tr><th>Nombre</th><th>Valor</th><th>Acción</th></tr></thead>
+      <tbody id="fleteTable"></tbody>
+    </table>
+
+    <h3>Peajes</h3>
+    <input type="text" id="newPeajeNombre" placeholder="Nombre peaje">
+    <input type="number" id="newPeajeValor" placeholder="Valor">
+    <button id="addPeajeBtn" class="btn-success btn">Agregar Peaje</button>
+
+    <table>
+      <thead><tr><th>Nombre</th><th>Valor</th><th>Acción</th></tr></thead>
+      <tbody id="peajeTable"></tbody>
+    </table>
+  </div>
+
+  <!-- =================== Fundaciones (Admin) ===================== -->
+  <div id="adminFundacionesSection" class="hidden">
+    <h2>Fundaciones</h2>
+
+    <label>NIT:</label>
+    <input id="funNit" type="text" placeholder="123456789">
+
+    <label>Nombre Fundación:</label>
+    <input id="funNombre" type="text">
+
+    <h3>Sucursales</h3>
+    <div id="funSucursales"></div>
+    <button id="btnAddSucursal" class="btn">Agregar sucursal</button>
+
+    <br><br>
+    <button id="btnSaveFundacion" class="btn-success btn">Guardar Fundación</button>
+
+    <table>
+      <thead><tr><th>NIT</th><th>Nombre</th><th>Sucursales</th><th>Acción</th></tr></thead>
+      <tbody id="funTable"></tbody>
+    </table>
+  </div>
+
+  <!-- =================== Documentos ===================== -->
+
+  <h2>Documentos</h2>
+  <button class="btn-success btn" id="btnNuevoDoc">Nuevo Documento</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Código</th><th>Conductor</th><th>Fundación</th><th>Fecha</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="docsTable"></tbody>
+  </table>
+
+  <!-- =================== Formulario Documento ===================== -->
+
+  <div id="docFormSection" class="hidden">
+    <h3>Documento</h3>
+
+    <label>Código PEF:</label>
+    <input type="text" id="docCode" readonly>
+
+    <label>Fecha:</label>
+    <input type="date" id="docDate">
+
+    <label>Conductor:</label>
+    <input type="text" id="docConductor">
+
+    <!-- NUEVO: NIT + Botón Crear Fundación + Nombre (autocompletado) -->
+    <label>NIT Fundación:</label>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <input type="text" id="docFundNit" style="flex:1;" placeholder="Ingrese NIT"/>
+      <button id="btnCrearFundDesdeDoc" class="inline-btn" style="background:#1976d2;color:white;">➕ Crear Fundación</button>
+    </div>
+
+    <label>Nombre Fundación:</label>
+    <input type="text" id="docFundNombre" readonly>
+
+    <label>Sucursal:</label>
+    <select id="docSucursalSelect">
+      <option value="">-- Seleccione Sucursal --</option>
+    </select>
+
+    <label>Flete:</label>
+    <select id="docFlete"></select>
+
+    <label>Peaje:</label>
+    <select id="docPeaje"></select>
+
+    <h4>Productos</h4>
+    <table>
+      <thead><tr><th>Producto</th><th>Cantidad</th><th>Kilos</th><th>Acción</th></tr></thead>
+      <tbody id="productsTable"></tbody>
+    </table>
+
+    <button id="btnAddProduct" class="btn">Agregar Producto</button>
+
+    <br><br>
+    <button id="btnSaveDoc" class="btn-success btn">Guardar</button>
+    <button id="btnCancelDoc" class="btn-danger btn">Cancelar</button>
+
+  </div>
+
+</div>
+
+<!-- ============================================================= -->
+<!--              MODAL PARA CREAR FUNDACION DESDE DOCUMENTO       -->
+<!-- ============================================================= -->
+
+<div id="modalFundacion" class="hidden">
+  <div class="modalContent">
+    <h3>Crear Fundación</h3>
+    <label>NIT:</label>
+    <input id="fundaNIT" type="text">
+    <label>Nombre Fundación:</label>
+    <input id="fundaNombre" type="text">
+
+    <h4>Sucursales</h4>
+    <div id="sucursalLista"></div>
+    <button id="btnAgregarSucursal" class="btn">Agregar Sucursal</button>
+
+    <div style="margin-top:12px;">
+      <button id="btnGuardarFundacionModal" class="btn-success btn">Guardar Fundación</button>
+      <button id="btnCancelarFundacion" class="btn-danger btn">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!--              PLANTILLA INTERNA PARA IMPRIMIR PDF              -->
+<!-- ============================================================= -->
+
+<div id="printArea" class="hidden"></div>
+
+<script>
+/* ===========================================================
+   VARIABLES DE DATA (LocalStorage simulando base de datos)
+   =========================================================== */
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [
+  {usuario:"admin", contrasena:"admin", rol:"administrador"}
+];
+let documentos = JSON.parse(localStorage.getItem("docs")) || [];
+let fletes = JSON.parse(localStorage.getItem("fletes")) || [];
+let peajes = JSON.parse(localStorage.getItem("peajes")) || [];
+let fundaciones = JSON.parse(localStorage.getItem("fundaciones")) || [];
+
+let usuarioActivo = null;
+
+/* ===========================================================
+   LOGIN
+   =========================================================== */
+
+document.getElementById("btnLogin").onclick = () => {
+  const u = document.getElementById("usernameLogin").value.trim();
+  const p = document.getElementById("passwordLogin").value.trim();
+
+  const encontrado = usuarios.find(x => x.usuario === u && x.contrasena === p);
+
+  if (!encontrado) {
+    document.getElementById("errorLogin").classList.remove("hidden");
+    return;
+  }
+
+  usuarioActivo = encontrado;
+  document.getElementById("errorLogin").classList.add("hidden");
+  mostrarERP();
+};
+
+/* Logout */
+document.getElementById("btnLogout").onclick = () => {
+  usuarioActivo = null;
+  document.getElementById("erpSection").classList.add("hidden");
+  document.getElementById("loginSection").classList.remove("hidden");
+};
+
+/* ===========================================================
+   MOSTRAR ERP LUEGO DEL LOGIN
+   =========================================================== */
+
+function mostrarERP() {
+  document.getElementById("loginSection").classList.add("hidden");
+  document.getElementById("erpSection").classList.remove("hidden");
+
+  document.getElementById("userDisplay").textContent = usuarioActivo.usuario;
+  document.getElementById("roleDisplay").textContent = usuarioActivo.rol;
+
+  if (usuarioActivo.rol === "administrador") {
+    document.getElementById("adminUsersSection").classList.remove("hidden");
+    document.getElementById("adminConfigSection").classList.remove("hidden");
+    document.getElementById("adminFundacionesSection").classList.remove("hidden");
+  } else {
+    document.getElementById("adminUsersSection").classList.add("hidden");
+    document.getElementById("adminConfigSection").classList.add("hidden");
+    document.getElementById("adminFundacionesSection").classList.add("hidden");
+  }
+
+  renderUsuarios();
+  renderFletes();
+  renderPeajes();
+  renderFundaciones();
+  renderDocs();
+}
+
+/* ===========================================================
+   USUARIOS
+   =========================================================== */
+
+function renderUsuarios() {
+  const tbody = document.getElementById("usersTable");
+  if(!tbody) return;
+  tbody.innerHTML = "";
+
+  usuarios.forEach((u, i) => {
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.usuario}</td>
+      <td>${u.rol}</td>
+      <td>${u.usuario === "admin" ? "" : `<button class='btn-danger btn' onclick="deleteUser(${i})">Eliminar</button>`}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function deleteUser(i) {
+  usuarios.splice(i,1);
+  guardarUsuarios();
+  renderUsuarios();
+}
+
+document.getElementById("addUserBtn").onclick = () => {
+  const nu = document.getElementById("newUser").value.trim();
+  const np = document.getElementById("newPass").value.trim();
+  const nr = document.getElementById("newRole").value;
+  if(!nu || !np) { alert("Usuario y contraseña requeridos"); return; }
+  usuarios.push({
+    usuario: nu,
+    contrasena: np,
+    rol: nr
+  });
+  guardarUsuarios();
+  renderUsuarios();
+  document.getElementById("newUser").value = "";
+  document.getElementById("newPass").value = "";
+};
+
+/* ===========================================================
+   FLETES / PEAJES
+   =========================================================== */
+
+function renderFletes(){
+  const tb = document.getElementById("fleteTable");
+  if(!tb) return;
+  tb.innerHTML = "";
+  fletes.forEach((f,i)=>{
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${f.nombre}</td>
+      <td>${f.valor}</td>
+      <td><button class='btn-danger btn' onclick="delFlete(${i})">Eliminar</button></td>
+    `;
+    tb.appendChild(tr);
+  });
+  updateSelects();
+}
+
+function delFlete(i){
+  fletes.splice(i,1);
+  guardarFletes();
+  renderFletes();
+}
+
+document.getElementById("addFleteBtn").onclick = () => {
+  const nombre = document.getElementById("newFleteNombre").value.trim();
+  const valor = Number(document.getElementById("newFleteValor").value || 0);
+  if(!nombre) { alert("Ingrese nombre de flete"); return; }
+  fletes.push({ nombre, valor });
+  guardarFletes();
+  renderFletes();
+  document.getElementById("newFleteNombre").value = "";
+  document.getElementById("newFleteValor").value = "";
+};
+
+function renderPeajes(){
+  const tb = document.getElementById("peajeTable");
+  if(!tb) return;
+  tb.innerHTML = "";
+  peajes.forEach((p,i)=>{
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${p.nombre}</td>
+      <td>${p.valor}</td>
+      <td><button class='btn-danger btn' onclick="delPeaje(${i})">Eliminar</button></td>
+    `;
+    tb.appendChild(tr);
+  });
+  updateSelects();
+}
+
+function delPeaje(i){
+  peajes.splice(i,1);
+  guardarPeajes();
+  renderPeajes();
+}
+
+document.getElementById("addPeajeBtn").onclick = () => {
+  const nombre = document.getElementById("newPeajeNombre").value.trim();
+  const valor = Number(document.getElementById("newPeajeValor").value || 0);
+  if(!nombre) { alert("Ingrese nombre de peaje"); return; }
+  peajes.push({ nombre, valor });
+  guardarPeajes();
+  renderPeajes();
+  document.getElementById("newPeajeNombre").value = "";
+  document.getElementById("newPeajeValor").value = "";
+};
+
+function updateSelects(){
+  const fsel = document.getElementById("docFlete");
+  const psel = document.getElementById("docPeaje");
+  if(!fsel || !psel) return;
+
+  fsel.innerHTML = `<option value="">-- seleccione --</option>`;
+  psel.innerHTML = `<option value="">-- seleccione --</option>`;
+
+  fletes.forEach((f,i)=> fsel.innerHTML += `<option value="${i}">${f.nombre} - $${f.valor}</option>`);
+  peajes.forEach((p,i)=> psel.innerHTML += `<option value="${i}">${p.nombre} - $${p.valor}</option>`);
+}
+
+/* ===========================================================
+   FUNDACIONES (ADMIN + desde documento)
+   =========================================================== */
+
+function renderFundaciones(){
+  const tb = document.getElementById("funTable");
+  if (!tb) return;
+  tb.innerHTML = "";
+  fundaciones.forEach((f,i)=>{
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${f.nit}</td>
+      <td>${f.nombre}</td>
+      <td>${(f.sucursales||[]).length}</td>
+      <td>
+        <button class='btn' onclick="prefillFundacionToDoc(${i})">Usar</button>
+        <button class='btn-danger btn' onclick="delFundacion(${i})">Eliminar</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+function delFundacion(i){
+  if(!confirm("Eliminar fundación?")) return;
+  fundaciones.splice(i,1);
+  guardarFundaciones();
+  renderFundaciones();
+}
+
+/* Add sucursal (admin form) */
+document.getElementById("btnAddSucursal").onclick = () => {
+  const cont = document.getElementById("funSucursales");
+  const div = document.createElement("div");
+  div.className = 'sucursal-box';
+  div.innerHTML = `
+    <div class="grid2">
+      <label>Nombre Sucursal: <input class="sNombre" type="text"></label>
+      <label>Barrio: <input class="sBarrio" type="text"></label>
+      <label>Teléfono: <input class="sTelefono" type="text"></label>
+      <label>Localidad: <input class="sLocalidad" type="text"></label>
+      <label>Ciudad: <input class="sCiudad" type="text"></label>
+      <label>Dirección: <input class="sDireccion" type="text"></label>
+    </div>
+    <button class="btn-danger btn" onclick="this.parentNode.remove()">Eliminar Sucursal</button>
+  `;
+  cont.appendChild(div);
+};
+
+/* Save fundacion from admin section */
+document.getElementById("btnSaveFundacion").onclick = () => {
+  const nit = document.getElementById("funNit").value.trim();
+  const nombre = document.getElementById("funNombre").value.trim();
+  if (!nit || !nombre) { alert("NIT y nombre obligatorios"); return; }
+  const suc = [];
+  document.querySelectorAll("#funSucursales .sucursal-box").forEach(div=>{
+    suc.push({
+      nombre: div.querySelector(".sNombre").value,
+      barrio: div.querySelector(".sBarrio").value,
+      telefono: div.querySelector(".sTelefono").value,
+      localidad: div.querySelector(".sLocalidad").value,
+      ciudad: div.querySelector(".sCiudad").value,
+      direccion: div.querySelector(".sDireccion").value
+    });
+  });
+  fundaciones.push({ nit, nombre, sucursales: suc });
+  guardarFundaciones();
+  renderFundaciones();
+  document.getElementById("funNit").value = "";
+  document.getElementById("funNombre").value = "";
+  document.getElementById("funSucursales").innerHTML = "";
+};
+
+/* ModalCrearFundacion (desde doc) */
+document.getElementById("btnCrearFundDesdeDoc").onclick = () => {
+  document.getElementById("modalFundacion").classList.remove("hidden");
+  const nitVal = document.getElementById("docFundNit").value.trim();
+  document.getElementById("fundaNIT").value = nitVal;
+  document.getElementById("fundaNombre").value = "";
+  document.getElementById("sucursalLista").innerHTML = "";
+};
+
+/* add sucursal in modal */
+document.getElementById("btnAgregarSucursal").onclick = () => {
+  const cont = document.getElementById("sucursalLista");
+  const div = document.createElement("div");
+  div.className = 'sucursal-box';
+  div.innerHTML = `
+    <div class="grid2">
+      <label>Nombre Sucursal: <input class="msNombre" type="text"></label>
+      <label>Barrio: <input class="msBarrio" type="text"></label>
+      <label>Teléfono: <input class="msTelefono" type="text"></label>
+      <label>Localidad: <input class="msLocalidad" type="text"></label>
+      <label>Ciudad: <input class="msCiudad" type="text"></label>
+      <label>Dirección: <input class="msDireccion" type="text"></label>
+    </div>
+    <button class="btn-danger btn" onclick="this.parentNode.remove()">Eliminar Sucursal</button>
+  `;
+  cont.appendChild(div);
+};
+
+/* Save fundacion from modal and prefill doc */
+document.getElementById("btnGuardarFundacionModal").onclick = () => {
+  const nit = document.getElementById("fundaNIT").value.trim();
+  const nombre = document.getElementById("fundaNombre").value.trim();
+  if (!nit || !nombre) { alert("NIT y Nombre obligatorios"); return; }
+  const suc = [];
+  document.querySelectorAll("#sucursalLista .sucursal-box").forEach(div=>{
+    suc.push({
+      nombre: div.querySelector(".msNombre").value,
+      barrio: div.querySelector(".msBarrio").value,
+      telefono: div.querySelector(".msTelefono").value,
+      localidad: div.querySelector(".msLocalidad").value,
+      ciudad: div.querySelector(".msCiudad").value,
+      direccion: div.querySelector(".msDireccion").value
+    });
+  });
+  fundaciones.push({ nit, nombre, sucursales: suc });
+  guardarFundaciones();
+  renderFundaciones();
+  document.getElementById("modalFundacion").classList.add("hidden");
+  document.getElementById("docFundNit").value = nit;
+  fillFundacionInDoc(nit);
+};
+
+/* Cancel modal */
+document.getElementById("btnCancelarFundacion").onclick = () => {
+  document.getElementById("modalFundacion").classList.add("hidden");
+};
+
+/* Auto-complete: al cambiar NIT en el doc */
+document.getElementById("docFundNit").addEventListener("change", () => {
+  const nit = document.getElementById("docFundNit").value.trim();
+  fillFundacionInDoc(nit);
+});
+
+/* Fill fundacion into doc form */
+function fillFundacionInDoc(nit){
+  document.getElementById("docFundNombre").value = "";
+  const sel = document.getElementById("docSucursalSelect");
+  sel.innerHTML = `<option value="">-- Seleccione Sucursal --</option>`;
+  if (!nit) return;
+  const f = fundaciones.find(x => x.nit === nit);
+  if (!f) return;
+  document.getElementById("docFundNombre").value = f.nombre;
+  (f.sucursales||[]).forEach((s, idx) => {
+    const op = document.createElement("option");
+    op.value = idx; // index within fund.sucursales
+    op.textContent = `${s.nombre} — ${s.barrio} — ${s.telefono || ""}`;
+    sel.appendChild(op);
+  });
+}
+
+/* Prefill fundacion to doc from admin list (use button) */
+function prefillFundacionToDoc(index) {
+  const f = fundaciones[index];
+  if(!f) return;
+  document.getElementById("docFundNit").value = f.nit;
+  fillFundacionInDoc(f.nit);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===========================================================
+   DOCUMENTOS
+   =========================================================== */
+
+document.getElementById("btnNuevoDoc").onclick = () => {
+  abrirFormDoc();
+};
+
+function abrirFormDoc(){
+  document.getElementById("docFormSection").classList.remove("hidden");
+  document.getElementById("docCode").value = generarCodigo();
+  document.getElementById("productsTable").innerHTML = "";
+  addProductRow();
+  // reset fundation fields
+  document.getElementById("docFundNit").value = "";
+  document.getElementById("docFundNombre").value = "";
+  document.getElementById("docSucursalSelect").innerHTML = `<option value="">-- Seleccione Sucursal --</option>`;
+}
+
+document.getElementById("btnAddProduct").onclick = addProductRow;
+
+function addProductRow(){
+  let tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td><input type="text" class="prod-nombre" placeholder="Nombre"></td>
+    <td><input type="number" class="prod-cant" placeholder="0"></td>
+    <td><input type="number" class="prod-kilos" placeholder="0"></td>
+    <td><button class="btn-danger btn" onclick="this.parentNode.parentNode.remove()">X</button></td>
+  `;
+  document.getElementById("productsTable").appendChild(tr);
+}
+
+document.getElementById("btnSaveDoc").onclick = () => {
+  const codigo = document.getElementById("docCode").value;
+  const fecha = document.getElementById("docDate").value;
+  const conductor = document.getElementById("docConductor").value.trim();
+  const nit = document.getElementById("docFundNit").value.trim();
+  const fundNombre = document.getElementById("docFundNombre").value;
+  const sucIndex = document.getElementById("docSucursalSelect").value; // index in fund.sucursales
+  const flete = document.getElementById("docFlete").value;
+  const peaje = document.getElementById("docPeaje").value;
+
+  if(!conductor) { alert("Ingrese conductor"); return; }
+
+  // build products
+  let productos = [];
+  document.querySelectorAll("#productsTable tr").forEach(row=>{
+    let p = row.querySelector(".prod-nombre").value;
+    let c = row.querySelector(".prod-cant").value;
+    let k = row.querySelector(".prod-kilos").value;
+    if (p) productos.push({producto:p, cantidad:c, kilos:k});
+  });
+
+  // get selected sucursal object (if any)
+  let sucursalObj = null;
+  if (nit && sucIndex !== "") {
+    const f = fundaciones.find(x=> x.nit === nit);
+    if (f && f.sucursales && f.sucursales[Number(sucIndex)]) {
+      sucursalObj = f.sucursales[Number(sucIndex)];
+    }
+  }
+
+  documentos.push({
+    codigo, fecha, conductor,
+    fundacion_nit: nit,
+    fundacion_nombre: fundNombre,
+    sucursal: sucursalObj, // may be null
+    flete, peaje, productos
+  });
+  guardarDocs();
+  renderDocs();
+  document.getElementById("docFormSection").classList.add("hidden");
+};
+
+function renderDocs(){
+  const tb = document.getElementById("docsTable");
+  tb.innerHTML = "";
+
+  documentos.forEach((d,i)=>{
+    const fundName = d.fundacion_nombre || d.fundacion_nit || "";
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d.codigo}</td>
+      <td>${d.conductor}</td>
+      <td>${fundName}</td>
+      <td>${d.fecha}</td>
+      <td>
+        <button class="btn" onclick="verPDF(${i})">PDF</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+/* ===========================================================
+   GENERAR PDF (IMPRESIÓN)
+   =========================================================== */
+
+function verPDF(i){
+  const doc = documentos[i];
+
+  // Resolve flete/peaje labels & values
+  const fleteLabel = (doc.flete !== "" && fletes[doc.flete]) ? `${fletes[doc.flete].nombre} - $${fletes[doc.flete].valor}` : "0";
+  const peajeLabel = (doc.peaje !== "" && peajes[doc.peaje]) ? `${peajes[doc.peaje].nombre} - $${peajes[doc.peaje].valor}` : "0";
+
+  const sucursalHtml = doc.sucursal ? `
+    <p><b>Sucursal:</b> ${doc.sucursal.nombre}</p>
+    <p><b>Barrio:</b> ${doc.sucursal.barrio}</p>
+    <p><b>Teléfono:</b> ${doc.sucursal.telefono}</p>
+    <p><b>Localidad:</b> ${doc.sucursal.localidad}</p>
+    <p><b>Ciudad:</b> ${doc.sucursal.ciudad}</p>
+    <p><b>Dirección:</b> ${doc.sucursal.direccion}</p>
+  ` : `<p><b>Sucursal:</b> No seleccionada</p>`;
+
+  const printHTML = `
+    <div style="font-family:Arial; max-width:700px;">
+      <h2>RECIBO DE DESPACHO</h2>
+      <hr>
+      <p><b>Código:</b> ${doc.codigo}</p>
+      <p><b>Fecha:</b> ${doc.fecha}</p>
+      <p><b>Conductor:</b> ${doc.conductor}</p>
+      <p><b>Fundación:</b> ${doc.fundacion_nombre || doc.fundacion_nit}</p>
+      ${sucursalHtml}
+      <p><b>Flete:</b> ${fleteLabel}</p>
+      <p><b>Peaje:</b> ${peajeLabel}</p>
+
+      <h3>Productos</h3>
+      <table border="1" style="border-collapse:collapse;width:100%;">
+        <tr><th>Producto</th><th>Cant</th><th>Kilos</th></tr>
+        ${doc.productos.map(p=>`
+          <tr><td>${p.producto}</td><td>${p.cantidad}</td><td>${p.kilos}</td></tr>
+        `).join("")}
+      </table>
+
+      <br><br><br>
+      <p>Firma Conductor: ________________________</p>
+      <p>Firma Despachador: _______________________</p>
+    </div>
+  `;
+
+  let win = window.open("", "_blank");
+  win.document.write(printHTML);
+  win.print();
+  win.close();
+}
+
+/* ===========================================================
+   UTILIDADES (guardar localStorage)
+   =========================================================== */
+
+function generarCodigo(){
+  return "PEF" + Date.now();
+}
+
+function guardarUsuarios(){ localStorage.setItem("usuarios", JSON.stringify(usuarios)); }
+function guardarFletes(){ localStorage.setItem("fletes", JSON.stringify(fletes)); }
+function guardarPeajes(){ localStorage.setItem("peajes", JSON.stringify(peajes)); }
+function guardarDocs(){ localStorage.setItem("docs", JSON.stringify(documentos)); }
+function guardarFundaciones(){ localStorage.setItem("fundaciones", JSON.stringify(fundaciones)); }
+
+/* Inicializar selects y listados al cargar la página */
+updateSelects();
+renderFundaciones();
+renderDocs();
+renderFletes();
+renderPeajes();
+renderUsuarios();
+
+</script>
+</body>
+</html>
