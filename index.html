@@ -1,1 +1,71 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Mini ERP</title><link rel='stylesheet' href='src/css/style.css'></head><body><h1>Mini ERP</h1><script src='src/js/app.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Mini ERP</title>
+<style>
+    body { font-family: Arial; padding: 20px; }
+    label { display: block; margin-top: 10px; }
+    input { padding: 5px; width: 250px; }
+    #modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    #modalContent {
+        background: white; padding: 20px; border-radius: 8px; width: 300px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Mini ERP</h1>
+
+<label>NIT Fundación</label>
+<input type="text" id="nit" placeholder="Digite NIT">
+<button onclick="abrirModal()">➕ Nueva Fundación</button>
+
+<!-- MODAL -->
+<div id="modal">
+    <div id="modalContent">
+        <h3>Crear Fundación</h3>
+
+        <label>Nombre</label>
+        <input id="nombre">
+
+        <label>Dirección</label>
+        <input id="direccion">
+
+        <label>Teléfono</label>
+        <input id="telefono">
+
+        <label>Correo</label>
+        <input id="correo">
+
+        <br><br>
+        <button onclick="guardarFundacion()">Guardar</button>
+        <button onclick="cerrarModal()">Cancelar</button>
+    </div>
+</div>
+
+<script>
+function abrirModal() {
+    document.getElementById("modal").style.display = "flex";
+}
+
+function cerrarModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+function guardarFundacion() {
+    alert("Fundación creada (luego conectamos esto con la base de datos)");
+    cerrarModal();
+}
+</script>
+
+</body>
+</html>
