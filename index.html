@@ -1,33 +1,41 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>ERP Corabastos — V4 (Estable)</title>
 <style>
-body{margin:0;font-family:Inter,system-ui,Arial;background:#f4f6f9;color:#0f172a}
-header{background:#071025;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
-.app{display:flex;height:calc(100vh - 50px)}
-#sidebar{width:240px;background:#0b1220;color:#fff;padding:16px;display:flex;flex-direction:column;gap:8px}
-#sidebar button{background:transparent;border:0;color:#cbd5e1;text-align:left;padding:8px;border-radius:6px;cursor:pointer}
-#sidebar button:hover{background:rgba(255,255,255,0.06)}
-#sidebar button.active{background:rgba(255,255,255,0.06);color:#fff;font-weight:700}
-main{flex:1;padding:20px;overflow:auto}
-.card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,0.06);margin-bottom:16px}
-input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #d0d6e1}
-button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-radius:6px;cursor:pointer}
-.small{font-size:13px;color:#6b7280}.hidden{display:none!important}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:8px;border-bottom:1px solid #eef4fb;text-align:left}
-@media(max-width:900px){#sidebar{position:fixed;left:0;top:50px;bottom:0;transform:translateX(-100%);transition:transform .22s;z-index:40}#sidebar.open{transform:translateX(0)}main{padding:12px}}
+:root{--bg:#f4f6f9;--card:#fff;--accent:#0a57ff;--muted:#6b7280}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:#0f172a}
+header{background:#071025;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.app{display:flex;height:calc(100vh - 56px);min-height:calc(100vh - 56px)}
+#sidebar{width:240px;background:#0b1220;color:#fff;padding:14px;display:flex;flex-direction:column;gap:8px}
+#sidebar button{background:transparent;border:0;color:#cbd5e1;text-align:left;padding:10px;border-radius:8px;cursor:pointer}
+#sidebar button:hover{background:rgba(255,255,255,0.04);color:#fff}
+#sidebar button.active{background:rgba(255,255,255,0.04);color:#fff;font-weight:700}
+main{flex:1;padding:18px;overflow:auto}
+.card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);margin-bottom:14px}
+input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-top:6px}
+label{font-weight:600;font-size:13px;margin-top:8px;display:block}
+button.primary{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.small{font-size:13px;color:var(--muted)}
+.hidden{display:none}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:8px;border-bottom:1px solid #eef4fb;text-align:left}
+@media(max-width:900px){#sidebar{position:fixed;left:0;top:56px;bottom:0;transform:translateX(-100%);transition:transform .22s;z-index:60}#sidebar.open{transform:translateX(0)}main{padding:12px}}
 </style>
 </head>
 <body>
 <header>
   <div style="display:flex;align-items:center;gap:12px">
     <button id="btnMenu" class="primary" style="background:transparent;border:0;color:#fff">☰</button>
-    <div style="font-size:18px;font-weight:700">ERP Corabastos</div>
+    <div style="font-weight:700;font-size:18px">ERP Corabastos</div>
   </div>
-  <div class="small" id="headerUser"></div>
-  <button id="btnLogout" class="primary" style="background:#dc2626;border:0;padding:6px 10px;margin-left:12px">Cerrar sesión</button>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div id="headerUser" class="small"></div>
+    <button id="btnLogout" class="primary" style="background:#dc2626;border:0;padding:6px 10px;display:none">Cerrar sesión</button>
+  </div>
 </header>
 <div class="app">
   <aside id="sidebar">
@@ -37,7 +45,7 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
     <button data-sec="conductores">Conductores</button>
     <button data-sec="recibos">Pedidos</button>
     <button data-sec="search">Buscar</button>
-    <hr style="border-color:rgba(255,255,255,0.04);">
+    <hr style="border-color:rgba(255,255,255,0.04);opacity:.06">
     <button data-sec="usuarios">Mi Cuenta</button>
     <button data-sec="admin_users">Usuarios (Admin)</button>
     <button data-sec="auditoria">Auditoría</button>
@@ -48,17 +56,16 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
 
     <section id="dashboard" class="card">
       <h2>Bienvenido</h2>
-      <p class="small">Versión estable. Usa el menú lateral para navegar.</p>
+      <p class="small">Versión estable. Use el menú lateral para navegar. Inicie sesión cuando se le solicite.</p>
     </section>
 
-    <section id="fundaciones" class="hidden">
-      <p class="small">Administre fundaciones y sus puntos de envío.</p>
+    <section id="fundaciones" class="card hidden">
       <h2>Fundaciones</h2>
       <div class="card">
         <h3>Crear Fundación</h3>
         <label>NIT</label><input id="f_nit">
         <label>Nombre</label><input id="f_name">
-        <button id="btnFundCreate" class="primary" style="margin-top:10px">Crear Fundación</button>
+        <div style="margin-top:8px"><button id="btnFundCreate" class="primary">Crear Fundación</button></div>
       </div>
 
       <div class="card">
@@ -70,7 +77,7 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
         <label>Teléfono 1</label><input id="p_tel1">
         <label>Teléfono 2</label><input id="p_tel2">
         <label>Encargada</label><input id="p_encargada">
-        <button id="btnPointCreate" class="primary" style="margin-top:10px">Agregar Punto</button>
+        <div style="margin-top:8px"><button id="btnPointCreate" class="primary">Agregar Punto</button></div>
       </div>
 
       <div class="card">
@@ -80,20 +87,19 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
       </div>
     </section>
 
-    <section id="items" class="hidden">
-      <p class="small">Cree items y administre embalajes.</p>
+    <section id="items" class="card hidden">
       <h2>Items</h2>
       <div class="card">
         <label>Nombre</label><input id="item_name">
         <label>Descripción</label><input id="item_desc">
         <label>Precio</label><input id="item_price" type="number">
-        <button id="btnCreateItem" class="primary" style="margin-top:10px">Agregar Item</button>
+        <div style="margin-top:8px"><button id="btnCreateItem" class="primary">Agregar Item</button></div>
       </div>
 
       <div class="card">
         <h3>Gestionar Embalajes</h3>
         <input id="new_pack" placeholder="Nuevo embalaje">
-        <button id="btnAddPack" class="primary" style="margin-top:10px">Agregar</button>
+        <div style="margin-top:8px"><button id="btnAddPack" class="primary">Agregar</button></div>
         <ul id="packList" class="small" style="padding-left:18px;margin-top:10px"></ul>
       </div>
 
@@ -104,22 +110,21 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
       </div>
     </section>
 
-    <section id="conductores" class="hidden">
-      <p class="small">Registre conductores y placas.</p>
+    <section id="conductores" class="card hidden">
       <h2>Conductores</h2>
       <div class="card">
         <label>Nombre</label><input id="drv_name">
         <label>Documento</label><input id="drv_doc">
         <label>Teléfono</label><input id="drv_tel">
         <label>Empresa</label><input id="drv_cmp">
-        <button id="btnAddDriver" class="primary" style="margin-top:10px">Agregar Conductor</button>
+        <div style="margin-top:8px"><button id="btnAddDriver" class="primary">Agregar Conductor</button></div>
       </div>
 
       <div class="card">
         <h3>Agregar Placa</h3>
         <label>Placa</label><input id="pl_plate">
         <label>Tipo</label><input id="pl_type">
-        <button id="btnAddPlate" class="primary" style="margin-top:10px">Agregar</button>
+        <div style="margin-top:8px"><button id="btnAddPlate" class="primary">Agregar</button></div>
       </div>
 
       <div class="card">
@@ -135,16 +140,14 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
       </div>
     </section>
 
-    <section id="search" class="hidden">
+    <section id="search" class="card hidden">
       <h2>Buscador Global</h2>
       <input id="globalSearch" placeholder="Buscar..." style="margin-bottom:10px">
       <div id="globalResults"></div>
     </section>
 
-    <section id="recibos" class="hidden">
+    <section id="recibos" class="card hidden">
       <h2>Pedidos</h2>
-      <p class="small">Aquí se crean pedidos: seleccione fundación, punto, costos e items.</p>
-
       <div class="card">
         <h3>Crear Pedido</h3>
         <label>NIT Fundación</label><input id="pd_nit">
@@ -156,22 +159,16 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
         <label>Peaje</label><input id="pd_peaje" type="number">
         <label>Costo de Transporte</label><input id="pd_trans" type="number">
 
-        <h3 style="margin-top:20px">Agregar Items</h3>
-
+        <h3 style="margin-top:16px">Agregar Items</h3>
         <label>Item</label>
         <select id="pd_item_sel" style="width:100%;margin-bottom:6px"></select>
-
         <label>Embalaje (opcional)</label>
         <select id="pd_pack_sel" style="width:100%;margin-bottom:6px"></select>
-
         <label>Cantidad de Embalaje</label>
-        <input id="pd_pack_qty" type="number" placeholder="Cant. Embalaje" style="width:100%;margin-bottom:6px" value="1">
-
+        <input id="pd_pack_qty" type="number" placeholder="Cant. Embalaje" value="1">
         <label>Kilos (obligatorio)</label>
-        <input id="pd_kilos" type="number" placeholder="Kilos (obligatorio)" style="width:100%;margin-bottom:6px">
-
-        <button id="pd_add_item" class="primary" style="margin-bottom:10px">+</button>
-
+        <input id="pd_kilos" type="number" placeholder="Kilos (obligatorio)">
+        <div style="margin-top:8px"><button id="pd_add_item" class="primary">Agregar producto</button></div>
         <ul id="pd_items_list" style="margin-top:10px"></ul>
 
         <div style="display:flex;gap:8px;margin-top:12px">
@@ -181,9 +178,7 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
         </div>
       </div>
 
-      <button id="btnTestPedido" class="primary" style="margin-bottom:10px">Crear Pedido de Prueba</button>
-
-      <div class="card">
+      <div class="card" style="margin-top:10px">
         <h3>Listado de Pedidos</h3>
         <input id="searchPedidos" placeholder="Buscar..." style="margin-bottom:10px">
         <label>Filtrar por conductor</label>
@@ -194,68 +189,40 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
       <div class="card">
         <h3>Historial de Pedidos</h3>
         <table class="table" id="pedHistTable">
-          <thead>
-            <tr><th>ID</th><th>Fundación</th><th>Fecha</th><th>Kg</th><th>Total</th><th>Acciones</th></tr>
-          </thead>
+          <thead><tr><th>ID</th><th>Fundación</th><th>Fecha</th><th>Kg</th><th>Total</th><th>Acciones</th></tr></thead>
           <tbody id="pedHistBody"></tbody>
         </table>
       </div>
     </section>
 
-    <section id="usuarios" class="hidden">
-      <p class="small">Gestione su perfil de usuario.</p>
-      <h2>Perfil / Usuario</h2>
-
+    <section id="usuarios" class="card hidden">
+      <h2>Perfil</h2>
       <div class="card">
-        <label>Usuario (asignado por administrador)</label>
-        <input id="usr_username" disabled>
-
-        <label>Nombre completo</label>
-        <input id="usr_fullname">
-
-        <label>Teléfono</label>
-        <input id="usr_phone">
-
-        <label>Correo</label>
-        <input id="usr_email">
-
-        <label>Contraseña</label>
-        <input id="usr_password" type="password">
-
-        <button id="btnUserPassSave" class="primary" style="margin-top:10px">Actualizar</button>
+        <label>Usuario (no editable)</label><input id="usr_username" disabled>
+        <label>Nombre completo</label><input id="usr_fullname">
+        <label>Teléfono</label><input id="usr_phone">
+        <label>Correo</label><input id="usr_email">
+        <label>Contraseña</label><input id="usr_password" type="password">
+        <div style="margin-top:8px"><button id="btnUserPassSave" class="primary">Actualizar</button></div>
       </div>
-
-      <div class="card">
-        <h3>Información actual</h3>
-        <div id="usr_info" class="small"></div>
-      </div>
+      <div class="card"><h3>Información actual</h3><div id="usr_info" class="small"></div></div>
     </section>
 
-    <section id="admin_users" class="hidden">
+    <section id="admin_users" class="card hidden">
       <h2>Gestión de Usuarios (Admin)</h2>
       <div class="card">
-        <label>Nuevo Usuario</label>
-        <input id="adm_new_user" placeholder="Usuario">
-        <label>Contraseña</label>
-        <input id="adm_new_pass" type="password">
+        <label>Nuevo Usuario</label><input id="adm_new_user" placeholder="Usuario">
+        <label>Contraseña</label><input id="adm_new_pass" type="password">
         <label>Rol</label>
-        <select id="adm_new_role">
-          <option value="general">General</option>
-          <option value="admin">Administrador</option>
-          <option value="lector">Lector</option>
-        </select>
-        <button id="adm_add_user" class="primary" style="margin-top:10px">Crear Usuario</button>
+        <select id="adm_new_role"><option value="general">General</option><option value="admin">Administrador</option><option value="lector">Lector</option></select>
+        <div style="margin-top:8px"><button id="adm_add_user" class="primary">Crear Usuario</button></div>
       </div>
-      <div class="card">
-        <h3>Usuarios Registrados</h3>
-        <ul id="adm_user_list" class="small" style="padding-left:18px"></ul>
-      </div>
+      <div class="card"><h3>Usuarios Registrados</h3><ul id="adm_user_list" class="small" style="padding-left:18px"></ul></div>
     </section>
 
-    <section id="auditoria" class="hidden">
-      <p class="small">Auditoría completa de acciones del sistema.</p>
+    <section id="auditoria" class="card hidden">
       <h2>Auditoría Avanzada</h2>
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
         <input id="auditSearch" placeholder="Buscar en auditoría...">
         <label>Desde</label><input id="audit_from" type="date">
         <label>Hasta</label><input id="audit_to" type="date">
@@ -263,40 +230,27 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
         <button id="btnFilterAudit" class="primary">Filtrar</button>
         <button id="btnExportAuditCSV" class="primary">Exportar CSV</button>
       </div>
-      <div id="auditDash" class="card" style="margin-bottom:10px"></div>
+      <div id="auditDash" class="card"></div>
       <ul id="auditList" class="small" style="padding-left:18px"></ul>
     </section>
 
-    <section id="seguimiento" class="hidden">
-      <p class="small">Historial y seguimiento de fundaciones.</p>
+    <section id="seguimiento" class="card hidden">
       <h2>Seguimiento de Fundaciones</h2>
       <div class="card">
-        <div style="display:flex;gap:12px;align-items:center">
-          <label>Fundación</label>
-          <select id="seg_fund"><option value="">Todas</option></select>
-          <label>Desde</label><input id="seg_from" type="date">
-          <label>Hasta</label><input id="seg_to" type="date">
-          <button id="btnFilterSeg" class="primary">Filtrar</button>
-          <button id="btnExportSegCSV" class="primary">Exportar CSV</button>
-        </div>
-        <div style="margin-top:12px">
-          <table class="table" id="segTable"><thead><tr><th>Fecha</th><th>Fundación</th><th>Barrio</th><th>Kilos</th><th>Conductor</th></tr></thead><tbody></tbody></table>
-        </div>
+        <label>Fundación</label><select id="seg_fund"><option value="">Todas</option></select>
+        <label>Desde</label><input id="seg_from" type="date">
+        <label>Hasta</label><input id="seg_to" type="date">
+        <div style="margin-top:8px"><button id="btnFilterSeg" class="primary">Filtrar</button> <button id="btnExportSegCSV" class="primary">Exportar CSV</button></div>
+        <table class="table" id="segTable"><thead><tr><th>Fecha</th><th>Fundación</th><th>Barrio</th><th>Kilos</th><th>Conductor</th></tr></thead><tbody></tbody></table>
       </div>
     </section>
 
-    <section id="roles" class="hidden">
-      <p class="small">Administración de roles y permisos.</p>
+    <section id="roles" class="card hidden">
       <h2>Gestión de Roles</h2>
       <div class="card">
-        <p class="small">Editar permisos por rol. Solo admin puede guardar cambios.</p>
-        <div style="display:flex;gap:12px;align-items:center">
-          <label>Rol</label>
-          <select id="role_select"></select>
-          <button id="btnLoadRole" class="primary">Cargar</button>
-        </div>
+        <label>Rol</label><select id="role_select"></select>
         <div id="rolePerms" style="margin-top:12px"></div>
-        <div style="margin-top:10px"><button id="btnSaveRole" class="primary">Guardar permisos</button></div>
+        <div style="margin-top:8px"><button id="btnSaveRole" class="primary">Guardar permisos</button></div>
       </div>
     </section>
 
@@ -304,156 +258,60 @@ button.primary{background:#0a57ff;color:#fff;padding:8px 12px;border:0;border-ra
 </div>
 
 <script>
-window.addEventListener('DOMContentLoaded',()=>{
+(function(){
   const $ = id => document.getElementById(id);
 
-  // Initialize state
+  // State init
   let state = JSON.parse(localStorage.getItem('erp_state')||'null') || {};
-  state.users = Array.isArray(state.users)? state.users : [{username:'admin',pass:'3134630773',role:'admin',fullname:'Administrador'}];
-  state.currentUser = state.currentUser || null;
-  state.foundations = Array.isArray(state.foundations)? state.foundations : [];
-  state.items = Array.isArray(state.items)? state.items : [];
-  state.packs = Array.isArray(state.packs)? state.packs : ['Atado','Bulto','Canastilla','Caja','Unidad'];
-  state.drivers = Array.isArray(state.drivers)? state.drivers : [];
-  state.plates = Array.isArray(state.plates)? state.plates : [];
-  state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
-  state.audit = Array.isArray(state.audit)? state.audit : [];
+  state.users = Array.isArray(state.users) ? state.users : [{username:'admin',pass:'3134630773',role:'admin',fullname:'Administrador'}];
+  state.currentUser = null;
+  state.foundations = Array.isArray(state.foundations) ? state.foundations : [];
+  state.items = Array.isArray(state.items) ? state.items : [];
+  state.packs = Array.isArray(state.packs) ? state.packs : ['Atado','Bulto','Canastilla','Caja','Unidad'];
+  state.drivers = Array.isArray(state.drivers) ? state.drivers : [];
+  state.plates = Array.isArray(state.plates) ? state.plates : [];
+  state.pedidos = Array.isArray(state.pedidos) ? state.pedidos : [];
+  state.audit = Array.isArray(state.audit) ? state.audit : [];
   state.roles = state.roles || {admin:{create_user:true,delete_doc:true,edit:true},general:{create_user:false,delete_doc:false,edit:true},lector:{create_user:false,delete_doc:false,edit:false}};
 
   function save(){ localStorage.setItem('erp_state', JSON.stringify(state)); }
+  function now(){ return new Date().toISOString(); }
+  function registrarAccion(tipo, detalle){ const rec={fecha:now(),usuario:state.currentUser?state.currentUser.username:'?',accion:tipo,detalle}; state.audit.unshift(rec); save(); renderAudit(); }
 
-  function registrarAccion(tipo, detalle){ const rec={fecha:new Date().toISOString(),usuario:state.currentUser?state.currentUser.username:'?',accion:tipo,detalle}; state.audit.unshift(rec); save(); renderAudit(); }
-
-  // Navigation helpers
+  // Navigation
   function show(sec){ document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden')); const el=$(sec); if(el) el.classList.remove('hidden'); document.querySelectorAll('#sidebar button').forEach(b=>b.classList.remove('active')); const btn=document.querySelector(`#sidebar button[data-sec="${sec}"]`); if(btn) btn.classList.add('active'); }
   document.querySelectorAll('#sidebar button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sec)));
-  $('btnMenu').addEventListener('click',()=>{ document.getElementById('sidebar').classList.toggle('open'); });
+  $('btnMenu').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
 
   // Apply role UI
-  function applyRoleUI(){ if(state.currentUser){ $('headerUser').innerText = state.currentUser.username + ' ('+state.currentUser.role+')'; } else { $('headerUser').innerText = ''; }
-    const adminBtn=document.querySelector('#sidebar button[data-sec="admin_users"]'); if(adminBtn) adminBtn.style.display = (state.currentUser && state.currentUser.role==='admin')? 'block' : 'none';
-  }
+  function applyRoleUI(){ const header = $('headerUser'); if(state.currentUser){ $('headerUser').innerText = state.currentUser.username + ' ('+state.currentUser.role+')'; $('btnLogout').style.display='inline-block'; } else { $('headerUser').innerText=''; $('btnLogout').style.display='none'; }
+    const adminBtn = document.querySelector('#sidebar button[data-sec="admin_users"]'); if(adminBtn) adminBtn.style.display = (state.currentUser && state.currentUser.role==='admin')? 'block' : 'none'; }
 
-  // Login modal (mandatory)
-  function showLogin(){
-    const box=document.createElement('div');
-    box.id='loginBox';
-    box.style.cssText='position:fixed;inset:0;background:#0b1220cc;display:flex;align-items:center;justify-content:center;z-index:9999;';
-    box.innerHTML = '\n      <div style="background:#fff;padding:20px;border-radius:10px;width:320px;box-shadow:0 4px 14px rgba(0,0,0,0.3)">\n        <h3 style="margin-top:0;text-align:center">Iniciar Sesión</h3>\n        <label>Usuario</label>\n        <input id="lg_user" style="width:100%;margin-bottom:8px">\n        <label>Contraseña</label>\n        <div style="display:flex;align-items:center;gap:6px">\n          <input id="lg_pass" type="password" style="width:100%">\n          <button id="lg_toggle" style="padding:6px">👁</button>\n        </div>\n        <button id="lg_btn" class="primary" style="margin-top:14px;width:100%">Ingresar</button>\n        <div id="lg_load" class="small" style="text-align:center;margin-top:10px;display:none">Iniciando sesión...</div>\n      </div>';
+  // Login (modal)
+  function showLogin(){ const box = document.createElement('div'); box.id='loginBox'; box.style.cssText='position:fixed;inset:0;background:rgba(11,18,32,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    box.innerHTML = '\n      <div style="background:#fff;padding:20px;border-radius:10px;width:340px;box-shadow:0 8px 30px rgba(2,6,23,0.3)">\n        <h3 style="margin-top:0;text-align:center">Iniciar Sesión</h3>\n        <label>Usuario</label>\n        <input id="lg_user" style="width:100%;margin-bottom:8px">\n        <label>Contraseña</label>\n        <div style="display:flex;align-items:center;gap:6px">\n          <input id="lg_pass" type="password" style="width:100%">\n          <button id="lg_toggle" style="padding:6px">👁</button>\n        </div>\n        <div style="margin-top:12px">\n          <button id="lg_btn" class="primary" style="width:100%">Ingresar</button>\n        </div>\n        <div id="lg_load" class="small" style="text-align:center;margin-top:8px;display:none">Iniciando sesión...</div>\n      </div>';
     document.body.appendChild(box);
-
     const inpUser = $('lg_user'); const inpPass = $('lg_pass'); const btnToggle = $('lg_toggle'); const btnLogin = $('lg_btn'); const load = $('lg_load');
-
     btnToggle.addEventListener('click',()=>{ inpPass.type = inpPass.type==='password' ? 'text' : 'password'; });
-
-    function doLoginAttempt(){ const u = inpUser.value.trim(); const p = inpPass.value.trim(); if(!u||!p){ alert('Usuario y contraseña requeridos'); return; } const user = state.users.find(x=>x.username===u && x.pass===p); if(!user){ alert('Usuario o clave incorrectos'); return; } load.style.display='block'; btnLogin.disabled=true; setTimeout(()=>{ state.currentUser = user; save(); box.remove(); applyRoleUI(); show('dashboard'); // Crear pedido de prueba automático si no existe uno
-if(!state.pedidos.some(p=>p.id && p.id.startsWith('PED-AUTO')) && state.items.length>=6 && state.foundations.length>0 && state.foundations[0].points && state.foundations[0].points.length>0){
-  const f = state.foundations[0];
-  const point = f.points[0];
-  const items = state.items.slice(0,6).map(it=>({name:it.name,price:it.price,qty:1,kgs:Math.floor(Math.random()*10)+1,pack:''}));
-  const subtotal = items.reduce((s,it)=> s + it.price, 0);
-  const peaje = 1500;
-  const trans = 2500;
-  const total = subtotal + peaje + trans;
-  const pedido = {
-    id:'PED-AUTO-'+Date.now(),
-    foundation:f.name,
-    foundationNIT:f.nit,
-    point,
-    items,
-    peaje,
-    trans,
-    total,
-    driver:null,
-    plate:null,
-    createdAt:new Date().toISOString()
-  };
-  state.pedidos.unshift(pedido);
-  save();
-}
-renderAll();
-
-  // Logout handler
-  const lgBtn = document.getElementById('btnLogout');
-  if(lgBtn){ lgBtn.addEventListener('click',()=>{ if(confirm('¿Cerrar s
-
-  // Pedido de prueba automático
-  // Pedido fijo para pruebas de PDF/IMG
-  if(!state.pedidos.some(p=>p.id==='PED-EJEMPLO')){
-    state.pedidos.push({
-      id:'PED-EJEMPLO',
-      foundation:'Fundación de Prueba',
-      foundationNIT:'999999999',
-      point:{barrio:'Centro',localidad:'Localidad X',ciudad:'Bogotá'},
-      items:[
-        {name:'Arroz',price:2000,qty:1,kgs:5,pack:''},
-        {name:'Frijol',price:3000,qty:1,kgs:3,pack:''},
-        {name:'Aceite',price:5000,qty:1,kgs:1,pack:''},
-        {name:'Pasta',price:2500,qty:1,kgs:2,pack:''},
-        {name:'Azúcar',price:1800,qty:1,kgs:4,pack:''},
-        {name:'Sal',price:1000,qty:1,kgs:1,pack:''}
-      ],
-      peaje:1500,
-      trans:2500,
-      total:2000+3000+5000+2500+1800+1000+1500+2500,
-      driver:{name:'Conductor Prueba'},
-      plate:{plate:'ABC123'},
-      createdAt:new Date().toISOString()
-    });
-    save();
-  }
-  const btnTest = document.getElementById('btnTestPedido');
-  if(btnTest){
-    btnTest.addEventListener('click',()=>{
-      if(state.foundations.length===0 || state.items.length<5){ alert('Debe haber al menos 1 fundación y 5 items.'); return; }
-      const f = state.foundations[0];
-      if(!f.points || f.points.length===0){ alert('La fundación debe tener puntos'); return; }
-      const point = f.points[0];
-      const items = state.items.slice(0,5).map(it=>({ name:it.name, price:it.price, qty:1, pack:'', kgs:Math.floor(Math.random()*10)+1 }));
-      const subtotal = items.reduce((s,it)=> s + it.price*it.qty, 0);
-      const peaje = 1000;
-      const trans = 2000;
-      const total = subtotal + peaje + trans;
-      const pedido = {
-        id:'PED-TEST-'+Date.now(),
-        foundation:f.name,
-        foundationNIT:f.nit,
-        point,
-        items,
-        peaje,
-        trans,
-        total,
-        driver:null,
-        plate:null,
-        createdAt:new Date().toISOString()
-      };
-      state.pedidos.unshift(pedido);
-      save();
-      renderPedidos();
-      registrarAccion('crear_pedido_prueba',{id:pedido.id});
-      alert('Pedido de prueba creado: '+pedido.id);
-    });
-  } },700); }
-
+    function doLoginAttempt(){ const u = inpUser.value.trim(); const p = inpPass.value.trim(); if(!u||!p){ alert('Usuario y contraseña requeridos'); return; } const user = state.users.find(x=>x.username===u && x.pass===p); if(!user){ alert('Usuario o clave incorrectos'); return; } load.style.display='block'; btnLogin.disabled=true; setTimeout(()=>{ state.currentUser = user; save(); box.remove(); applyRoleUI(); renderAll(); show('dashboard'); registrarAccion('login',{username:user.username}); },600); }
     btnLogin.addEventListener('click', doLoginAttempt);
     inpPass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLoginAttempt(); });
     inpUser.addEventListener('keydown', (e)=>{ if(e.key==='Enter') inpPass.focus(); });
   }
 
   // If no logged user, show login
-  if(!state.currentUser) showLogin();
-  else applyRoleUI();
+  if(!state.currentUser) showLogin(); else applyRoleUI();
 
   // Fill selectors and render functions
   function fillFundSelect(){ const s=$('selFund'); if(!s) return; s.innerHTML=''; state.foundations.forEach((f,i)=> s.appendChild(new Option(f.name+' ('+f.nit+')', i))); fillPedidoFunds(); }
-  function fillPedidoFunds(){ const sel=$('pd_fund'); if(!sel) return; sel.innerHTML=''; state.foundations.forEach((f,i)=> sel.appendChild(new Option(f.name, i))); fillPedidoPoints(); }
+  function fillPedidoFunds(){ const sel=$('pd_fund'); if(!sel) return; sel.innerHTML=''; state.foundations.forEach((f,i)=> sel.appendChild(new Option(f.name+' ('+f.nit+')', i))); fillPedidoPoints(); }
   function fillPedidoPoints(){ const sel=$('pd_point'); if(!sel) return; sel.innerHTML=''; const fi = Number($('pd_fund').value||0); const f = state.foundations[fi]; if(f && Array.isArray(f.points)) f.points.forEach((p,i)=> sel.appendChild(new Option(p.barrio+' - '+p.localidad+' - '+p.ciudad, i))); }
   function fillItemSelect(){ const sel=$('pd_item_sel'); if(!sel) return; sel.innerHTML=''; state.items.forEach((it,i)=> sel.appendChild(new Option(it.name+' - $'+it.price, i))); }
   function fillPackSelect(){ const sel=$('pd_pack_sel'); if(!sel) return; sel.innerHTML=''; sel.appendChild(new Option('','')); state.packs.forEach(p=> sel.appendChild(new Option(p,p))); }
   function fillDriverSelect(){ const sel=$('pd_driver'); if(!sel) return; sel.innerHTML=''; state.drivers.forEach((d,i)=> sel.appendChild(new Option(d.name,i))); const fd=$('filterDriver'); if(fd){ fd.innerHTML=''; fd.appendChild(new Option('','')); state.drivers.forEach(d=> fd.appendChild(new Option(d.name,d.name))); } }
   function fillPlateSelect(){ const sel=$('pd_plate'); if(!sel) return; sel.innerHTML=''; state.plates.forEach((p,i)=> sel.appendChild(new Option(p.plate,i))); }
 
-  function renderFund(){ const box=$('fundList'); if(!box) return; box.innerHTML=''; state.foundations.forEach(f=>{ const div=document.createElement('div'); div.className='card'; div.style.marginBottom='8px'; div.innerHTML = `<strong>${f.name}</strong><div class='small'>NIT: ${f.nit}</div>`; const pts=document.createElement('div'); pts.style.marginTop='8px'; if(Array.isArray(f.points) && f.points.length){ f.points.forEach(p=>{ const pdiv=document.createElement('div'); pdiv.className='small'; pdiv.style.marginBottom='6px'; pdiv.textContent = p.barrio+' — '+p.localidad+' — '+p.ciudad+' — '+(p.encargada||'')+' — '+(p.tel1||''); pts.appendChild(pdiv); }); } else pts.innerHTML='<div class="small">Sin puntos</div>'; div.appendChild(pts); box.appendChild(div); }); }
+  function renderFund(){ const box=$('fundList'); if(!box) return; box.innerHTML=''; state.foundations.forEach((f,fi)=>{ const div=document.createElement('div'); div.className='card'; div.style.marginBottom='8px'; div.innerHTML = `<strong>${f.name}</strong><div class='small'>NIT: ${f.nit}</div>`; const pts=document.createElement('div'); pts.style.marginTop='8px'; if(Array.isArray(f.points) && f.points.length){ f.points.forEach((p,pi)=>{ const pdiv=document.createElement('div'); pdiv.className='small'; pdiv.style.marginBottom='6px'; pdiv.textContent = (pi+1)+'. '+p.barrio+' — '+p.localidad+' — '+p.ciudad+' — '+(p.encargada||'')+' — '+(p.tel1||''); pts.appendChild(pdiv); }); } else pts.innerHTML='<div class="small">Sin puntos</div>'; div.appendChild(pts); box.appendChild(div); }); }
 
   function renderItems(){ const tbody = $('itemsTable').querySelector('tbody'); if(!tbody) return; tbody.innerHTML=''; state.items.forEach((it,i)=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${it.name}</td><td>${it.desc||''}</td><td>$${it.price}</td><td><button data-i='${i}' class='delItem'>Eliminar</button></td>`; tbody.appendChild(tr); }); document.querySelectorAll('.delItem').forEach(b=>b.onclick=function(){ if(!state.currentUser || state.currentUser.role!=='admin') return alert('Solo admin puede eliminar'); const i=Number(this.dataset.i); state.items.splice(i,1); save(); renderItems(); registrarAccion('eliminar_item',{index:i}); }); }
 
@@ -462,17 +320,22 @@ renderAll();
   function renderDrivers(){ const ul=$('driversList'); if(!ul) return; ul.innerHTML=''; state.drivers.forEach((d,i)=>{ const li=document.createElement('li'); li.textContent = d.name + ' — ' + (d.document||''); const del=document.createElement('button'); del.textContent='Eliminar'; del.style.marginLeft='8px'; del.onclick=()=>{ if(!state.currentUser || state.currentUser.role!=='admin') return alert('Solo admin'); state.drivers.splice(i,1); save(); renderDrivers(); fillDriverSelect(); }; li.appendChild(del); ul.appendChild(li); }); }
   function renderPlates(){ const ul=$('platesList'); if(!ul) return; ul.innerHTML=''; state.plates.forEach((p,i)=>{ const li=document.createElement('li'); li.textContent = p.plate + ' ('+(p.type||'')+')'; const del=document.createElement('button'); del.textContent='Eliminar'; del.style.marginLeft='8px'; del.onclick=()=>{ if(!state.currentUser || state.currentUser.role!=='admin') return alert('Solo admin'); state.plates.splice(i,1); save(); renderPlates(); fillPlateSelect(); }; li.appendChild(del); ul.appendChild(li); }); }
 
-  function renderPedidos(){ const ul=$('pedidosList'); if(!ul) return; const filterDrv = $('filterDriver')? $('filterDriver').value : ''; ul.innerHTML=''; state.pedidos.filter(p=>{ if(filterDrv && p.driver && p.driver.name!==filterDrv) return false; return true; }).forEach((p,idx)=>{ const li=document.createElement('li'); li.style.marginBottom='8px'; const html = `<strong>${p.id}</strong> — ${p.foundation} — $${p.total}<div class='small'>${new Date(p.createdAt).toLocaleString()}</div><div class='small'>Llegada: ${p.horaLlegada||'—'} | Salida: ${p.horaSalida||'—'} | Conductor: ${p.driver? p.driver.name : '—'}</div>`; li.innerHTML = html; const btnH=document.createElement('button'); btnH.textContent='Registrar Horas'; btnH.className='primary'; btnH.style.marginTop='6px'; btnH.onclick=()=>{ const hL=prompt('Hora de llegada (HH:MM)', p.horaLlegada||''); if(!hL) return; const hS=prompt('Hora de salida (HH:MM)', p.horaSalida||''); if(!hS) return; state.pedidos[idx].horaLlegada=hL; state.pedidos[idx].horaSalida=hS; save(); renderPedidos(); registrarAccion('registrar_horas',{id:p.id,hL,hS}); }; const btnC=document.createElement('button'); btnC.textContent='Copiar Pedido'; btnC.className='primary'; btnC.style.marginLeft='8px'; btnC.onclick=()=>{ const nit=prompt('Nuevo NIT de Fundación'); if(!nit) return; const f=state.foundations.find(x=>x.nit===nit); if(!f) return alert('NIT no registrado'); if(!Array.isArray(f.points) || f.points.length===0) return alert('Fundación sin puntos'); const pointIndex=Number(prompt('Índice de punto (0 a '+(f.points.length-1)+')')); const point=f.points[pointIndex]; if(point===undefined) return alert('Punto inválido'); const peaje=Number(prompt('Peaje', p.peaje||0))||0; const trans=Number(prompt('Transporte', p.trans||0))||0; const subtotal=p.items.reduce((s,it)=>s+(it.price||0)*(it.qty||1),0); const total=subtotal+peaje+trans; const pedido={ id:'PED-'+Date.now(), foundation:f.name, foundationNIT:f.nit, point, items: JSON.parse(JSON.stringify(p.items)), peaje, trans, total, driver:null, createdAt:new Date().toISOString() }; state.pedidos.unshift(pedido); save(); renderPedidos(); registrarAccion('copiar_pedido',{id:pedido.id,base:p.id}); alert('Pedido copiado: '+pedido.id); }; li.appendChild(btnH); li.appendChild(btnC); ul.appendChild(li); }); }
+  function renderPedidos(){ const ul=$('pedidosList'); if(!ul) return; const filterDrv = $('filterDriver')? $('filterDriver').value : ''; ul.innerHTML=''; state.pedidos.filter(p=>{ if(filterDrv && p.driver && p.driver.name!==filterDrv) return false; return true; }).forEach((p,idx)=>{ const li=document.createElement('li'); li.style.marginBottom='8px'; const html = `<strong>${p.id}</strong> — ${p.foundation} — $${p.total}<div class='small'>${new Date(p.createdAt).toLocaleString()}</div><div class='small'>Llegada: ${p.horaLlegada||'—'} | Salida: ${p.horaSalida||'—'} | Conductor: ${p.driver? p.driver.name : '—'}</div>`; li.innerHTML = html; const btnH=document.createElement('button'); btnH.textContent='Registrar Horas'; btnH.className='primary'; btnH.style.marginTop='6px'; btnH.onclick=()=>{ const hL=prompt('Hora de llegada (HH:MM)', p.horaLlegada||''); if(!hL) return; const hS=prompt('Hora de salida (HH:MM)', p.horaSalida||''); if(!hS) return; state.pedidos[idx].horaLlegada=hL; state.pedidos[idx].horaSalida=hS; save(); renderPedidos(); registrarAccion('registrar_horas',{id:p.id,hL,hS}); }; const btnC=document.createElement('button'); btnC.textContent='Copiar Pedido'; btnC.className='primary'; btnC.style.marginLeft='8px'; btnC.onclick=()=>{ const nit=prompt('Nuevo NIT de Fundación'); if(!nit) return; const f=state.foundations.find(x=>x.nit===nit); if(!f) return alert('NIT no registrado'); if(!Array.isArray(f.points) || f.points.length===0) return alert('Fundación sin puntos'); const pointIndex=Number(prompt('Índice de punto (0 a '+(f.points.length-1)+')')); const point=f.points[pointIndex]; if(point===undefined) return alert('Punto inválido'); const peaje=Number(prompt('Peaje', p.peaje||0))||0; const trans=Number(prompt('Transporte', p.trans||0))||0; const subtotal=p.items.reduce((s,it)=>s+(it.price||0)*(it.qty||1),0); const total=subtotal+peaje+trans; const pedido={ id:'PED-'+Date.now(), foundation:f.name, foundationNIT:f.nit, point, items: JSON.parse(JSON.stringify(p.items)), peaje, trans, total, driver:null, createdAt:new Date().toISOString() }; state.pedidos.unshift(pedido); save(); renderPedidos(); registrarAccion('copiar_pedido',{id:pedido.id,base:p.id}); alert('Pedido copiado: '+pedido.id); }; const btnV=document.createElement('button'); btnV.textContent='Ver'; btnV.style.marginLeft='8px'; btnV.onclick=()=>{ viewPedido(idx); }; li.appendChild(btnH); li.appendChild(btnC); li.appendChild(btnV); ul.appendChild(li); }); }
+
+  function renderHistorial(){ const tbody=$('pedHistBody'); if(!tbody) return; tbody.innerHTML=''; const sorted = state.pedidos.slice().sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt)); sorted.forEach(p=>{ const tr=document.createElement('tr'); const kilos = p.items.reduce((s,it)=> s + (it.kgs||0),0); const tdAcc = document.createElement('td'); tdAcc.innerHTML = `<button class='viewHist' data-id='${p.id}'>Ver</button> <button class='copyHist' data-id='${p.id}'>Copiar</button> <button class='pdfHist' data-id='${p.id}'>PDF</button>`; tr.innerHTML = `<td>${p.id}</td><td>${p.foundation}</td><td>${new Date(p.createdAt).toLocaleString()}</td><td>${kilos} kg</td><td>$${p.total}</td>`; tr.appendChild(tdAcc); tbody.appendChild(tr); });
+    document.querySelectorAll('.viewHist').forEach(b=>b.onclick=function(){ const id=this.dataset.id; const idx = state.pedidos.findIndex(x=>x.id===id); if(idx>=0) viewPedido(idx); });
+    document.querySelectorAll('.copyHist').forEach(b=>b.onclick=function(){ const id=this.dataset.id; const p = state.pedidos.find(x=>x.id===id); if(!p) return; const nit = prompt('Nuevo NIT de Fundación'); if(!nit) return; const f = state.foundations.find(x=>x.nit===nit); if(!f) return alert('NIT no registrado'); const pointIndex=Number(prompt('Índice de punto (0 a '+(f.points.length-1)+')')); const point=f.points[pointIndex]; if(point===undefined) return alert('Punto inválido'); const peaje=Number(prompt('Peaje', p.peaje||0))||0; const trans=Number(prompt('Transporte', p.trans||0))||0; const subtotal=p.items.reduce((s,it)=>s+(it.price||0)*(it.qty||1),0); const total=subtotal+peaje+trans; const pedido={ id:'PED-'+Date.now(), foundation:f.name, foundationNIT:f.nit, point, items: JSON.parse(JSON.stringify(p.items)), peaje, trans, total, driver:null, createdAt:new Date().toISOString() }; state.pedidos.unshift(pedido); save(); renderPedidos(); renderHistorial(); registrarAccion('copiar_pedido',{id:pedido.id,base:p.id}); alert('Pedido copiado: '+pedido.id); });
+    document.querySelectorAll('.pdfHist').forEach(b=>b.onclick=function(){ const id=this.dataset.id; const idx=state.pedidos.findIndex(x=>x.id===id); if(idx>=0) exportPedidoAsHTML(idx); });
+  }
 
   function renderAudit(){ const list=$('auditList'); if(!list) return; list.innerHTML=''; state.audit.forEach(a=>{ const li=document.createElement('li'); li.style.marginBottom='8px'; li.innerHTML = `<b>[${new Date(a.fecha).toLocaleString()}] ${a.usuario}</b> — ${a.accion} <div class='small'>${JSON.stringify(a.detalle)}</div>`; list.appendChild(li); }); const totalActions = state.audit.length; const byUser = {}; state.audit.forEach(a=> byUser[a.usuario]=(byUser[a.usuario]||0)+1 ); const dash = $('auditDash'); if(dash) dash.innerHTML = `<div><strong>Total acciones:</strong> ${totalActions}</div><div class='small' style='margin-top:6px'><strong>Por usuario:</strong> ${Object.entries(byUser).map(e=>e.join(':')).join(' | ')}</div>`; }
 
-  // Exports
   function exportAuditCSV(){ const rows=[['fecha','usuario','accion','detalle']]; state.audit.forEach(a=> rows.push([a.fecha,a.usuario,a.accion,JSON.stringify(a.detalle)])); const csv = rows.map(r=> r.map(c=> '"'+(''+c).replace(/"/g,'""')+'"').join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='auditoria.csv'; a.click(); URL.revokeObjectURL(url); }
   function exportFoundationHistoryCSV(nit){ const rows=[['fecha','fundacion','barrio','kilos','conductor']]; state.pedidos.filter(p=>p.foundationNIT===nit).forEach(p=>{ p.items.forEach(it=> rows.push([p.createdAt,p.foundation,p.point?.barrio||'',it.kgs||it.qty||0, p.driver?.name||''])); }); const csv = rows.map(r=> r.map(c=> '"'+(''+c).replace(/"/g,'""')+'"').join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='historial_'+nit+'.csv'; a.click(); URL.revokeObjectURL(url); }
 
   // Handlers
   $('btnFundCreate')?.addEventListener('click',()=>{ const nit=$('f_nit').value.trim(); const name=$('f_name').value.trim(); if(!nit||!name) return alert('Complete NIT y Nombre'); state.foundations.push({nit,name,points:[]}); save(); fillFundSelect(); renderFund(); registrarAccion('crear_fundacion',{nit,name}); $('f_nit').value=''; $('f_name').value=''; });
-  $('btnPointCreate')?.addEventListener('click',()=>{ const fi=Number($('selFund').value); if(!state.foundations[fi]) return alert('Seleccione fundacion'); const p={barrio:$('p_barrio').value.trim(),localidad:$('p_localidad').value.trim(),ciudad:$('p_ciudad').value.trim(),tel1:$('p_tel1').value.trim(),tel2:$('p_tel2').value.trim(),encargada:$('p_encargada').value.trim()}; state.foundations[fi].points = state.foundations[fi].points || []; state.foundations[fi].points.push(p); save(); renderFund(); fillFundSelect(); registrarAccion('crear_punto',{fund:state.foundations[fi].name,barrio:p.barrio}); $('p_barrio').value=''; });
+  $('btnPointCreate')?.addEventListener('click',()=>{ const fi=Number($('selFund').value); if(!state.foundations[fi]) return alert('Seleccione fundacion'); const p={barrio:$('p_barrio').value.trim(),localidad:$('p_localidad').value.trim(),ciudad:$('p_ciudad').value.trim(),tel1:$('p_tel1').value.trim(),tel2:$('p_tel2').value.trim(),encargada:$('p_encargada').value.trim()}; state.foundations[fi].points = state.foundations[fi].points || []; state.foundations[fi].points.push(p); save(); renderFund(); fillFundSelect(); registrarAccion('crear_punto',{fund:state.foundations[fi].name,barrio:p.barrio}); $('p_barrio').value=''; $('p_localidad').value=''; $('p_ciudad').value=''; $('p_tel1').value=''; $('p_tel2').value=''; $('p_encargada').value=''; });
 
   $('btnCreateItem')?.addEventListener('click',()=>{ const name=$('item_name').value.trim(); if(!name) return alert('Nombre requerido'); const desc=$('item_desc').value.trim(); const price=Number($('item_price').value)||0; state.items.push({name,desc,price}); save(); renderItems(); fillItemSelect(); registrarAccion('crear_item',{name}); $('item_name').value=''; $('item_desc').value=''; $('item_price').value=''; });
 
@@ -490,7 +353,7 @@ renderAll();
   $('btnAddPedido')?.addEventListener('click',()=>{
     if(!state.currentUser) return alert('Inicie sesión');
     const fi=Number($('pd_fund').value); const f=state.foundations[fi]; if(!f) return alert('Seleccione fundación'); const pi=Number($('pd_point').value); const point=(f.points||[])[pi]; if(!point) return alert('Seleccione punto'); if(currentPedidoItems.length===0) return alert('Agregue items'); const peaje=Number($('pd_peaje').value)||0; const trans=Number($('pd_trans').value)||0; const subtotal=currentPedidoItems.reduce((s,it)=>s+(it.price||0)*(it.qty||1),0); const total=subtotal+peaje+trans; const drvIndex = Number($('pd_driver').value); const plIndex = Number($('pd_plate').value); const pedido = { id:'PED-'+Date.now(), foundation:f.name, foundationNIT:f.nit, point, items: currentPedidoItems.slice(), peaje, trans, total, driver: state.drivers[drvIndex]||null, plate: state.plates[plIndex]||null, createdAt:new Date().toISOString() };
-    state.pedidos.unshift(pedido); save(); registrarAccion('crear_pedido',{id:pedido.id,foundation:f.name,total}); currentPedidoItems=[]; refreshPdItems(); renderPedidos(); alert('Pedido creado: '+pedido.id);
+    state.pedidos.unshift(pedido); save(); registrarAccion('crear_pedido',{id:pedido.id,foundation:f.name,total}); currentPedidoItems=[]; refreshPdItems(); renderPedidos(); renderHistorial(); alert('Pedido creado: '+pedido.id);
   });
 
   // Admin users
@@ -507,7 +370,6 @@ renderAll();
 
   // Roles
   function renderRoleOptions(){ const sel=$('role_select'); if(!sel) return; sel.innerHTML=''; Object.keys(state.roles).forEach(r=> sel.appendChild(new Option(r,r))); }
-  $('btnLoadRole')?.addEventListener('click',()=>{ const r=$('role_select').value; const box=$('rolePerms'); if(!box) return; box.innerHTML=''; const perms = state.roles[r]||{}; Object.keys(perms).forEach(k=>{ const id='perm_'+k; const div=document.createElement('div'); div.innerHTML = `<label><input type='checkbox' id='${id}' ${perms[k]? 'checked':''}> ${k}</label>`; box.appendChild(div); }); });
   $('btnSaveRole')?.addEventListener('click',()=>{ if(!state.currentUser || state.currentUser.role!=='admin') return alert('Solo admin'); const r=$('role_select').value; const perms={}; document.querySelectorAll('#rolePerms input[type=checkbox]').forEach(cb=>{ const key = cb.id.replace('perm_',''); perms[key]=cb.checked; }); state.roles[r]=perms; save(); alert('Permisos guardados'); registrarAccion('editar_rol',{rol:r,perms}); });
 
   // Helpers
@@ -517,13 +379,31 @@ renderAll();
   // render seguimiento
   function renderSeguimiento(){ const tbody = $('segTable').querySelector('tbody'); if(!tbody) return; tbody.innerHTML=''; const nit=$('seg_fund').value; const from=$('seg_from').value? new Date($('seg_from').value) : null; const to=$('seg_to').value? new Date($('seg_to').value+'T23:59:59') : null; state.pedidos.filter(p=>{ if(nit && p.foundationNIT!==nit) return false; const d=new Date(p.createdAt); if(from && d<from) return false; if(to && d>to) return false; return true; }).forEach(p=> p.items.forEach(it=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${new Date(p.createdAt).toLocaleDateString()}</td><td>${p.foundation}</td><td>${p.point?.barrio||''}</td><td>${it.kgs||it.qty||0}</td><td>${p.driver?.name||''}</td>`; tbody.appendChild(tr); })); }
 
-  // render all utility
-  function renderAll(){ fillFundSelect(); fillItemSelect(); fillPackSelect(); renderPacks(); renderFund(); renderItems(); renderDrivers(); renderPlates(); renderPedidos(); renderAdminUsers(); renderAudit(); renderRoleOptions(); populateAuditUsers(); populateSegFunds(); }
+  // view pedido
+  function viewPedido(idx){ const o = state.pedidos[idx]; if(!o) return alert('Pedido no encontrado'); const w = window.open('','_blank'); let html = `<!doctype html><html><head><meta charset="utf-8"><title>${o.id}</title><style>body{font-family:Arial;padding:18px}table{width:100%;border-collapse:collapse}th,td{padding:6px;border:1px solid #ddd;text-align:left}</style></head><body>`; html += `<h2>Pedido ${o.id}</h2>`; html += `<p><strong>Fundación:</strong> ${o.foundation} (${o.foundationNIT||''})</p>`; html += `<p><strong>Punto:</strong> ${o.point?.barrio||''} — ${o.point?.localidad||''} — ${o.point?.ciudad||''}</p>`; html += `<table><thead><tr><th>Item</th><th>Cantidad</th><th>Kgs</th><th>Precio</th></tr></thead><tbody>`; o.items.forEach(it=>{ html += `<tr><td>${it.name}</td><td>${it.qty||1}</td><td>${it.kgs||''}</td><td>$${it.price||0}</td></tr>`; }); html += `</tbody></table>`; html += `<p><strong>Peaje:</strong> $${o.peaje||0} — <strong>Transporte:</strong> $${o.trans||o.transporte||0}</p>`; html += `<p><strong>Total:</strong> $${o.total}</p>`; html += `</body></html>`; w.document.open(); w.document.write(html); w.document.close(); }
 
-  renderAll();
-  show('dashboard');
+  // export simple HTML (used for PDF conversion externally)
+  function exportPedidoAsHTML(idx){ const o = state.pedidos[idx]; if(!o) return alert('Pedido no encontrado'); const w = window.open('','_blank'); let html = `<!doctype html><html><head><meta charset="utf-8"><title>${o.id}</title><style>body{font-family:Arial;padding:18px}table{width:100%;border-collapse:collapse}th,td{padding:6px;border:1px solid #ddd;text-align:left}</style></head><body>`; html += `<div style="border:1px solid #ddd;padding:12px;border-radius:8px"><h2 style="margin-top:0">${o.id}</h2><p><strong>Fundación:</strong> ${o.foundation} (${o.foundationNIT||''})</p><p><strong>Punto:</strong> ${o.point?.barrio||''} — ${o.point?.localidad||''} — ${o.point?.ciudad||''}</p>`; html += `<table><thead><tr><th>Item</th><th>Cantidad</th><th>Kgs</th><th>Precio</th></tr></thead><tbody>`; o.items.forEach(it=>{ html += `<tr><td>${it.name}</td><td>${it.qty||1}</td><td>${it.kgs||''}</td><td>$${it.price||0}</td></tr>`; }); html += `</tbody></table><p><strong>Peaje:</strong> $${o.peaje||0} — <strong>Transporte:</strong> $${o.trans||o.transporte||0}</p><p><strong>Total:</strong> $${o.total}</p></div>`; html += `</body></html>`; w.document.open(); w.document.write(html); w.document.close(); }
 
-});
+  // create test pedido (PED-EJEMPLO)
+  if(!state.pedidos.some(p=>p.id==='PED-EJEMPLO')){
+    state.pedidos.push({ id:'PED-EJEMPLO', foundation:'Fundación de Prueba', foundationNIT:'999999999', point:{barrio:'Centro',localidad:'Localidad X',ciudad:'Bogotá'}, items:[{name:'Arroz',price:2000,qty:1,kgs:5,pack:''},{name:'Frijol',price:3000,qty:1,kgs:3,pack:''},{name:'Aceite',price:5000,qty:1,kgs:1,pack:''},{name:'Pasta',price:2500,qty:1,kgs:2,pack:''},{name:'Azúcar',price:1800,qty:1,kgs:4,pack:''},{name:'Sal',price:1000,qty:1,kgs:1,pack:''}], peaje:1500, trans:2500, total:2000+3000+5000+2500+1800+1000+1500+2500, driver:{name:'Conductor Prueba'}, plate:{plate:'ABC123'}, createdAt: now() }); save(); }
+
+  // Test pedido button
+  const btnTest = $('btnTestPedido'); if(btnTest){ btnTest.addEventListener('click',()=>{ if(state.foundations.length===0 || state.items.length<6){ alert('Debe haber al menos 1 fundación y 6 items.'); return; } const f = state.foundations[0]; if(!f.points||f.points.length===0){ alert('La fundación debe tener puntos'); return; } const point = f.points[0]; const items = state.items.slice(0,6).map(it=>({ name:it.name, price:it.price, qty:1, pack:'', kgs:Math.floor(Math.random()*10)+1 })); const subtotal = items.reduce((s,it)=> s + it.price*it.qty, 0); const peaje = 1500; const trans = 2500; const total = subtotal + peaje + trans; const pedido = { id:'PED-TEST-'+Date.now(), foundation:f.name, foundationNIT:f.nit, point, items, peaje, trans, total, driver:null, plate:null, createdAt: now() }; state.pedidos.unshift(pedido); save(); renderPedidos(); renderHistorial(); registrarAccion('crear_pedido_prueba',{id:pedido.id}); alert('Pedido de prueba creado: '+pedido.id); }); }
+
+  // render historial and all
+  function renderHistSelects(){ fillFundSelect(); fillItemSelect(); fillPackSelect(); fillDriverSelect(); fillPlateSelect(); renderPacks(); renderFund(); renderItems(); renderDrivers(); renderPlates(); renderPedidos(); renderHistorial(); renderAdminUsers(); renderAudit(); renderRoleOptions(); populateAuditUsers(); populateSegFunds(); }
+
+  // initial render
+  renderHistSelects(); show('dashboard');
+
+  // logout
+  $('btnLogout').addEventListener('click',()=>{ if(confirm('¿Cerrar sesión?')){ state.currentUser=null; save(); location.reload(); }});
+
+  // utility: export pedido as CSV (not used now)
+
+})();
 </script>
 </body>
 </html>
