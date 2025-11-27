@@ -1,2 +1,1 @@
-// Main JS
-console.log('Mini ERP loaded');
+await supabase.from("foundations").insert({ nit, name });
