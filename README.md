@@ -1,1 +1,0 @@
-Mini ERP portable - package. See README in ZIP for details.
