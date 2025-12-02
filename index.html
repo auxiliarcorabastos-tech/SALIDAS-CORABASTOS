@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ERP Corabastos — Portable</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NkYGBgAAAABQABDQottAAAAABJRU5ErkJggg==" />
+<meta name="description" content="Mini ERP portable — facturación, peajes, transporte, fundaciones, items y sincronización." />
+<link rel="stylesheet" href="./assets/css/style.css" />
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button id="btnMenu" class="primary" style="background:transparent;border:0;color:#fff">☰</button>
+    <div style="font-size:18px;font-weight:700">ERP Corabastos</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="small" id="headerUser">Invitado</div>
+    <button id="btnLogout" class="primary hidden">Cerrar sesión</button>
+  </div>
+</header>
+<div class="app">
+  <aside id="sidebar">
+    <button data-sec="dashboard">Dashboard</button>
+    <button data-sec="fundaciones">Fundaciones</button>
+    <button data-sec="items">Items</button>
+    <button data-sec="conductores">Conductores</button>
+    <button data-sec="recibos">Pedidos</button>
+    <button data-sec="search">Buscar</button>
+  </aside>
+  <main id="main">
+    <section id="dashboard" class="card">
+      <h2>Bienvenido</h2>
+      <p class="small">Versión portable.</p>
+    </section>
+    <section id="fundaciones" class="hidden">
+      <h2>Fundaciones</h2>
+      <div class="card">
+        <h3>Crear Fundación</h3>
+        <label>NIT</label><input id="f_nit">
+        <label>Nombre</label><input id="f_name">
+        <button id="btnFundCreate" class="primary" style="margin-top:10px">Crear Fundación</button>
+      </div>
+      <div class="card">
+        <h3>Listado</h3>
+        <input id="searchFund" placeholder="Buscar fundaciones..." style="margin-bottom:10px">
+        <div id="fundList"></div>
+      </div>
+    </section>
+    <section id="items" class="hidden">
+      <h2>Items</h2>
+      <div class="card">
+        <label>Referencia</label><input id="item_ref">
+        <label>Nombre</label><input id="item_name">
+        <label>Precio</label><input id="item_price" type="number">
+        <button id="btnCreateItem" class="primary" style="margin-top:10px">Agregar Item</button>
+      </div>
+      <div class="card">
+        <h3>Listado de Items</h3>
+        <input id="searchItems" placeholder="Buscar..." style="margin-bottom:10px">
+        <table class="table" id="itemsTable"><thead><tr><th>Ref</th><th>Nombre</th><th>Precio</th></tr></thead><tbody></tbody></table>
+      </div>
+    </section>
+    <section id="conductores" class="hidden">
+      <h2>Conductores</h2>
+      <div class="card">
+        <label>Nombre</label><input id="drv_name">
+        <label>Documento</label><input id="drv_doc">
+        <button id="btnAddDriver" class="primary" style="margin-top:10px">Agregar Conductor</button>
+      </div>
+      <div class="card">
+        <h3>Conductores</h3>
+        <ul id="driversList"></ul>
+      </div>
+    </section>
+    <section id="recibos" class="hidden">
+      <h2>Pedidos</h2>
+      <div class="card">
+        <label>NIT Fundación</label><input id="pd_nit">
+        <div id="pd_fund_info" class="small" style="margin-top:6px"></div>
+        <label>Punto de Envío</label><input id="pd_point">
+        <label>Conductor</label><select id="pd_driver"></select>
+        <label>Placa</label><select id="pd_plate"></select>
+        <label>Peaje</label><input id="pd_peaje" type="number">
+        <label>Costo de Transporte</label><input id="pd_trans" type="number">
+        <h3 style="margin-top:12px">Agregar Items</h3>
+        <select id="pd_item_sel" style="width:100%;margin-bottom:6px"></select>
+        <label>Cantidad de Embalaje</label><input id="pd_pack_qty" type="number" placeholder="Cant. Embalaje" value="1">
+        <label>Kilos (obligatorio)</label><input id="pd_kilos" type="number" placeholder="Kilos (obligatorio)">
+        <button id="pd_add_item" class="primary" style="margin-bottom:10px">Agregar producto</button>
+        <ul id="pd_items_list"></ul>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button id="btnAddPedido" class="primary">Guardar Pedido</button>
+          <button id="btnExportPedidoCSV" class="primary">Exportar CSV</button>
+          <button id="btnExportPedidoIMG" class="primary">Exportar IMG</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Listado de Pedidos</h3>
+        <input id="searchPedidos" placeholder="Buscar..." style="margin-bottom:10px">
+        <ul id="pedidosList"></ul>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="./assets/js/main.min.js"></script>
+</body>
+</html>
