@@ -3,155 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ERP Corabastos — V4 (Sync)</title>
-<link rel="stylesheet" href="css/style.css">
+<title>ERP Corabastos — Portable</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NkYGBgAAAABQABDQottAAAAABJRU5ErkJggg==" />
+<meta name="description" content="Mini ERP portable — facturación, peajes, transporte, fundaciones, items y sincronización." />
+<link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 <body>
 <header>
-  <div class="header-left">
-    <button id="btnMenu" class="primary">☰</button>
-    <div class="brand">ERP Corabastos</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button id="btnMenu" class="primary" style="background:transparent;border:0;color:#fff">☰</button>
+    <div style="font-size:18px;font-weight:700">ERP Corabastos</div>
   </div>
-  <div class="header-right">
+  <div style="display:flex;align-items:center;gap:12px">
     <div class="small" id="headerUser">Invitado</div>
     <button id="btnLogout" class="primary hidden">Cerrar sesión</button>
   </div>
 </header>
-
 <div class="app">
-  <aside id="sidebar" class="sidebar">
-    <button data-sec="dashboard" class="nav-btn active">Dashboard</button>
-    <button data-sec="fundaciones" class="nav-btn">Fundaciones</button>
-    <button data-sec="items" class="nav-btn">Items</button>
-    <button data-sec="conductores" class="nav-btn">Conductores</button>
-    <button data-sec="recibos" class="nav-btn">Pedidos</button>
-    <button data-sec="seguimiento" class="nav-btn">Seguimiento</button>
+  <aside id="sidebar">
+    <button data-sec="dashboard">Dashboard</button>
+    <button data-sec="fundaciones">Fundaciones</button>
+    <button data-sec="items">Items</button>
+    <button data-sec="conductores">Conductores</button>
+    <button data-sec="recibos">Pedidos</button>
+    <button data-sec="search">Buscar</button>
   </aside>
-
   <main id="main">
-    <section id="dashboard" class="card section active">
+    <section id="dashboard" class="card">
       <h2>Bienvenido</h2>
-      <p class="small">Versión con sincronización Google Apps Script. Usa la cuenta admin para probar.</p>
+      <p class="small">Versión portable.</p>
     </section>
-
-    <section id="fundaciones" class="card section hidden">
+    <section id="fundaciones" class="hidden">
       <h2>Fundaciones</h2>
-      <div class="form-row">
-        <label>NIT</label><input id="f_nit" placeholder="NIT">
-        <label>Nombre</label><input id="f_name" placeholder="Nombre">
-        <button id="btnFundCreate" class="primary">Crear Fundación</button>
+      <div class="card">
+        <h3>Crear Fundación</h3>
+        <label>NIT</label><input id="f_nit">
+        <label>Nombre</label><input id="f_name">
+        <button id="btnFundCreate" class="primary" style="margin-top:10px">Crear Fundación</button>
       </div>
-      <div class="form-row">
-        <label>Agregar Punto (elige fundación)</label>
-        <select id="selFund"></select>
-        <label>Barrio / Dirección</label><input id="p_barrio">
-        <label>Ciudad</label><input id="p_ciudad">
-        <label>Responsable</label><input id="p_encargada">
-        <button id="btnPointCreate" class="primary">Agregar Punto</button>
-      </div>
-      <div class="card small">
+      <div class="card">
         <h3>Listado</h3>
+        <input id="searchFund" placeholder="Buscar fundaciones..." style="margin-bottom:10px">
         <div id="fundList"></div>
       </div>
     </section>
-
-    <section id="items" class="card section hidden">
+    <section id="items" class="hidden">
       <h2>Items</h2>
-      <div class="form-row">
+      <div class="card">
         <label>Referencia</label><input id="item_ref">
         <label>Nombre</label><input id="item_name">
         <label>Precio</label><input id="item_price" type="number">
-        <button id="btnCreateItem" class="primary">Agregar Item</button>
-      </div>
-      <div class="card small">
-        <h3>Listado</h3>
-        <input id="searchItems" placeholder="Buscar...">
-        <table id="itemsTable"><thead><tr><th>Ref</th><th>Nombre</th><th>Precio</th></tr></thead><tbody></tbody></table>
-      </div>
-    </section>
-
-    <section id="conductores" class="card section hidden">
-      <h2>Conductores y Placas</h2>
-      <div class="form-row">
-        <label>Nombre</label><input id="drv_name">
-        <label>Documento</label><input id="drv_doc">
-        <label>Teléfono</label><input id="drv_tel">
-        <button id="btnAddDriver" class="primary">Agregar Conductor</button>
-      </div>
-      <div class="form-row">
-        <label>Placa</label><input id="pl_plate">
-        <label>Tipo</label><input id="pl_type">
-        <button id="btnAddPlate" class="primary">Agregar Placa</button>
+        <button id="btnCreateItem" class="primary" style="margin-top:10px">Agregar Item</button>
       </div>
       <div class="card">
-        <h3>Importar Placas (Excel: Col A placa, Col B tipo)</h3>
-        <input id="excel_plates" type="file" accept=".xlsx,.xls">
-        <button id="btnImportPlates" class="primary">Importar Placas</button>
+        <h3>Listado de Items</h3>
+        <input id="searchItems" placeholder="Buscar..." style="margin-bottom:10px">
+        <table class="table" id="itemsTable"><thead><tr><th>Ref</th><th>Nombre</th><th>Precio</th></tr></thead><tbody></tbody></table>
       </div>
-      <div class="card small">
+    </section>
+    <section id="conductores" class="hidden">
+      <h2>Conductores</h2>
+      <div class="card">
+        <label>Nombre</label><input id="drv_name">
+        <label>Documento</label><input id="drv_doc">
+        <button id="btnAddDriver" class="primary" style="margin-top:10px">Agregar Conductor</button>
+      </div>
+      <div class="card">
         <h3>Conductores</h3>
         <ul id="driversList"></ul>
       </div>
-      <div class="card small">
-        <h3>Placas</h3>
-        <ul id="platesList"></ul>
-      </div>
     </section>
-
-    <section id="recibos" class="card section hidden">
+    <section id="recibos" class="hidden">
       <h2>Pedidos</h2>
-      <div class="form-row">
+      <div class="card">
         <label>NIT Fundación</label><input id="pd_nit">
-        <div id="pd_fund_info" class="small"></div>
-        <label>Fundación (seleccione)</label><select id="pd_fund"></select>
-        <label>Punto de Envío</label><select id="pd_point"></select>
+        <div id="pd_fund_info" class="small" style="margin-top:6px"></div>
+        <label>Punto de Envío</label><input id="pd_point">
         <label>Conductor</label><select id="pd_driver"></select>
         <label>Placa</label><select id="pd_plate"></select>
-        <label>Peaje</label><input id="pd_peaje" type="number" value="0">
-        <label>Transporte</label><input id="pd_trans" type="number" value="0">
+        <label>Peaje</label><input id="pd_peaje" type="number">
+        <label>Costo de Transporte</label><input id="pd_trans" type="number">
+        <h3 style="margin-top:12px">Agregar Items</h3>
+        <select id="pd_item_sel" style="width:100%;margin-bottom:6px"></select>
+        <label>Cantidad de Embalaje</label><input id="pd_pack_qty" type="number" placeholder="Cant. Embalaje" value="1">
+        <label>Kilos (obligatorio)</label><input id="pd_kilos" type="number" placeholder="Kilos (obligatorio)">
+        <button id="pd_add_item" class="primary" style="margin-bottom:10px">Agregar producto</button>
+        <ul id="pd_items_list"></ul>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button id="btnAddPedido" class="primary">Guardar Pedido</button>
+          <button id="btnExportPedidoCSV" class="primary">Exportar CSV</button>
+          <button id="btnExportPedidoIMG" class="primary">Exportar IMG</button>
+        </div>
       </div>
-
-      <h3>Agregar Items</h3>
-      <div class="form-row">
-        <label>Item</label><select id="pd_item_sel"></select>
-        <label>Embalaje</label><select id="pd_pack_sel"></select>
-        <label>Cantidad</label><input id="pd_pack_qty" type="number" value="1">
-        <label>Kilos</label><input id="pd_kilos" type="number">
-        <button id="pd_add_item" class="primary">Agregar producto</button>
-      </div>
-
-      <ul id="pd_items_list"></ul>
-
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button id="btnAddPedido" class="primary">Guardar Pedido</button>
-        <button id="btnExportPedidoCSV" class="primary">Exportar CSV</button>
-      </div>
-
-      <div class="card small">
-        <h3>Listado de Pedidos (historial)</h3>
+      <div class="card">
+        <h3>Listado de Pedidos</h3>
+        <input id="searchPedidos" placeholder="Buscar..." style="margin-bottom:10px">
         <ul id="pedidosList"></ul>
       </div>
     </section>
-
-    <section id="seguimiento" class="card section hidden">
-      <h2>Seguimiento / Export Config</h2>
-      <button id="btnExportConfig" class="primary">Exportar config (JSON)</button>
-      <input id="importConfigFile" type="file" accept=".json">
-      <button id="btnImportConfig" class="primary">Importar config</button>
-    </section>
-
   </main>
 </div>
-
-<!-- libs -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-<!-- app modules -->
-<script type="module" src="js/state.js"></script>
-<script type="module" src="js/google_sync.js"></script>
-<script type="module" src="js/ui.js"></script>
-<script type="module" src="js/pedidos.js"></script>
-<script type="module" src="js/app.js"></script>
+<script src="./assets/js/main.min.js"></script>
 </body>
 </html>

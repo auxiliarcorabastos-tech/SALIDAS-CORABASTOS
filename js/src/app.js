@@ -1,0 +1,16 @@
+import { loadStateFromStorage, saveState, mergeRemote } from './state.js';
+import { setupSidebarToggle, renderFundList, renderItemsTable, renderDrivers, renderPlates, fillSelectors } from './ui.js';
+import { initPedidos, renderPedidos } from './pedidos.js';
+import { pullSync } from './google_sync.js';
+
+loadStateFromStorage();
+document.addEventListener('DOMContentLoaded', ()=>{
+  setupSidebarToggle();
+  renderFundList();
+  renderItemsTable();
+  renderDrivers();
+  renderPlates();
+  fillSelectors();
+  initPedidos();
+  setInterval(()=>{ pullSync(); },10000);
+});
