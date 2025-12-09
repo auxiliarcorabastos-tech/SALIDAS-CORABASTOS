@@ -1,1802 +1,1386 @@
+<!-- PARTE 1/5 - INICIO DEL ARCHIVO: head, estilos y estructura base -->
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ERP Corabastos — V5 Mejorada</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ERP Corabastos — V5</title>
 
-<style>
-:root{
-  --bg:#f4f6f9;
-  --panel:#0b1220;
-  --accent:#0a57ff;
-  --card:#ffffff;
-}
+  <!-- Estilos principales -->
+  <style>
+    :root{
+      --bg:#f4f6f9;
+      --panel:#0b1220;
+      --accent:#0a57ff;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--bg);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
 
-*{
-  box-sizing:border-box;
-}
+    header{
+      background:#071025;
+      color:#fff;
+      padding:12px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{font-size:18px;margin:0}
 
-body{
-  margin:0;
-  font-family:Inter,system-ui,Arial,sans-serif;
-  background:var(--bg);
-  color:#0f172a;
-}
+    .app{display:flex;height:calc(100vh - 60px);min-height:500px}
+    #sidebar{
+      width:260px;
+      background:var(--panel);
+      color:#fff;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      transition:transform .18s ease;
+    }
+    #sidebar button{
+      background:transparent;
+      border:0;
+      color:#cbd5e1;
+      text-align:left;
+      padding:10px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    #sidebar button:hover{ background: rgba(255,255,255,0.03); color:#fff; }
+    #sidebar button.active{ background: rgba(255,255,255,0.06); color:#fff; font-weight:700; }
 
-/* ---------------- HEADER ---------------- */
-header{
-  background:#071025;
-  color:#fff;
-  padding:10px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+    main{flex:1;padding:20px;overflow:auto}
+    .card{
+      background:var(--card);
+      padding:16px;
+      border-radius:10px;
+      box-shadow:0 6px 20px rgba(2,6,23,0.06);
+      margin-bottom:16px;
+    }
 
-#btnMenu{
-  background:transparent;
-  border:0;
-  color:#fff;
-  font-size:20px;
-  cursor:pointer;
-}
+    input,select,textarea{
+      width:100%;
+      padding:8px;
+      margin-top:6px;
+      border-radius:8px;
+      border:1px solid #e2e8f0;
+      font-size:14px;
+    }
 
-.app{
-  display:flex;
-  height:calc(100vh - 50px);
-}
+    button.primary{
+      background:var(--accent);
+      color:#fff;
+      padding:8px 12px;
+      border:0;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+    }
 
-/* ---------------- SIDEBAR ---------------- */
-#sidebar{
-  width:240px;
-  background:var(--panel);
-  color:#fff;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
+    .small{ font-size:13px; color:var(--muted); }
+    .hidden{ display:none!important; }
 
-#sidebar button{
-  background:transparent;
-  border:0;
-  color:#cbd5e1;
-  text-align:left;
-  padding:8px;
-  border-radius:6px;
-  cursor:pointer;
-}
+    .table{ width:100%; border-collapse:collapse; margin-top:8px; }
+    .table th, .table td{ padding:8px; border-bottom:1px solid #eef4fb; text-align:left; }
 
-#sidebar button:hover{
-  background:rgba(255,255,255,0.04);
-}
+    .modal{
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.45); z-index:1000;
+    }
+    .modal .card{ width:100%; max-width:520px; }
 
-#sidebar button.active{
-  background:rgba(255,255,255,0.08);
-  color:#ffffff;
-  font-weight:700;
-}
+    @media(max-width:900px){
+      #sidebar{ position:fixed; left:0; top:60px; bottom:0; transform:translateX(-100%); z-index:1200 }
+      #sidebar.open{ transform:translateX(0) }
+      main{ padding:12px }
+    }
 
-@media(max-width:900px){
-  #sidebar{
-    position:fixed;
-    left:0;
-    top:50px;
-    bottom:0;
-    transform:translateX(-100%);
-    transition:transform .22s;
-    z-index:40;
-  }
-  #sidebar.open{
-    transform:translateX(0);
-  }
-}
+    /* Helpers for lists/cards */
+    .badge{ display:inline-block; padding:4px 8px; border-radius:999px; background:#eef2ff; color:var(--accent); font-weight:600; font-size:12px; }
+    .actions-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .item-row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+    .card-title{ font-size:16px; margin:0 0 8px 0; font-weight:700; }
+    .muted-line{ font-size:13px; color:var(--muted); margin-top:6px; }
 
-/* ---------------- MAIN ---------------- */
-main{
-  flex:1;
-  padding:20px;
-  overflow:auto;
-}
+    /* conductor card */
+    .drv-card{
+      border-radius:10px; padding:12px; background:linear-gradient(180deg,#ffffff,#fbfdff);
+      box-shadow:0 6px 14px rgba(2,6,23,0.04); margin-bottom:10px;
+    }
+    .drv-row{ display:flex; align-items:center; gap:12px; }
+    .drv-actions{ margin-left:auto; display:flex; gap:8px; }
+    .danger{ background:var(--danger); color:#fff }
+  </style>
 
-.card{
-  background:var(--card);
-  padding:16px;
-  border-radius:12px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.06);
-  margin-bottom:16px;
-}
-
-input,select,textarea{
-  width:100%;
-  padding:8px;
-  margin-top:6px;
-  border-radius:6px;
-  border:1px solid #d0d6e1;
-}
-
-button.primary{
-  background:var(--accent);
-  color:#fff;
-  padding:8px 12px;
-  border:0;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-button.small-btn{
-  padding:4px 8px;
-  font-size:12px;
-}
-
-.small{
-  font-size:13px;
-  color:#6b7280;
-}
-
-.hidden{
-  display:none!important;
-}
-
-/* ---------------- TABLE ---------------- */
-.table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.table th,.table td{
-  padding:8px;
-  border-bottom:1px solid #eef4fb;
-  text-align:left;
-}
-
-/* ---------------- MODAL ---------------- */
-.modal{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,0.45);
-  z-index:60;
-}
-
-.modal .card{
-  width:100%;
-  max-width:420px;
-}
-
-/* ---------------- BADGES ---------------- */
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:999px;
-  background:#eef2ff;
-  color:#0a57ff;
-  font-weight:600;
-  font-size:12px;
-}
-
-/* ---------------- FLEX HELPERS ---------------- */
-.actions-row{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.item-row{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-/* ----- TARJETAS DE CONDUCTORES (nuevo diseño) ----- */
-.driver-card{
-  background:#fff;
-  border-radius:10px;
-  padding:12px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.08);
-  margin-bottom:10px;
-}
-
-.driver-top{
-  font-size:16px;
-  font-weight:700;
-  color:#0a57ff;
-}
-
-.driver-info{
-  margin:6px 0;
-  font-size:14px;
-  color:#333;
-}
-
-.driver-actions{
-  display:flex;
-  gap:8px;
-  margin-top:8px;
-}
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- Librerías usadas (xlsx + html2canvas) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <button id="btnMenu" class="primary" style="background:transparent;border:0;color:#fff;font-size:18px">☰</button>
+      <h1>ERP Corabastos — V5</h1>
+      <div class="badge">Estable</div>
+    </div>
 
-<header>
-  <div style="display:flex;align-items:center;gap:12px">
-    <button id="btnMenu">☰</button>
-    <div style="font-size:18px;font-weight:700">ERP Corabastos</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="small" id="headerUser">Invitado</div>
+      <button id="btnLogout" class="primary hidden">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- APLICACIÓN: SIDEBAR + MAIN -->
+  <div class="app">
+    <aside id="sidebar" aria-label="Navegación principal">
+      <button data-sec="dashboard" id="nav_dashboard">Dashboard</button>
+      <button data-sec="fundaciones" id="nav_fundaciones">Fundaciones</button>
+      <button data-sec="items" id="nav_items">Items</button>
+      <button data-sec="conductores" id="nav_conductores">Conductores</button>
+      <button data-sec="recibos" id="nav_recibos">Pedidos</button>
+      <button data-sec="search" id="nav_search">Buscar</button>
+      <hr style="border-color:rgba(255,255,255,0.04);margin:8px 0">
+      <button data-sec="usuarios" id="nav_usuario">Mi Cuenta</button>
+      <button data-sec="admin_users" id="nav_admin_users">Usuarios (Admin)</button>
+      <button data-sec="auditoria" id="nav_auditoria">Auditoría</button>
+      <button data-sec="seguimiento" id="nav_seguimiento">Seguimiento</button>
+      <button data-sec="roles" id="nav_roles">Gestión Roles</button>
+    </aside>
+
+    <main id="main">
+      <!-- Aquí inician las secciones; el contenido completo estará en las PARTES 2..5 -->
+      <!-- PARTE 1 termina aquí; continuar con PARTE 2/5 -->
+<!-- ========================= -->
+<!-- DASHBOARD -->
+<!-- ========================= -->
+<section id="dashboard" class="card">
+  <h2 class="card-title">Dashboard</h2>
+  <p class="muted-line">Bienvenido al sistema ERP. Seleccione un módulo en el menú.</p>
+</section>
+
+<!-- ========================= -->
+<!-- FUNDACIONES -->
+<!-- ========================= -->
+<section id="fundaciones" class="hidden">
+  <div class="card">
+    <h2 class="card-title">Fundaciones</h2>
+
+    <!-- Crear fundación -->
+    <h3>Crear Fundación</h3>
+    <div class="item-row">
+      <div style="flex:1">
+        <label>NIT</label>
+        <input id="f_nit" placeholder="Digite NIT" />
+      </div>
+      <div style="flex:2">
+        <label>Nombre</label>
+        <input id="f_name" placeholder="Nombre de fundación" />
+      </div>
+    </div>
+    <button class="primary" id="btnFundCreate">Guardar Fundación</button>
   </div>
 
-  <div style="display:flex;align-items:center;gap:12px">
-    <div id="headerUser" class="small">Invitado</div>
-    <button id="btnLogout" class="primary hidden">Cerrar sesión</button>
+  <!-- Listado de fundaciones -->
+  <div class="card">
+    <h3>Listado</h3>
+
+    <!-- Buscador -->
+    <label>Buscar Fundación</label>
+    <div class="item-row">
+      <input id="fund_search" placeholder="Buscar por NIT o nombre..." style="flex:1">
+      <button id="fund_search_btn" class="primary small-btn">Buscar</button>
+    </div>
+
+    <table class="table" id="fund_table">
+      <thead>
+        <tr>
+          <th>NIT</th>
+          <th>Nombre</th>
+          <th>Sucursales</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="fund_list"></tbody>
+    </table>
   </div>
-</header>
 
-<div class="app">
-  <aside id="sidebar">
-    <button data-sec="dashboard">Dashboard</button>
-    <button data-sec="fundaciones">Fundaciones</button>
-    <button data-sec="items">Items</button>
-    <button data-sec="conductores">Conductores</button>
-    <button data-sec="recibos">Pedidos</button>
-    <button data-sec="search">Buscar</button>
-    <hr style="border-color:rgba(255,255,255,0.15)">
-    <button data-sec="usuarios">Mi Cuenta</button>
-    <button data-sec="admin_users" id="btnAdminUsers">Usuarios (Admin)</button>
-    <button data-sec="auditoria">Auditoría</button>
-    <button data-sec="seguimiento">Seguimiento</button>
-    <button data-sec="roles">Gestión Roles</button>
-  </aside>
+  <!-- Crear Sucursal -->
+  <div class="card">
+    <h2 class="card-title">Crear Sucursal</h2>
 
-  <main id="main">
-    <!-- ================= PARTE 2: FUNDACIONES / CONDUCTORES / BUSCADOR / LOGIN ================= -->
-    <section id="fundaciones" class="card hidden">
-      <h2>Fundaciones</h2>
+    <!-- Paso 1: Buscar Fundación por NIT -->
+    <label>Ingrese NIT de Fundación</label>
+    <input id="p_nit_lookup" placeholder="Ej: 900123456" />
 
-      <div class="card">
-        <h3>Crear Fundación</h3>
-        <label>NIT</label><input id="f_nit" placeholder="Ej: 900123456">
-        <label>Nombre</label><input id="f_name" placeholder="Nombre de la fundación">
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="btnFundCreate" class="primary">Crear Fundación</button>
-          <button id="btnEditFund" class="primary hidden small-btn">Guardar cambios</button>
-          <button id="btnCancelEditFund" class="small-btn hidden">Cancelar</button>
-        </div>
+    <div class="muted-line" id="p_nit_info"></div>
+
+    <!-- Nombre auto-detectado (NO editable) -->
+    <label>Nombre de Fundación</label>
+    <input id="p_fund_name" disabled
+      style="background:#e5e7eb;font-weight:bold;border:1px solid #cbd5e1;">    
+
+    <!-- Datos de sucursal -->
+    <div class="item-row" style="margin-top:12px">
+      <div style="flex:2">
+        <label>Barrio</label>
+        <input id="p_barrio" placeholder="Barrio" />
       </div>
-
-      <div class="card">
-        <h3>Añadir Punto de Envío (Sucursal)</h3>
-
-        <label>NIT Fundación (buscar)</label>
-        <div style="display:flex;gap:8px;">
-          <input id="p_nit_lookup" placeholder="Escriba NIT y presione Buscar" />
-          <button id="btnLookupByNit" class="primary small-btn">Buscar</button>
-        </div>
-        <div id="p_nit_info" class="small" style="margin-top:6px;color:#0a57ff"></div>
-
-        <label>Fundación (seleccione si no usó NIT)</label>
-        <select id="selFund"></select>
-
-        <label>Barrio / Dirección</label><input id="p_barrio" placeholder="Barrio o dirección corta">
-        <label>Localidad</label><input id="p_localidad" placeholder="Localidad">
-        <label>Ciudad</label><input id="p_ciudad" placeholder="Ciudad">
-        <label>Teléfono 1</label><input id="p_tel1" placeholder="Teléfono 1">
-        <label>Teléfono 2</label><input id="p_tel2" placeholder="Teléfono 2 (opcional)">
-        <label>Encargada</label><input id="p_encargada" placeholder="Nombre de la persona encargada">
-
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="btnPointCreate" class="primary">Agregar Punto</button>
-          <button id="btnEditPoint" class="primary hidden small-btn">Guardar cambios</button>
-          <button id="btnCancelEditPoint" class="small-btn hidden">Cancelar</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Cargar Fundaciones desde Excel</h3>
-        <input id="excel_fundaciones" type="file" accept=".xlsx,.xls">
-        <button id="btnImportFund" class="primary" style="margin-top:10px">Importar Excel</button>
-      </div>
-
-      <div class="card">
-        <h3>Listado</h3>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="searchFund" placeholder="Buscar fundaciones por nombre o NIT..." style="flex:1">
-          <button id="btnSearchFund" class="primary small-btn">Buscar</button>
-        </div>
-        <div id="fundList" style="margin-top:10px"></div>
-      </div>
-    </section>
-
-    <!-- ================= CONDUCTORES ================= -->
-    <section id="conductores" class="card hidden">
-      <h2>Conductores y Placas</h2>
-
-      <div class="card">
-        <h3>Agregar / Editar Conductor</h3>
-        <label>Nombre</label><input id="drv_name" placeholder="Nombre completo">
-        <label>Documento</label><input id="drv_doc" placeholder="Documento">
-        <label>Teléfono</label><input id="drv_tel" placeholder="Teléfono">
-        <label>Empresa</label><input id="drv_cmp" placeholder="Empresa (opcional)">
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="btnAddDriver" class="primary">Agregar Conductor</button>
-          <button id="btnUpdateDriver" class="primary hidden small-btn">Guardar cambios</button>
-          <button id="btnCancelEditDriver" class="small-btn hidden">Cancelar</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Agregar Placa</h3>
-        <label>Placa</label><input id="pl_plate" placeholder="ABC123">
-        <label>Tipo</label><input id="pl_type" placeholder="Tipo de vehículo">
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="btnAddPlate" class="primary">Agregar</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Conductores</h3>
-        <input id="searchDrivers" placeholder="Buscar conductores..." style="margin-bottom:10px">
-        <div id="driversList"></div>
-      </div>
-
-      <div class="card">
-        <h3>Placas</h3>
-        <input id="searchPlates" placeholder="Buscar placas..." style="margin-bottom:10px">
-        <ul id="platesList"></ul>
-      </div>
-    </section>
-
-    <!-- ================= BUSCADOR GLOBAL ================= -->
-    <section id="search" class="card hidden">
-      <h2>Buscador Global</h2>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input id="globalSearch" placeholder="Buscar..." style="flex:1">
-        <button id="btnGlobalSearch" class="primary small-btn">Buscar</button>
-        <button id="btnSearchInFund" class="primary small-btn">Buscar en Fundaciones</button>
-      </div>
-      <div id="globalResults" style="margin-top:10px"></div>
-    </section>
-
-    <!-- ================= LOGIN modal (required) ================= -->
-    <div id="loginModal" class="modal hidden">
-      <div class="card">
-        <h3>Iniciar sesión</h3>
-        <label>Usuario</label><input id="login_user">
-        <label>Contraseña <small style="color:#6b7280">(<a href="#" id="togglePass">mostrar</a>)</small></label>
-        <input id="login_pass" type="password">
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-          <button id="btnLogin" class="primary">Ingresar</button>
-          <div id="loginStatus" class="small" style="color:#6b7280"></div>
-        </div>
+      <div style="flex:1">
+        <label>Localidad</label>
+        <input id="p_localidad" placeholder="Localidad" />
       </div>
     </div>
 
-  </main> <!-- fin main (parte1 continuó aquí) -->
-</div> <!-- fin .app -->
+    <div class="item-row">
+      <div style="flex:2">
+        <label>Ciudad</label>
+        <input id="p_ciudad" placeholder="Ciudad" />
+      </div>
+      <div style="flex:1">
+        <label>Teléfono 1</label>
+        <input id="p_tel1" placeholder="Teléfono principal" />
+      </div>
+    </div>
 
-<!-- ================= SCRIPT: PARTE 2 (INICIALIZACIÓN + HELPERS) ================= -->
+    <div class="item-row">
+      <div style="flex:1">
+        <label>Teléfono 2</label>
+        <input id="p_tel2" placeholder="Otro teléfono" />
+      </div>
+      <div style="flex:2">
+        <label>Persona encargada</label>
+        <input id="p_encargada" placeholder="Nombre encargado" />
+      </div>
+    </div>
+
+    <button class="primary" id="btnPointCreate" style="margin-top:12px">
+      Crear Sucursal
+    </button>
+  </div>
+
+  <!-- Sucursales de fundación seleccionada -->
+  <div class="card">
+    <h3>Sucursales Registradas</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fundación</th>
+          <th>Barrio</th>
+          <th>Localidad</th>
+          <th>Ciudad</th>
+          <th>Encargado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="fund_points_list"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- ITEMS -->
+<!-- ========================= -->
+<section id="items" class="hidden">
+  <div class="card">
+    <h2 class="card-title">Items</h2>
+
+    <div class="item-row">
+      <div style="flex:1">
+        <label>Referencia</label>
+        <input id="item_ref" placeholder="Referencia" />
+      </div>
+      <div style="flex:2">
+        <label>Nombre</label>
+        <input id="item_name" placeholder="Nombre del item" />
+      </div>
+    </div>
+
+    <label>Descripción</label>
+    <input id="item_desc" placeholder="Descripción" />
+
+    <label>Precio</label>
+    <input id="item_price" type="number" placeholder="Precio" />
+
+    <button class="primary" id="btnCreateItem">Crear Item</button>
+  </div>
+
+  <div class="card">
+    <h3>Lista de Items</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Ref</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="items_list"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- CONDUCTORES -->
+<!-- ========================= -->
+<section id="conductores" class="hidden">
+  <div class="card">
+    <h2 class="card-title">Conductores</h2>
+
+    <label>Nombre</label>
+    <input id="drv_name" placeholder="Nombre completo" />
+
+    <div class="item-row">
+      <div style="flex:1">
+        <label>Documento</label>
+        <input id="drv_doc" placeholder="Documento" />
+      </div>
+      <div style="flex:1">
+        <label>Teléfono</label>
+        <input id="drv_tel" placeholder="Teléfono" />
+      </div>
+    </div>
+
+    <label>Empresa</label>
+    <input id="drv_cmp" placeholder="Empresa transportadora" />
+
+    <button class="primary" id="btnAddDriver">Agregar conductor</button>
+  </div>
+
+  <div class="card">
+    <h3>Conductores Registrados</h3>
+    <div id="driver_list"></div>
+  </div>
+
+  <div class="card">
+    <h3>Registrar Placa</h3>
+
+    <div class="item-row">
+      <div style="flex:1">
+        <label>Placa</label>
+        <input id="pl_plate" placeholder="Placa" />
+      </div>
+      <div style="flex:1">
+        <label>Tipo Vehículo</label>
+        <input id="pl_type" placeholder="Ej: Turbo, Furgón..." />
+      </div>
+    </div>
+
+    <button class="primary" id="btnAddPlate">Agregar Placa</button>
+  </div>
+
+  <div class="card">
+    <h3>Placas Registradas</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Placa</th>
+          <th>Tipo</th>
+        </tr>
+      </thead>
+      <tbody id="plate_list"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- PEDIDOS -->
+<!-- ========================= -->
+<section id="recibos" class="hidden">
+  <div class="card">
+    <h2 class="card-title">Crear Pedido</h2>
+
+    <label>Cliente / Fundación</label>
+    <select id="pd_fund_sel"></select>
+
+    <label>Punto de Envío</label>
+    <select id="pd_point_sel"></select>
+
+    <label>Conductor</label>
+    <select id="pd_driver_sel"></select>
+
+    <label>Placa</label>
+    <select id="pd_plate_sel"></select>
+
+    <hr>
+
+    <h3>Agregar Productos</h3>
+    <div class="item-row">
+      <select id="pd_item_sel" style="flex:2"></select>
+      <select id="pd_pack_sel" style="flex:1"></select>
+      <input id="pd_pack_qty" type="number" style="width:70px" placeholder="Cant">
+      <input id="pd_kilos" type="number" placeholder="Kilos" style="width:100px" />
+      <button class="primary small-btn" id="pd_add_item">+</button>
+    </div>
+
+    <div id="pd_items_list" class="muted-line" style="margin-top:10px">No hay items</div>
+
+    <button class="primary" id="pd_save" style="margin-top:12px;">Guardar Pedido</button>
+  </div>
+
+  <div class="card">
+    <h3>Lista de Pedidos</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fundación</th>
+          <th>Punto</th>
+          <th>Conductor</th>
+          <th>Placa</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="pd_list"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- BÚSQUEDA -->
+<!-- ========================= -->
+<section id="search" class="hidden">
+  <div class="card">
+    <h2 class="card-title">Buscar Pedidos</h2>
+
+    <label>NIT Fundación</label>
+    <input id="srch_nit" placeholder="Buscar por NIT" />
+
+    <button class="primary" id="btnSearchPedidos">Buscar</button>
+
+    <table class="table" style="margin-top:14px">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fundación</th>
+          <th>Punto</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody id="srch_results"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- MI CUENTA -->
+<!-- ========================= -->
+<section id="usuarios" class="hidden">
+  <div class="card">
+    <h2>Mi Cuenta</h2>
+    <p class="muted-line">Aquí aparecerá la configuración del usuario actual.</p>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- ADMIN USUARIOS -->
+<!-- ========================= -->
+<section id="admin_users" class="hidden">
+  <div class="card">
+    <h2>Usuario Administrador</h2>
+    <p>Gestión futura de usuarios.</p>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- AUDITORÍA -->
+<!-- ========================= -->
+<section id="auditoria" class="hidden">
+  <div class="card">
+    <h2>Auditoría</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Acción</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody id="audit_list"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- SEGUIMIENTO -->
+<!-- ========================= -->
+<section id="seguimiento" class="hidden">
+  <div class="card">
+    <h2>Seguimiento</h2>
+    <p>En construcción.</p>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- ROLES -->
+<!-- ========================= -->
+<section id="roles" class="hidden">
+  <div class="card">
+    <h2>Gestión de Roles</h2>
+    <p>En construcción.</p>
+  </div>
+</section>
+
+<!-- FIN DE PARTE 2 — Continúa PARTE 3 con el LOGIN y navegación -->
+<!-- ========================= -->
+<!-- LOGIN (modal) -->
+<!-- ========================= -->
+<div id="loginModal" class="modal">
+  <div class="card">
+    <h2 class="card-title">Iniciar Sesión</h2>
+
+    <label>Usuario</label>
+    <input id="lg_user" placeholder="Usuario" />
+
+    <label>Contraseña</label>
+    <input id="lg_pass" type="password" placeholder="Contraseña" />
+
+    <button class="primary" id="btnLogin" style="margin-top:12px;">Ingresar</button>
+
+    <p class="small" style="margin-top:10px;text-align:center;cursor:pointer;color:#0a57ff"
+       id="btnForgot">¿Olvidaste tu contraseña?</p>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- RECUPERAR CONTRASEÑA -->
+<!-- ========================= -->
+<div id="recoverModal" class="modal hidden">
+  <div class="card">
+    <h2 class="card-title">Recuperar Contraseña</h2>
+
+    <label>Usuario</label>
+    <input id="rc_user" placeholder="Usuario registrado" />
+
+    <button class="primary" id="btnRecoverSend" style="margin-top:12px;">Enviar</button>
+    <button class="primary" style="background:#6b7280;margin-top:8px;" id="btnRecoverBack">
+      Volver
+    </button>
+
+    <p class="small" id="recover_msg" style="margin-top:10px;"></p>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- SCRIPT DE LOGIN + NAVEGACIÓN -->
+<!-- ========================= -->
 <script>
-document.addEventListener('DOMContentLoaded', function(){
-  const $ = id => document.getElementById(id);
+/* ========================================= */
+/* VARIABLES GLOBALES DEL SISTEMA            */
+/* ========================================= */
+let state = {
+  currentUser: null,
+  users: [],
+  foundations: [],
+  items: [],
+  drivers: [],
+  plates: [],
+  pedidos: [],
+  audit: []
+};
 
-  // --- Estado (se carga desde localStorage si existe) ---
-  let state = JSON.parse(localStorage.getItem('erp_state')||'null') || {};
-  state.users = Array.isArray(state.users)? state.users : [
-    {username:'admin',pass:'3134630773',role:'admin',fullname:'Administrador'},
-    {username:'jgarnica',pass:'12345',role:'general',fullname:''},
-    {username:'jnonato',pass:'12345',role:'general',fullname:''},
-    {username:'salidas',pass:'12345',role:'general',fullname:''},
-    {username:'mcarabali',pass:'12345',role:'general',fullname:''}
-  ];
-  state.currentUser = state.currentUser || null;
-  state.foundations = Array.isArray(state.foundations)? state.foundations : []; // { nit, name, points: [ {barrio,localidad,ciudad,tel1,tel2,encargada,createdAt,id} ], createdAt }
-  state.items = Array.isArray(state.items)? state.items : [];
-  state.packs = Array.isArray(state.packs)? state.packs : ['Atado','Bulto','Canastilla','Caja','Unidad'];
-  state.drivers = Array.isArray(state.drivers)? state.drivers : []; // { id, name, document, phone, company, createdAt }
-  state.plates = Array.isArray(state.plates)? state.plates : []; // { plate, type, createdAt }
-  state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
-  state.audit = Array.isArray(state.audit)? state.audit : [];
+let currentPedidoItems = [];
 
-  function save(){ localStorage.setItem('erp_state', JSON.stringify(state)); }
+/* ========================================= */
+/* UTILIDADES                                */
+/* ========================================= */
+const $ = id => document.getElementById(id);
 
-  function registrarAccion(accion, detalle){
-    const rec = { fecha: new Date().toISOString(), usuario: state.currentUser? state.currentUser.username : '-', accion, detalle };
-    state.audit = state.audit || [];
-    state.audit.unshift(rec);
+function save() {
+  localStorage.setItem("erp_data", JSON.stringify(state));
+}
+
+function load() {
+  let d = localStorage.getItem("erp_data");
+  if (d) {
+    state = JSON.parse(d);
+  } else {
+    // crear usuario admin por defecto
+    state.users = [
+      { user: "admin", pass: "123", role: "admin", name:"Administrador" }
+    ];
     save();
-    renderAudit();
   }
+}
 
-  // Variables para edición
-  let editingFundIndex = null;
-  let editingPoint = { fundIndex: null, pointIndex: null };
-  let editingDriverId = null;
-
-  // Helpers UI
-  function showSection(id){
-    document.querySelectorAll('main section').forEach(s=> s.classList.add('hidden'));
-    const el = $(id);
-    if(el) el.classList.remove('hidden');
-    document.querySelectorAll('#sidebar button').forEach(b=> b.classList.remove('active'));
-    const btn = document.querySelector('#sidebar button[data-sec="'+id+'"]');
-    if(btn) btn.classList.add('active');
-    window.scrollTo(0,0);
-  }
-
-  document.querySelectorAll('#sidebar button').forEach(b=> b.addEventListener('click', ()=> { showSection(b.dataset.sec); document.getElementById('sidebar').classList.remove('open'); }));
-  $('btnMenu').addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
-
-  // Login handling
-  function openLogin(){ $('loginModal').classList.remove('hidden'); }
-  function closeLogin(){ $('loginModal').classList.add('hidden'); }
-
-  $('togglePass').addEventListener('click', function(ev){ ev.preventDefault(); const p=$('login_pass'); p.type = p.type === 'password' ? 'text' : 'password'; this.textContent = p.type==='password'? 'mostrar':'ocultar'; });
-
-  function setCurrentUser(user){
-    state.currentUser = user;
-    save();
-    $('headerUser').innerText = user.username + ' ('+user.role+')';
-    $('btnLogout').classList.remove('hidden');
-    if(user.role !== 'admin') $('btnAdminUsers').style.display = 'none'; else $('btnAdminUsers').style.display = 'block';
-    closeLogin();
-    renderAll();
-    showSection('dashboard');
-  }
-
-  $('btnLogin').addEventListener('click', function(){
-    const u = $('login_user').value.trim();
-    const p = $('login_pass').value.trim();
-    if(!u || !p){ alert('Usuario y clave requeridos'); return; }
-    $('loginStatus').innerText = 'Iniciando...';
-    setTimeout(()=>{
-      const found = state.users.find(x=> x.username === u && x.pass === p);
-      if(!found){ alert('Usuario o clave incorrectos'); $('loginStatus').innerText=''; return; }
-      setCurrentUser(found);
-      registrarAccion('login',{user:u});
-      $('login_user').value=''; $('login_pass').value='';
-      $('loginStatus').innerText='';
-    }, 400);
+function registrarAccion(accion, detalle) {
+  state.audit.push({
+    fecha: new Date().toLocaleString(),
+    accion,
+    detalle: JSON.stringify(detalle)
   });
+  save();
+}
 
-  $('btnLogout').addEventListener('click', function(){ if(confirm('Cerrar sesión?')){ state.currentUser = null; save(); $('headerUser').innerText = 'Invitado'; $('btnLogout').classList.add('hidden'); openLogin(); } });
+/* ========================================= */
+/* LOGIN                                     */
+/* ========================================= */
+function showLogin() {
+  $("loginModal").classList.remove("hidden");
+}
 
-  // Force login if no user
-  if(!state.currentUser) openLogin(); else setCurrentUser(state.currentUser);
+function hideLogin() {
+  $("loginModal").classList.add("hidden");
+}
 
-  // ========== renderers básicos (se usan en parte 3/4/5) ==========
-  function fillFundSelects(){
-    const sel = $('selFund');
-    if(sel){
-      sel.innerHTML = '';
-      state.foundations.forEach((f,i)=> sel.appendChild(new Option(f.name + ' ('+f.nit+')', i)));
+function doLogin() {
+  let u = $("lg_user").value.trim();
+  let p = $("lg_pass").value.trim();
+
+  const usr = state.users.find(x => x.user === u && x.pass === p);
+
+  if (!usr) return alert("Usuario o contraseña incorrecta");
+
+  state.currentUser = usr;
+  $("headerUser").innerText = usr.name || usr.user;
+  $("btnLogout").classList.remove("hidden");
+
+  hideLogin();
+  showSection("dashboard");
+  registrarAccion("login", {user: usr.user});
+}
+
+$("btnLogin").addEventListener("click", doLogin);
+
+/* ========================================= */
+/* LOGOUT                                    */
+/* ========================================= */
+$("btnLogout").addEventListener("click", () => {
+  state.currentUser = null;
+  $("headerUser").innerText = "Invitado";
+  $("btnLogout").classList.add("hidden");
+  showLogin();
+});
+
+/* ========================================= */
+/* RECUPERAR CONTRASEÑA                      */
+/* ========================================= */
+$("btnForgot").addEventListener("click", () => {
+  $("loginModal").classList.add("hidden");
+  $("recoverModal").classList.remove("hidden");
+});
+
+$("btnRecoverBack").addEventListener("click", () => {
+  $("recoverModal").classList.add("hidden");
+  $("loginModal").classList.remove("hidden");
+});
+
+$("btnRecoverSend").addEventListener("click", () => {
+  const user = $("rc_user").value.trim();
+  const u = state.users.find(x => x.user === user);
+
+  if (!u) {
+    $("recover_msg").innerText = "Usuario no encontrado.";
+  } else {
+    $("recover_msg").innerText =
+      "Tu contraseña es: " + u.pass + " (mostrar solo para pruebas)";
+  }
+});
+
+/* ========================================= */
+/* MOSTRAR SECCIÓN                           */
+/* ========================================= */
+function showSection(id) {
+  if (!state.currentUser) return showLogin();
+
+  document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
+
+  const t = document.getElementById(id);
+  if (t) t.classList.remove("hidden");
+
+  document
+    .querySelectorAll("#sidebar button")
+    .forEach(b => b.classList.remove("active"));
+
+  const btn = document.querySelector(`#sidebar button[data-sec="${id}"]`);
+  if (btn) btn.classList.add("active");
+
+  window.scrollTo(0, 0);
+}
+
+/* ========================================= */
+/* SIDEBAR NAVIGATION                         */
+/* ========================================= */
+document.querySelectorAll("#sidebar button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    showSection(btn.dataset.sec);
+    if (window.innerWidth < 900) {
+      $("sidebar").classList.remove("open");
     }
-    const pf = $('pd_fund');
-    if(pf){
-      pf.innerHTML = '';
-      state.foundations.forEach((f,i)=> pf.appendChild(new Option(f.name, i)));
-      // fill points will be called on change elsewhere
-    }
-  }
+  });
+});
 
-  function renderFund(){
-    const box = $('fundList');
-    if(!box) return;
-    box.innerHTML = '';
-    state.foundations.forEach((f, idx)=>{
-      const d = document.createElement('div');
-      d.className = 'card';
-      d.style.marginBottom = '8px';
-      let html = `<strong>${f.name}</strong> <div class="small">NIT: ${f.nit}</div>`;
-      html += `<div class="small" style="margin-top:8px">Puntos: ${ (f.points||[]).length }</div>`;
-      html += `<div style="margin-top:8px" class="actions-row">
-        <button data-idx="${idx}" class="btn-edit-fund small-btn">Editar</button>
-        <button data-idx="${idx}" class="btn-del-fund small-btn">Eliminar</button>
-      </div>`;
-      // show points list expansion
-      if(Array.isArray(f.points) && f.points.length){
-        html += '<div style="margin-top:8px">';
-        f.points.forEach((p,pi)=>{
-          html += `<div class="small" style="display:flex;justify-content:space-between;align-items:center;padding:6px;border-radius:6px;background:#fafafa;margin-bottom:6px">
-            <div>
-              <div><b>${p.barrio}</b> — ${p.localidad} — ${p.ciudad}</div>
-              <div class="small">Tel: ${p.tel1||''} ${p.tel2? ' / '+p.tel2 : ''} — Encargada: ${p.encargada||''}</div>
-            </div>
-            <div>
-              <button data-idx="${idx}" data-pidx="${pi}" class="btn-edit-point small-btn">Editar</button>
-              <button data-idx="${idx}" data-pidx="${pi}" class="btn-del-point small-btn">Eliminar</button>
-            </div>
-          </div>`;
-        });
-        html += '</div>';
-      }
-      d.innerHTML = html;
-      box.appendChild(d);
-    });
+$("btnMenu").addEventListener("click", () => {
+  $("sidebar").classList.toggle("open");
+});
 
-    // attach events
-    document.querySelectorAll('.btn-edit-fund').forEach(b=> b.addEventListener('click', function(){
-      const i = Number(this.dataset.idx);
-      startEditFund(i);
-    }));
-    document.querySelectorAll('.btn-del-fund').forEach(b=> b.addEventListener('click', function(){
-      const i = Number(this.dataset.idx);
-      if(!confirm('Eliminar fundación y todas sus sucursales?')) return;
-      state.foundations.splice(i,1);
-      save(); renderFund(); fillFundSelects();
-      registrarAccion('eliminar_fundacion',{index:i});
-    }));
+/* ========================================= */
+/* MOSTRAR LOGIN AL CARGAR                   */
+/* ========================================= */
+load();
+if (!state.currentUser) {
+  showLogin();
+} else {
+  $("headerUser").innerText = state.currentUser.name || state.currentUser.user;
+  $("btnLogout").classList.remove("hidden");
+  showSection("dashboard");
+}
+</script>
 
-    document.querySelectorAll('.btn-edit-point').forEach(b=> b.addEventListener('click', function(){
-      const i = Number(this.dataset.idx), pi = Number(this.dataset.pidx);
-      startEditPoint(i,pi);
-    }));
-    document.querySelectorAll('.btn-del-point').forEach(b=> b.addEventListener('click', function(){
-      const i = Number(this.dataset.idx), pi = Number(this.dataset.pidx);
-      if(!confirm('Eliminar sucursal?')) return;
-      const f = state.foundations[i];
-      if(!f) return;
-      f.points.splice(pi,1);
-      save(); renderFund(); fillFundSelects();
-      registrarAccion('eliminar_sucursal',{fund:i,point:pi});
-    }));
-  }
+<!-- FIN DE PARTE 3/5 - SIGUE PARTE 4 (CRUD COMPLETO) -->
+<script>
+/* ====================================================== */
+/* ==================  CRUD FUNDACIONES ================= */
+/* ====================================================== */
 
-  function renderDrivers(){
-    const box = $('driversList'); if(!box) return;
-    box.innerHTML = '';
-    state.drivers.forEach((d)=>{
-      const card = document.createElement('div');
-      card.className = 'driver-card';
-      card.innerHTML = `<div class="driver-top">${d.name || '(sin nombre)'}</div>
-        <div class="driver-info">Documento: ${d.document||'—'}</div>
-        <div class="driver-info">Tel: ${d.phone||'—'} — Empresa: ${d.company||'—'}</div>
-        <div class="driver-actions">
-          <button class="btn-edit-driver small-btn" data-id="${d.id}">Editar</button>
-          <button class="btn-del-driver small-btn" data-id="${d.id}">Eliminar</button>
-        </div>`;
-      box.appendChild(card);
-    });
+function renderFund() {
+  let html = "";
+  state.foundations.forEach((f, i) => {
+    html += `
+    <tr>
+      <td>${f.nit}</td>
+      <td>${f.name}</td>
+      <td>${(f.points || []).length}</td>
+      <td>
+        <button class="primary small-btn" onclick="editFoundation(${i})">Editar</button>
+        <button class="danger small-btn" onclick="deleteFoundation(${i})">Eliminar</button>
+      </td>
+    </tr>
+    `;
+  });
+  $("fund_list").innerHTML = html;
 
-    // attach events
-    document.querySelectorAll('.btn-edit-driver').forEach(b=> b.addEventListener('click', function(){
-      const id = this.dataset.id;
-      const drv = state.drivers.find(x=> x.id === id);
-      if(!drv) return alert('Conductor no encontrado');
-      editingDriverId = id;
-      $('drv_name').value = drv.name || '';
-      $('drv_doc').value = drv.document || '';
-      $('drv_tel').value = drv.phone || '';
-      $('drv_cmp').value = drv.company || '';
-      $('btnAddDriver').classList.add('hidden');
-      $('btnUpdateDriver').classList.remove('hidden');
-      $('btnCancelEditDriver').classList.remove('hidden');
-      showSection('conductores');
-    }));
-
-    document.querySelectorAll('.btn-del-driver').forEach(b=> b.addEventListener('click', function(){
-      const id = this.dataset.id;
-      if(!confirm('Eliminar conductor?')) return;
-      state.drivers = state.drivers.filter(x=> x.id !== id);
-      save(); renderDrivers(); fillDriverPlate();
-      registrarAccion('eliminar_conductor',{id});
-    }));
-  }
-
-  function renderPlates(){
-    const ul = $('platesList'); if(!ul) return;
-    ul.innerHTML = '';
-    state.plates.forEach(p=>{
-      const li = document.createElement('li');
-      li.textContent = `${p.plate} (${p.type||''})`;
-      ul.appendChild(li);
-    });
-  }
-
-  function renderAudit(){
-    const box = $('auditList'); if(!box) return;
-    box.innerHTML = '';
-    const uf = $('auditUserFilter')? $('auditUserFilter').value.trim().toLowerCase() : '';
-    const df = $('auditDateFilter')? $('auditDateFilter').value : '';
-    (state.audit||[]).forEach(a=>{
-      const dstr = new Date(a.fecha).toISOString().slice(0,10);
-      if(uf && !a.usuario.toLowerCase().includes(uf)) return;
-      if(df && dstr !== df) return;
-      const div = document.createElement('div');
-      div.style.marginBottom = '8px';
-      div.innerHTML = `<b>[${new Date(a.fecha).toLocaleString()}] ${a.usuario}</b> — ${a.accion} <div class="small">${JSON.stringify(a.detalle)}</div>`;
-      box.appendChild(div);
-    });
-  }
-
-  // rellenar selects y listas iniciales
+  renderFoundationPoints();
   fillFundSelects();
+}
+
+function renderFoundationPoints() {
+  let html = "";
+  state.foundations.forEach(f => {
+    (f.points || []).forEach((p, idx) => {
+      html += `
+        <tr>
+          <td>${f.name}</td>
+          <td>${p.barrio}</td>
+          <td>${p.localidad}</td>
+          <td>${p.ciudad}</td>
+          <td>${p.encargada}</td>
+          <td>
+            <button class="primary small-btn" onclick="editPoint('${f.nit}', ${idx})">Editar</button>
+            <button class="danger small-btn" onclick="deletePoint('${f.nit}', ${idx})">Eliminar</button>
+          </td>
+        </tr>
+      `;
+    });
+  });
+  $("fund_points_list").innerHTML = html;
+}
+
+/* Crear fundación */
+$("btnFundCreate").addEventListener("click", () => {
+  if (!state.currentUser) return alert("Inicie sesión");
+
+  const nit = $("f_nit").value.trim();
+  const name = $("f_name").value.trim();
+
+  if (!nit || !name) return alert("Complete NIT y Nombre");
+
+  state.foundations.push({
+    nit,
+    name,
+    points: []
+  });
+
+  save();
   renderFund();
+  registrarAccion("crear_fundacion", {nit, name});
+
+  $("f_nit").value = "";
+  $("f_name").value = "";
+});
+
+/* Buscar fundación al escribir NIT para crear sucursal */
+$("p_nit_lookup").addEventListener("input", function () {
+  const nit = this.value.trim();
+  const info = $("p_nit_info");
+  const nameInput = $("p_fund_name");
+
+  info.innerText = "";
+  nameInput.value = "";
+
+  if (!nit) return;
+
+  const f = state.foundations.find(ff => String(ff.nit) === nit);
+
+  if (f) {
+    info.innerText = f.name;
+    nameInput.value = f.name;
+
+    // Esto permite saber a qué fundación se agregará la sucursal
+    $("p_fund_name").dataset.findex = state.foundations.findIndex(x => x.nit === f.nit);
+  } else {
+    info.innerText = "NIT no registrado";
+    $("p_fund_name").dataset.findex = "";
+  }
+});
+
+/* Crear Sucursal */
+$("btnPointCreate").addEventListener("click", () => {
+  if (!state.currentUser) return alert("Inicie sesión");
+
+  const fi = Number($("p_fund_name").dataset.findex);
+  if (isNaN(fi) || fi < 0) return alert("Primero ingrese un NIT válido");
+
+  const f = state.foundations[fi];
+
+  const p = {
+    barrio: $("p_barrio").value.trim(),
+    localidad: $("p_localidad").value.trim(),
+    ciudad: $("p_ciudad").value.trim(),
+    tel1: $("p_tel1").value.trim(),
+    tel2: $("p_tel2").value.trim(),
+    encargada: $("p_encargada").value.trim()
+  };
+
+  if (!p.barrio) return alert("Complete la información de la sucursal");
+
+  f.points.push(p);
+  save();
+  renderFoundationPoints();
+  fillFundSelects();
+
+  registrarAccion("crear_sucursal", { fundacion: f.name, punto: p.barrio });
+
+  $("p_barrio").value = "";
+  $("p_localidad").value = "";
+  $("p_ciudad").value = "";
+  $("p_tel1").value = "";
+  $("p_tel2").value = "";
+  $("p_encargada").value = "";
+});
+
+/* Editar fundación */
+function editFoundation(index) {
+  const f = state.foundations[index];
+  const nuevo = prompt("Nuevo nombre:", f.name);
+  if (!nuevo) return;
+  f.name = nuevo;
+  save();
+  renderFund();
+}
+
+/* Eliminar fundación */
+function deleteFoundation(i) {
+  if (!confirm("¿Eliminar fundación y sus sucursales?")) return;
+  state.foundations.splice(i, 1);
+  save();
+  renderFund();
+}
+
+/* Editar sucursal */
+function editPoint(nit, idx) {
+  const f = state.foundations.find(x => x.nit == nit);
+  const p = f.points[idx];
+
+  const nuevo = prompt("Nuevo nombre del barrio:", p.barrio);
+  if (!nuevo) return;
+
+  p.barrio = nuevo;
+  save();
+  renderFoundationPoints();
+}
+
+/* Eliminar sucursal */
+function deletePoint(nit, idx) {
+  const f = state.foundations.find(x => x.nit == nit);
+  if (!confirm("¿Eliminar esta sucursal?")) return;
+
+  f.points.splice(idx, 1);
+  save();
+  renderFoundationPoints();
+}
+
+/* ====================================================== */
+/* ======================= ITEMS ======================== */
+/* ====================================================== */
+
+function renderItems() {
+  let html = "";
+  state.items.forEach((it, i) => {
+    html += `
+      <tr>
+        <td>${it.ref}</td>
+        <td>${it.name}</td>
+        <td>$${it.price}</td>
+        <td>
+          <button class="primary small-btn" onclick="editItem(${i})">Editar</button>
+          <button class="danger small-btn" onclick="deleteItem(${i})">Eliminar</button>
+        </td>
+      </tr>
+    `;
+  });
+  $("items_list").innerHTML = html;
+
+  fillItemSelect();
+}
+
+$("btnCreateItem").addEventListener("click", () => {
+  if (!state.currentUser) return alert("Inicie sesión");
+
+  const ref = $("item_ref").value.trim();
+  const name = $("item_name").value.trim();
+  const desc = $("item_desc").value.trim();
+  const price = Number($("item_price").value) || 0;
+
+  if (!name) return alert("Nombre requerido");
+
+  state.items.push({ ref, name, desc, price });
+  save();
+  renderItems();
+
+  registrarAccion("crear_item", { name });
+
+  $("item_ref").value = "";
+  $("item_name").value = "";
+  $("item_desc").value = "";
+  $("item_price").value = "";
+});
+
+function editItem(i) {
+  const it = state.items[i];
+  const nuevo = prompt("Nuevo nombre del item:", it.name);
+  if (!nuevo) return;
+  it.name = nuevo;
+  save();
+  renderItems();
+}
+
+function deleteItem(i) {
+  if (!confirm("¿Eliminar item?")) return;
+  state.items.splice(i, 1);
+  save();
+  renderItems();
+}
+
+/* ====================================================== */
+/* ===================== CONDUCTORES ==================== */
+/* ====================================================== */
+
+function renderDrivers() {
+  let html = "";
+
+  state.drivers.forEach((d, i) => {
+    html += `
+      <div class="drv-card">
+        <div class="drv-row">
+          <div>
+            <strong>${d.name}</strong><br>
+            <span class="small">Doc: ${d.document}</span><br>
+            <span class="small">Tel: ${d.phone}</span><br>
+            <span class="small">Empresa: ${d.company}</span>
+          </div>
+          <div class="drv-actions">
+            <button class="small-btn primary" onclick="editDriver(${i})">Editar</button>
+            <button class="small-btn danger" onclick="deleteDriver(${i})">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  $("driver_list").innerHTML = html;
+
+  fillDriverPlate();
+}
+
+$("btnAddDriver").addEventListener("click", () => {
+  const d = {
+    name: $("drv_name").value.trim(),
+    document: $("drv_doc").value.trim(),
+    phone: $("drv_tel").value.trim(),
+    company: $("drv_cmp").value.trim()
+  };
+
+  if (!d.name) return alert("Nombre requerido");
+
+  state.drivers.push(d);
+  save();
   renderDrivers();
+
+  registrarAccion("crear_conductor", d);
+
+  $("drv_name").value = "";
+  $("drv_doc").value = "";
+  $("drv_tel").value = "";
+  $("drv_cmp").value = "";
+});
+
+function editDriver(i) {
+  const d = state.drivers[i];
+  const nuevo = prompt("Nuevo nombre:", d.name);
+  if (!nuevo) return;
+  d.name = nuevo;
+  save();
+  renderDrivers();
+}
+
+function deleteDriver(i) {
+  if (!confirm("¿Eliminar conductor?")) return;
+  state.drivers.splice(i, 1);
+  save();
+  renderDrivers();
+}
+
+/* ====================================================== */
+/* ======================== PLACAS ====================== */
+/* ====================================================== */
+
+function renderPlates() {
+  let html = "";
+  state.plates.forEach(p => {
+    html += `
+      <tr>
+        <td>${p.plate}</td>
+        <td>${p.type}</td>
+      </tr>
+    `;
+  });
+  $("plate_list").innerHTML = html;
+}
+
+$("btnAddPlate").addEventListener("click", () => {
+  const p = {
+    plate: $("pl_plate").value.trim(),
+    type: $("pl_type").value.trim()
+  };
+
+  if (!p.plate) return alert("Placa requerida");
+
+  state.plates.push(p);
+  save();
   renderPlates();
-  renderAudit();
+  fillDriverPlate();
 
-  // ----------------------------------------
-  // Aquí termina la PARTE 2 / 5 (más lógica y handlers en la siguiente parte).
-  // ----------------------------------------
+  registrarAccion("crear_placa", p);
+
+  $("pl_plate").value = "";
+  $("pl_type").value = "";
 });
-</script>
-<script>
-/* ============================================================
-   ==========   PARTE 3 — HANDLERS CRUD COMPLETOS   ==========
-   ============================================================ */
 
-document.addEventListener('DOMContentLoaded', function(){
+/* ====================================================== */
+/* ======================== PEDIDOS ===================== */
+/* ====================================================== */
 
-  const $ = id => document.getElementById(id);
-
-  /* ============================================================
-     FUNCIÓN: Buscar Fundación por NIT para crear sucursal
-     ============================================================ */
-  $('btnLookupByNit').addEventListener('click', function(){
-    const nit = $('p_nit_lookup').value.trim();
-    if(!nit) return alert("Ingrese un NIT");
-
-    const fund = state.foundations.find(f => f.nit === nit);
-    if(!fund){
-      $('p_nit_info').innerHTML = "❌ No encontrada";
-      $('selFund').value = "";
-      return;
-    }
-
-    $('p_nit_info').innerHTML = 
-      `✔ Fundación encontrada: <b>${fund.name}</b>`;
-
-    $('selFund').value = state.foundations.indexOf(fund);
+function fillFundSelects() {
+  let html = "";
+  state.foundations.forEach((f, i) => {
+    html += `<option value="${i}">${f.name}</option>`;
   });
-
-  /* ============================================================
-     CREAR FUNDACIÓN
-     ============================================================ */
-  $('btnFundCreate').addEventListener('click', function(){
-    if(!state.currentUser) return alert('Inicie sesión');
-
-    const nit = $('f_nit').value.trim();
-    const name = $('f_name').value.trim();
-    if(!nit || !name) return alert("Complete NIT y Nombre");
-
-    if(state.foundations.some(f => f.nit === nit)){
-      return alert("Ya existe una fundación con ese NIT");
-    }
-
-    state.foundations.push({
-      nit, name,
-      createdAt: new Date().toISOString(),
-      points: []
-    });
-    save();
-
-    $('f_nit').value = '';
-    $('f_name').value = '';
-
-    renderFund();  
-    fillFundSelects();
-
-    registrarAccion("crear_fundacion", { nit, name });
-  });
-
-  /* ============================================================
-     EDITAR FUNDACIÓN
-     ============================================================ */
-
-  window.startEditFund = function(index){
-    const f = state.foundations[index];
-    if(!f) return;
-
-    editingFundIndex = index;
-
-    $('f_nit').value = f.nit;
-    $('f_name').value = f.name;
-
-    $('btnFundCreate').classList.add('hidden');
-    $('btnEditFund').classList.remove('hidden');
-    $('btnCancelEditFund').classList.remove('hidden');
-
-    showSection("fundaciones");
-  };
-
-  $('btnEditFund').addEventListener('click', function(){
-    const nit = $('f_nit').value.trim();
-    const name = $('f_name').value.trim();
-
-    if(!nit || !name) return alert("Complete NIT y Nombre");
-
-    const f = state.foundations[editingFundIndex];
-    if(!f) return;
-
-    f.nit = nit;
-    f.name = name;
-
-    save();
-    renderFund();
-    fillFundSelects();
-
-    $('btnFundCreate').classList.remove('hidden');
-    $('btnEditFund').classList.add('hidden');
-    $('btnCancelEditFund').classList.add('hidden');
-
-    $('f_nit').value = '';
-    $('f_name').value = '';
-
-    registrarAccion("editar_fundacion", { index: editingFundIndex });
-    editingFundIndex = null;
-  });
-
-  $('btnCancelEditFund').addEventListener('click', function(){
-    editingFundIndex = null;
-
-    $('btnFundCreate').classList.remove('hidden');
-    $('btnEditFund').classList.add('hidden');
-    $('btnCancelEditFund').classList.add('hidden');
-
-    $('f_nit').value = '';
-    $('f_name').value = '';
-  });
-
-  /* ============================================================
-     CREAR SUCURSAL (PUNTO)
-     ============================================================ */
-  $('btnPointCreate').addEventListener('click', function(){
-    if(!state.currentUser) return alert('Inicie sesión');
-
-    const fundIndex = Number($('selFund').value);
-    const f = state.foundations[fundIndex];
-    if(!f) return alert("Seleccione fundación");
-
-    const suc = {
-      barrio: $('p_barrio').value.trim(),
-      localidad: $('p_localidad').value.trim(),
-      ciudad: $('p_ciudad').value.trim(),
-      tel1: $('p_tel1').value.trim(),
-      tel2: $('p_tel2').value.trim(),
-      encargada: $('p_encargada').value.trim(),
-      fundacion_nit: f.nit,
-      fundacion_nombre: f.name,
-      createdAt: new Date().toISOString()
-    };
-
-    if(!suc.barrio) return alert("La dirección/barrio es obligatoria");
-
-    f.points = f.points || [];
-    f.points.push(suc);
-
-    save();
-    renderFund();
-    fillFundSelects();
-
-    registrarAccion("crear_sucursal", suc);
-
-    $('p_barrio').value = "";
-    $('p_localidad').value = "";
-    $('p_ciudad').value = "";
-    $('p_tel1').value = "";
-    $('p_tel2').value = "";
-    $('p_encargada').value = "";
-  });
-
-  /* ============================================================
-     EDITAR SUCURSAL
-     ============================================================ */
-  window.startEditPoint = function(fi, pi){
-    const f = state.foundations[fi];
-    if(!f || !f.points[pi]) return;
-
-    editingPoint = { fundIndex: fi, pointIndex: pi };
-
-    const p = f.points[pi];
-
-    $('selFund').value = fi;
-    $('p_barrio').value = p.barrio;
-    $('p_localidad').value = p.localidad;
-    $('p_ciudad').value = p.ciudad;
-    $('p_tel1').value = p.tel1;
-    $('p_tel2').value = p.tel2;
-    $('p_encargada').value = p.encargada;
-
-    $('btnPointCreate').classList.add('hidden');
-    $('btnEditPoint').classList.remove('hidden');
-    $('btnCancelEditPoint').classList.remove('hidden');
-
-    showSection("fundaciones");
-  };
-
-  $('btnEditPoint').addEventListener('click', function(){
-    const { fundIndex, pointIndex } = editingPoint;
-    const f = state.foundations[fundIndex];
-    if(!f) return;
-
-    const p = f.points[pointIndex];
-    if(!p) return;
-
-    p.barrio = $('p_barrio').value.trim();
-    p.localidad = $('p_localidad').value.trim();
-    p.ciudad = $('p_ciudad').value.trim();
-    p.tel1 = $('p_tel1').value.trim();
-    p.tel2 = $('p_tel2').value.trim();
-    p.encargada = $('p_encargada').value.trim();
-
-    save();
-    renderFund();
-    fillFundSelects();
-
-    $('btnPointCreate').classList.remove('hidden');
-    $('btnEditPoint').classList.add('hidden');
-    $('btnCancelEditPoint').classList.add('hidden');
-
-    $('p_barrio').value = "";
-    $('p_localidad').value = "";
-    $('p_ciudad').value = "";
-    $('p_tel1').value = "";
-    $('p_tel2').value = "";
-    $('p_encargada').value = "";
-
-    registrarAccion("editar_sucursal", { fundIndex, pointIndex });
-    editingPoint = { fundIndex:null, pointIndex:null };
-  });
-
-  $('btnCancelEditPoint').addEventListener('click', function(){
-    editingPoint = { fundIndex:null, pointIndex:null };
-
-    $('btnPointCreate').classList.remove('hidden');
-    $('btnEditPoint').classList.add('hidden');
-    $('btnCancelEditPoint').classList.add('hidden');
-
-    $('p_barrio').value = "";
-    $('p_localidad').value = "";
-    $('p_ciudad').value = "";
-    $('p_tel1').value = "";
-    $('p_tel2').value = "";
-    $('p_encargada').value = "";
-  });
-
-  /* ============================================================
-     IMPORTAR FUNDACIONES DESDE EXCEL (.xlsx)
-     ============================================================ */
-  $('btnImportFund').addEventListener('click', function(){
-    const fileInput = $('excel_fundaciones');
-    if(!fileInput.files.length) return alert("Seleccione un archivo Excel");
-
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-      const wb = XLSX.read(e.target.result, { type:"binary" });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws);
-
-      rows.forEach(r=>{
-        if(!r.NIT || !r.Nombre) return;
-        
-        if(!state.foundations.some(f => f.nit === String(r.NIT))){
-          state.foundations.push({
-            nit: String(r.NIT),
-            name: String(r.Nombre),
-            points: [],
-            createdAt: new Date().toISOString()
-          });
-        }
-      });
-
-      save();
-      renderFund();
-      fillFundSelects();
-
-      registrarAccion("importar_fundaciones", { total: rows.length });
-    };
-
-    reader.readAsBinaryString(file);
-  });
-
-  /* ============================================================
-     BUSCADOR DE FUNDACIONES
-     ============================================================ */
-  $('btnSearchFund').addEventListener('click', function(){
-    const q = $('searchFund').value.trim().toLowerCase();
-    if(!q){ renderFund(); return; }
-
-    const box = $('fundList');
-    box.innerHTML = "";
-
-    state.foundations
-      .filter(f => f.name.toLowerCase().includes(q) || f.nit.includes(q))
-      .forEach(f=>{
-        const d = document.createElement('div');
-        d.className = "card";
-        d.innerHTML = `<strong>${f.name}</strong><div class="small">NIT: ${f.nit}</div>`;
-        box.appendChild(d);
-      });
-  });
-
-  /* ============================================================
-     CRUD: CONDUCTORES
-     ============================================================ */
-  $('btnAddDriver').addEventListener('click', function(){
-    if(!state.currentUser) return alert("Inicie sesión");
-
-    const d = {
-      id: crypto.randomUUID(),
-      name: $('drv_name').value.trim(),
-      document: $('drv_doc').value.trim(),
-      phone: $('drv_tel').value.trim(),
-      company: $('drv_cmp').value.trim(),
-      createdAt: new Date().toISOString()
-    };
-
-    if(!d.name) return alert("Nombre requerido");
-
-    state.drivers.push(d);
-    save();
-
-    $('drv_name').value = "";
-    $('drv_doc').value = "";
-    $('drv_tel').value = "";
-    $('drv_cmp').value = "";
-
-    renderDrivers();
-    registrarAccion("crear_conductor", d);
-  });
-
-  $('btnUpdateDriver').addEventListener('click', function(){
-    const drv = state.drivers.find(x => x.id === editingDriverId);
-    if(!drv) return;
-
-    drv.name = $('drv_name').value.trim();
-    drv.document = $('drv_doc').value.trim();
-    drv.phone = $('drv_tel').value.trim();
-    drv.company = $('drv_cmp').value.trim();
-
-    save();
-    renderDrivers();
-
-    $('btnAddDriver').classList.remove('hidden');
-    $('btnUpdateDriver').classList.add('hidden');
-    $('btnCancelEditDriver').classList.add('hidden');
-
-    editingDriverId = null;
-
-    $('drv_name').value = "";
-    $('drv_doc').value = "";
-    $('drv_tel').value = "";
-    $('drv_cmp').value = "";
-
-    registrarAccion("editar_conductor", { id: drv.id });
-  });
-
-  $('btnCancelEditDriver').addEventListener('click', function(){
-    editingDriverId = null;
-
-    $('btnAddDriver').classList.remove('hidden');
-    $('btnUpdateDriver').classList.add('hidden');
-    $('btnCancelEditDriver').classList.add('hidden');
-
-    $('drv_name').value = "";
-    $('drv_doc').value = "";
-    $('drv_tel').value = "";
-    $('drv_cmp').value = "";
-  });
-
-  /* ============================================================
-     PLACAS — agregar
-     ============================================================ */
-  $('btnAddPlate').addEventListener('click', function(){
-    const p = {
-      plate: $('pl_plate').value.trim(),
-      type: $('pl_type').value.trim(),
-      createdAt: new Date().toISOString()
-    };
-
-    if(!p.plate) return alert("Placa requerida");
-
-    state.plates.push(p);
-    save();
-
-    renderPlates();
-    fillDriverPlate();
-
-    $('pl_plate').value = "";
-    $('pl_type').value = "";
-
-    registrarAccion("crear_placa", p);
-  });
-
-});
-</script>
-<script>
-/* ================= PARTE 4 / 5 ======================
-   Mejora de render, edicion/eliminacion fundaciones/sucursales,
-   vista tarjeta conductores, y nuevo handler de Guardar Pedido
-   que guarda conductor y placa en el pedido.
-   ==================================================== */
-
-(function(){
-  const $ = id => document.getElementById(id);
-
-  // Variables usadas por las funciones de edición
-  window.editingFundIndex = window.editingFundIndex || null;
-  window.editingPoint = window.editingPoint || { fundIndex: null, pointIndex: null };
-  window.editingDriverId = window.editingDriverId || null;
-
-  // --- agregar boton de búsqueda junto al input searchFund si no existe ---
-  (function ensureSearchFundButton(){
-    const inp = $('searchFund');
-    if(!inp) return;
-    if(document.getElementById('btnSearchFund')) return;
-    const btn = document.createElement('button');
-    btn.id = 'btnSearchFund';
-    btn.className = 'primary';
-    btn.style.marginLeft = '8px';
-    btn.textContent = 'Buscar';
-    inp.insertAdjacentElement('afterend', btn);
-    // también soporta enter key en input
-    inp.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') btn.click(); });
-  })();
-
-  // --- renderFund mejorado: añade botones editar/eliminar a fundaciones y puntos ---
-  window.renderFund = function(){
-    const box = $('fundList');
-    if(!box) return;
-    box.innerHTML = '';
-
-    state.foundations.forEach((f, fi) => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'card';
-      wrapper.style.marginBottom = '8px';
-
-      const header = document.createElement('div');
-      header.style.display = 'flex';
-      header.style.justifyContent = 'space-between';
-      header.style.alignItems = 'center';
-
-      const title = document.createElement('div');
-      title.innerHTML = `<strong>${f.name}</strong><div class="small">NIT: ${f.nit}</div>`;
-
-      const actions = document.createElement('div');
-      actions.style.display = 'flex';
-      actions.style.gap = '6px';
-      const btnEditF = document.createElement('button');
-      btnEditF.textContent = 'Editar';
-      btnEditF.className = 'primary';
-      btnEditF.addEventListener('click', ()=> {
-        // rellenar formulario para editar
-        window.startEditFund(fi);
-      });
-
-      const btnDelF = document.createElement('button');
-      btnDelF.textContent = 'Eliminar';
-      btnDelF.className = 'primary';
-      btnDelF.addEventListener('click', ()=> {
-        if(!confirm('Eliminar fundación y sus sucursales?')) return;
-        state.foundations.splice(fi,1);
-        save();
-        renderFund();
-        fillFundSelects();
-        registrarAccion('eliminar_fundacion',{nit:f.nit,name:f.name});
-      });
-
-      actions.appendChild(btnEditF);
-      actions.appendChild(btnDelF);
-
-      header.appendChild(title);
-      header.appendChild(actions);
-
-      wrapper.appendChild(header);
-
-      // puntos/sucursales
-      const puntosCont = document.createElement('div');
-      puntosCont.style.marginTop = '8px';
-
-      if(Array.isArray(f.points) && f.points.length){
-        f.points.forEach((p, pi) => {
-          const pRow = document.createElement('div');
-          pRow.style.display = 'flex';
-          pRow.style.justifyContent = 'space-between';
-          pRow.style.alignItems = 'center';
-          pRow.style.marginBottom = '6px';
-
-          const pInfo = document.createElement('div');
-          pInfo.className = 'small';
-          pInfo.innerHTML = `<div><b>${p.barrio || ''}</b> — ${p.localidad || ''} — ${p.ciudad || ''}</div>
-                             <div>${p.tel1 || ''} ${p.tel2 || ''} ${p.encargada ? '— '+p.encargada : ''}</div>`;
-
-          const pActions = document.createElement('div');
-          pActions.style.display = 'flex';
-          pActions.style.gap = '6px';
-
-          const btnEditP = document.createElement('button');
-          btnEditP.textContent = 'Editar';
-          btnEditP.className = 'primary';
-          btnEditP.addEventListener('click', ()=> {
-            window.startEditPoint(fi, pi);
-          });
-
-          const btnDelP = document.createElement('button');
-          btnDelP.textContent = 'Eliminar';
-          btnDelP.className = 'primary';
-          btnDelP.addEventListener('click', ()=> {
-            if(!confirm('Eliminar sucursal?')) return;
-            state.foundations[fi].points.splice(pi,1);
-            save();
-            renderFund();
-            fillFundSelects();
-            registrarAccion('eliminar_sucursal',{fund:f.name,barrio:p.barrio});
-          });
-
-          pActions.appendChild(btnEditP);
-          pActions.appendChild(btnDelP);
-
-          pRow.appendChild(pInfo);
-          pRow.appendChild(pActions);
-
-          puntosCont.appendChild(pRow);
-        });
-      } else {
-        const empty = document.createElement('div');
-        empty.className = 'small';
-        empty.textContent = 'Sin puntos';
-        puntosCont.appendChild(empty);
-      }
-
-      wrapper.appendChild(puntosCont);
-      box.appendChild(wrapper);
-    });
-  };
-
-  // --- renderDrivers mejorado: tarjeta con editar/eliminar ---
-  window.renderDrivers = function(){
-    const ul = $('driversList');
-    if(!ul) return;
-    ul.innerHTML = '';
-
-    state.drivers.forEach((d, i) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.style.marginBottom = '8px';
-      card.style.display = 'flex';
-      card.style.justifyContent = 'space-between';
-      card.style.alignItems = 'center';
-
-      const left = document.createElement('div');
-      left.innerHTML = `<div style="font-weight:700">${d.name}</div>
-                        <div class="small">Documento: ${d.document || ''}</div>
-                        <div class="small">Tel: ${d.phone || ''} ${d.company ? ' — '+d.company : ''}</div>`;
-
-      const actions = document.createElement('div');
-      actions.style.display = 'flex';
-      actions.style.flexDirection = 'column';
-      actions.style.gap = '6px';
-      actions.style.alignItems = 'flex-end';
-
-      const btnEdit = document.createElement('button');
-      btnEdit.textContent = 'Editar';
-      btnEdit.className = 'primary';
-      btnEdit.addEventListener('click', ()=> {
-        // llenar formulario de conductor para editar
-        window.editingDriverId = d.id;
-        $('drv_name').value = d.name;
-        $('drv_doc').value = d.document || '';
-        $('drv_tel').value = d.phone || '';
-        $('drv_cmp').value = d.company || '';
-
-        // show update/cancel buttons (if they exist)
-        if($('btnUpdateDriver')) $('btnUpdateDriver').classList.remove('hidden');
-        if($('btnCancelEditDriver')) $('btnCancelEditDriver').classList.remove('hidden');
-        if($('btnAddDriver')) $('btnAddDriver').classList.add('hidden');
-
-        showSection('conductores');
-      });
-
-      const btnDel = document.createElement('button');
-      btnDel.textContent = 'Eliminar';
-      btnDel.className = 'primary';
-      btnDel.addEventListener('click', ()=> {
-        if(!confirm('Eliminar conductor?')) return;
-        state.drivers.splice(i,1);
-        save();
-        renderDrivers();
-        fillDriverPlate();
-        registrarAccion('eliminar_conductor',{id:d.id,name:d.name});
-      });
-
-      actions.appendChild(btnEdit);
-      actions.appendChild(btnDel);
-
-      card.appendChild(left);
-      card.appendChild(actions);
-
-      ul.appendChild(card);
-    });
-  };
-
-  // si el HTML no tiene botones de actualizar/cancelar conductor, los creamos dinámicamente
-  (function ensureDriverButtons(){
-    const container = document.querySelector('#conductores .card');
-    if(!container) return;
-
-    // if update button exists, skip
-    if(document.getElementById('btnUpdateDriver')) return;
-
-    const btnUpdate = document.createElement('button');
-    btnUpdate.id = 'btnUpdateDriver';
-    btnUpdate.className = 'primary hidden';
-    btnUpdate.style.marginTop = '8px';
-    btnUpdate.textContent = 'Guardar cambios';
-    btnUpdate.addEventListener('click', function(){
-      // handler creado en parte 3
-      if(typeof window.btnUpdateDriverHandler === 'function'){
-        window.btnUpdateDriverHandler();
-      } else {
-        // fallback: trigger existing update code if present
-        if(document.getElementById('btnUpdateDriver')) document.getElementById('btnUpdateDriver').click();
-      }
-    });
-
-    const btnCancel = document.createElement('button');
-    btnCancel.id = 'btnCancelEditDriver';
-    btnCancel.className = 'primary hidden';
-    btnCancel.style.marginTop = '8px';
-    btnCancel.textContent = 'Cancelar';
-    btnCancel.addEventListener('click', function(){
-      window.editingDriverId = null;
-      if($('btnAddDriver')) $('btnAddDriver').classList.remove('hidden');
-      if($('btnUpdateDriver')) $('btnUpdateDriver').classList.add('hidden');
-      if($('btnCancelEditDriver')) $('btnCancelEditDriver').classList.add('hidden');
-      $('drv_name').value = '';
-      $('drv_doc').value = '';
-      $('drv_tel').value = '';
-      $('drv_cmp').value = '';
-    });
-
-    // append if not already appended
-    if(!container.querySelector('#btnUpdateDriver')){
-      container.appendChild(btnUpdate);
-      container.appendChild(btnCancel);
-    }
-  })();
-
-  // --- Reemplazar handler de btnAddPedido para incluir driver/plate ---
-  (function replaceBtnAddPedidoHandler(){
-    const old = $('btnAddPedido');
-    if(!old) return;
-    // clone to remove old listeners
-    const clone = old.cloneNode(true);
-    old.parentNode.replaceChild(clone, old);
-
-    clone.addEventListener('click', ()=> {
-      if(!state.currentUser) return alert('Inicie sesión');
-
-      const nitVal = $('pd_nit').value.trim();
-      const fundIndex = Number($('pd_fund').value);
-      const f = state.foundations[fundIndex];
-      const pointIndex = Number($('pd_point').value);
-      const point = f ? (f.points || [])[pointIndex] : null;
-      if(!f) return alert('Seleccione fundación válida');
-      if(!point) return alert('Seleccione punto válido');
-      if(currentPedidoItems.length===0) return alert('Agregue items');
-
-      const peaje=Number($('pd_peaje').value)||0;
-      const trans=Number($('pd_trans').value)||0;
-      const subtotal=currentPedidoItems.reduce((s,it)=>s+(it.price||0)*(it.qty||1),0);
-      const total=subtotal+peaje+trans;
-
-      // capture driver & plate selections
-      const driverIndex = Number($('pd_driver').value);
-      const plateIndex = Number($('pd_plate').value);
-      const driver = (state.drivers && state.drivers[driverIndex]) ? JSON.parse(JSON.stringify(state.drivers[driverIndex])) : null;
-      const plate = (state.plates && state.plates[plateIndex]) ? JSON.parse(JSON.stringify(state.plates[plateIndex])) : null;
-
-      if(modoPedido === 'crear' || modoPedido === 'duplicar'){
-        // crear nuevo pedido
-        const nuevo = {
-          id: Date.now(),
-          numero: obtenerConsecutivoPedidoPorAnio(),
-          foundation: f.name,
-          foundationNIT: f.nit,
-          point: point,
-          items: JSON.parse(JSON.stringify(currentPedidoItems)),
-          peaje, trans, subtotal, total,
-          driver: driver ? { id: driver.id || null, name: driver.name, document: driver.document, phone: driver.phone } : null,
-          plate: plate ? { plate: plate.plate, type: plate.type } : null,
-          createdAt: new Date().toISOString()
-        };
-        state.pedidos.unshift(nuevo);
-        save();
-        registrarAccion('crear_pedido',{id:nuevo.id,foundation:nuevo.foundation,total:nuevo.total});
-        alert('Pedido creado: '+nuevo.numero);
-      } else if(modoPedido === 'editar'){
-        // editar pedido existente: conservar numero e id
-        state.pedidos = state.pedidos.map(p=>{
-          if(p.id === pedidoEditandoId){
-            return {
-              ...p,
-              foundation: f.name,
-              foundationNIT: f.nit,
-              point: point,
-              items: JSON.parse(JSON.stringify(currentPedidoItems)),
-              peaje, trans, subtotal, total,
-              driver: driver ? { id: driver.id || null, name: driver.name, document: driver.document, phone: driver.phone } : null,
-              plate: plate ? { plate: plate.plate, type: plate.type } : null
-            };
-          }
-          return p;
-        });
-        save();
-        registrarAccion('editar_pedido',{id:pedidoEditandoId});
-        alert('Pedido modificado.');
-      }
-
-      // Limpiar formulario y volver a historial
-      modoPedido = 'crear'; pedidoEditandoId = null;
-      currentPedidoItems = [];
-      refreshPdItems();
-      $('pd_nit').value=''; $('pd_peaje').value=''; $('pd_trans').value='';
-      $('formTitle').innerText = 'Crear Pedido';
-      $('pedidoModoBadge').innerText = '';
-      renderPedidos();
-      showSection('recibos'); // mantén en pedidos (historial visible)
-    });
-  })();
-
-  // --- Asegurar que el export muestre placa y conductor ---
-  // (la función exportPedidoAsImageAndPDF ya usa pedido.driver y pedido.plate; si existe, ya los muestra)
-  // Solo nos aseguramos de que al renderPedidos la vista también muestre conductor/placa:
-  const originalRenderPedidos = window.renderPedidos;
-  window.renderPedidos = function(){
-    const ul = $('pedidosList');
-    if(!ul) return;
-    ul.innerHTML = '';
-    const q=$('searchPedidos').value.trim().toLowerCase();
-    state.pedidos.forEach((p,idx)=>{
-      if(q && !(p.id+''+p.numero+''+p.foundation+''+(p.foundationNIT||'')).toLowerCase().includes(q)) return;
-      const li = document.createElement('li');
-      li.style.marginBottom='8px';
-      const created = new Date(p.createdAt).toLocaleString();
-
-      const headerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>${p.numero || ''} — ${p.id}</strong> — ${p.foundation} — $${p.total||0}</div>
-        <div class="small">${created}</div>
-      </div>`;
-
-      const info = document.createElement('div');
-      info.className = 'small';
-      info.style.marginTop = '6px';
-
-      const conductorTxt = p.driver ? `${p.driver.name} ${p.driver.document ? '— '+p.driver.document : ''}` : '—';
-      const placaTxt = p.plate ? `${p.plate.plate} ${p.plate.type ? '('+p.plate.type+')' : ''}` : '—';
-
-      info.innerHTML = `Llegada: ${p.horaLlegada||'—'} | Salida: ${p.horaSalida||'—'} | Conductor: ${conductorTxt} | Placa: ${placaTxt}`;
-
-      li.innerHTML = headerHTML;
-      li.appendChild(info);
-
-      // acciones (editar, duplicar, eliminar, export)
-      const row = document.createElement('div');
-      row.className='actions-row';
-      row.style.marginTop='8px';
-
-      const btnEdit = document.createElement('button'); btnEdit.textContent='Editar'; btnEdit.className='primary';
-      btnEdit.addEventListener('click', ()=> abrirEditarPedido(p.id));
-      const btnDup = document.createElement('button'); btnDup.textContent='Duplicar'; btnDup.className='primary';
-      btnDup.addEventListener('click', ()=> abrirDuplicarPedido(p.id));
-      const btnDel = document.createElement('button'); btnDel.textContent='Eliminar'; btnDel.className='primary';
-      btnDel.addEventListener('click', ()=> { if(!confirm('Eliminar pedido?')) return; state.pedidos = state.pedidos.filter(x=> x.id !== p.id); save(); renderPedidos(); registrarAccion('eliminar_pedido',{id:p.id}); });
-      const btnExport = document.createElement('button'); btnExport.textContent='Exportar'; btnExport.className='primary';
-      btnExport.addEventListener('click', ()=> exportPedidoAsImageAndPDF(p));
-
-      row.appendChild(btnEdit); row.appendChild(btnDup); row.appendChild(btnDel); row.appendChild(btnExport);
-      li.appendChild(row);
-
-      ul.appendChild(li);
-    });
-  };
-
-  // Re-render everything now that we replaced render functions
-  try { renderAll(); } catch(e){ console.warn('renderAll error', e); }
-
-})();
-</script>
-<script>
-/* ===============================================================
-   ==================== PARTE 5 / 5  FINAL ========================
-   =============================================================== */
-
-(function(){
-  const $ = id => document.getElementById(id);
-
-  /* ===============================================================
-       RELLENAR SELECTS DEL PEDIDO (conductor / placa)
-     =============================================================== */
-  window.fillDriverPlate = function(){
-    const drSel = $('pd_driver');
-    const plSel = $('pd_plate');
-    if(drSel){
-      drSel.innerHTML = '';
-      state.drivers.forEach((d,i)=>{
-        drSel.appendChild(new Option(d.name + (d.document?' ('+d.document+')':''), i));
-      });
-    }
-    if(plSel){
-      plSel.innerHTML = '';
-      state.plates.forEach((p,i)=>{
-        plSel.appendChild(new Option(p.plate + (p.type?' ('+p.type+')':''), i));
-      });
-    }
-  };
-
-  /* ===============================================================
-       CAMBIAR PUNTOS SEGÚN FUNDACIÓN SELECCIONADA
-     =============================================================== */
-  if($('pd_fund')){
-    $('pd_fund').addEventListener('change', function(){
-      const i = Number(this.value);
-      const f = state.foundations[i];
-      const sel = $('pd_point');
-      if(!sel) return;
-      sel.innerHTML = '';
-      if(f && Array.isArray(f.points)){
-        f.points.forEach((p,pi)=>{
-          const label = p.barrio+' - '+p.localidad+' - '+p.ciudad;
-          sel.appendChild(new Option(label, pi));
-        });
-      }
+  $("pd_fund_sel").innerHTML = html;
+
+  fillPointsSelect();
+}
+
+function fillPointsSelect() {
+  const fi = Number($("pd_fund_sel").value);
+  const f = state.foundations[fi];
+  let html = "";
+
+  if (f && f.points) {
+    f.points.forEach((p, i) => {
+      html += `<option value="${i}">${p.barrio}</option>`;
     });
   }
 
-  /* ===============================================================
-         MANEJO DE ITEMS DENTRO DE PEDIDO
-     =============================================================== */
-  window.currentPedidoItems = window.currentPedidoItems || [];
+  $("pd_point_sel").innerHTML = html;
+}
 
-  window.refreshPdItems = function(){
-    const box = $('pd_items_list');
-    if(!box) return;
+$("pd_fund_sel").addEventListener("change", fillPointsSelect);
 
-    box.innerHTML='';
-    currentPedidoItems.forEach((it,idx)=>{
-      const row = document.createElement('div');
-      row.className='item-row';
-      row.style.justifyContent='space-between';
-      row.style.width='100%';
-      row.style.marginBottom='4px';
+function fillItemSelect() {
+  let html = "";
+  state.items.forEach((it, i) => {
+    html += `<option value="${i}">${it.name}</option>`;
+  });
+  $("pd_item_sel").innerHTML = html;
+}
 
-      const left = document.createElement('div');
-      left.innerHTML = `<b>${it.name}</b> — ${it.qty||1} × ${it.kgs}kg — $${it.price}`;
+function fillDriverPlate() {
+  let drivers = "";
+  state.drivers.forEach((d, i) => {
+    drivers += `<option value="${i}">${d.name}</option>`;
+  });
+  $("pd_driver_sel").innerHTML = drivers;
 
-      const right = document.createElement('button');
-      right.textContent='X';
-      right.className='primary small-btn';
-      right.addEventListener('click', function(){
-        currentPedidoItems.splice(idx,1);
-        refreshPdItems();
-      });
+  let plates = "";
+  state.plates.forEach((p, i) => {
+    plates += `<option value="${i}">${p.plate}</option>`;
+  });
+  $("pd_plate_sel").innerHTML = plates;
+}
 
-      row.appendChild(left);
-      row.appendChild(right);
-      box.appendChild(row);
-    });
-  };
+/* Agregar items al pedido */
+$("pd_add_item").addEventListener("click", () => {
+  const idx = Number($("pd_item_sel").value);
+  const item = state.items[idx];
 
-  /* ===============================================================
-        ABRIR "CREAR PEDIDO"
-     =============================================================== */
-  window.modoPedido = window.modoPedido || 'crear';
-  window.pedidoEditandoId = window.pedidoEditandoId || null;
+  if (!item) return alert("Seleccione un item");
 
-  window.abrirCrearPedido = function(){
-    modoPedido = 'crear';
-    pedidoEditandoId = null;
-    currentPedidoItems = [];
-    refreshPdItems();
+  const pack = $("pd_pack_sel").value;
+  const qty = Number($("pd_pack_qty").value) || 1;
+  const kgs = Number($("pd_kilos").value);
 
-    $('pd_nit').value='';
-    $('pd_peaje').value='';
-    $('pd_trans').value='';
-    $('formTitle').innerText='Crear Pedido';
-    $('pedidoModoBadge').innerText='';
+  if (!kgs) return alert("Kilos requeridos");
 
-    fillDriverPlate();
-    fillFundSelects();
+  currentPedidoItems.push({
+    codigo: item.ref || "",
+    name: item.name,
+    price: item.price,
+    qty,
+    pack,
+    kgs
+  });
 
-    if($('pd_fund').value!==null){
-      $('pd_fund').dispatchEvent(new Event('change'));
-    }
+  refreshPdItems();
+});
 
-    showSection('pedidos_crear');
-  };
-
-  /* ===============================================================
-        OBTENER CONSECUTIVO POR AÑO (AAAA-0001 ...)
-     =============================================================== */
-  window.obtenerConsecutivoPedidoPorAnio = function(){
-    const y = new Date().getFullYear();
-    const prefix = y+'-';
-    const nums = state.pedidos
-      .filter(p=>p.numero && p.numero.startsWith(prefix))
-      .map(p=> Number(p.numero.split('-')[1]) || 0);
-
-    const next = (Math.max(0, ...nums) + 1).toString().padStart(4,'0');
-    return prefix + next;
-  };
-
-  /* ===============================================================
-        ABRIR EDITAR PEDIDO
-     =============================================================== */
-  window.abrirEditarPedido = function(id){
-    const p = state.pedidos.find(x=> x.id===id);
-    if(!p) return alert('Pedido no encontrado');
-
-    modoPedido='editar';
-    pedidoEditandoId=id;
-    $('formTitle').innerText='Editar Pedido';
-    $('pedidoModoBadge').innerText='EDITANDO';
-
-    // llenar
-    $('pd_nit').value = p.foundationNIT || '';
-    // fund & point
-    const fundIndex = state.foundations.findIndex(f=>f.nit === p.foundationNIT);
-    $('pd_fund').value = fundIndex;
-    $('pd_fund').dispatchEvent(new Event('change'));
-    if(fundIndex>=0){
-      const pi = (state.foundations[fundIndex].points||[]).findIndex(pp =>
-        pp.barrio===p.point.barrio &&
-        pp.localidad===p.point.localidad &&
-        pp.ciudad===p.point.ciudad
-      );
-      if(pi>=0) $('pd_point').value=pi;
-    }
-
-    currentPedidoItems = JSON.parse(JSON.stringify(p.items||[]));
-    refreshPdItems();
-
-    $('pd_peaje').value = p.peaje||'';
-    $('pd_trans').value = p.trans||'';
-
-    // driver / plate
-    fillDriverPlate();
-    if(p.driver){
-      const di = state.drivers.findIndex(d=> d.name===p.driver.name && d.document===p.driver.document);
-      if(di>=0) $('pd_driver').value=di;
-    }
-    if(p.plate){
-      const pi = state.plates.findIndex(pl=> pl.plate===p.plate.plate);
-      if(pi>=0) $('pd_plate').value=pi;
-    }
-
-    showSection('pedidos_crear');
-  };
-
-  /* ===============================================================
-        ABRIR DUPLICAR PEDIDO
-     =============================================================== */
-  window.abrirDuplicarPedido = function(id){
-    const p = state.pedidos.find(x=> x.id===id);
-    if(!p) return alert('Pedido no encontrado');
-
-    modoPedido='duplicar';
-    pedidoEditandoId=null;
-
-    $('formTitle').innerText='Duplicando Pedido';
-    $('pedidoModoBadge').innerText='DUPLICAR';
-
-    $('pd_nit').value=p.foundationNIT;
-    const fundIndex = state.foundations.findIndex(f=>f.nit === p.foundationNIT);
-    $('pd_fund').value=fundIndex;
-    $('pd_fund').dispatchEvent(new Event('change'));
-
-    currentPedidoItems = JSON.parse(JSON.stringify(p.items||[]));
-    refreshPdItems();
-
-    $('pd_peaje').value=p.peaje;
-    $('pd_trans').value=p.trans;
-
-    fillDriverPlate();
-
-    showSection('pedidos_crear');
-  };
-
-  /* ===============================================================
-     RENDER PEDIDOS: LISTADO PRINCIPAL DEL HISTORIAL
-     =============================================================== */
-  window.renderPedidos = function(){
-    const ul = $('pedidosList');
-    if(!ul) return;
-
-    ul.innerHTML='';
-    const q=$('searchPedidos').value.trim().toLowerCase();
-
-    state.pedidos.forEach((p)=>{
-      if(q && !(p.numero+' '+p.foundation+' '+p.id).toLowerCase().includes(q)) return;
-
-      const li=document.createElement('li');
-      li.className='card';
-      li.style.marginBottom='10px';
-
-      const fecha=new Date(p.createdAt).toLocaleString();
-
-      let html=`<div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>${p.numero}</strong> — ${p.foundation} — $${p.total}</div>
-        <div class="small">${fecha}</div>
-      </div>`;
-
-      html+=`<div class="small" style="margin-top:6px;">
-        Llegada: ${p.horaLlegada||'—'} | Salida: ${p.horaSalida||'—'}
-        | Conductor: ${p.driver?p.driver.name:'—'}
-        | Placa: ${p.plate?p.plate.plate:'—'}
-      </div>`;
-
-      html+=`<div class="actions-row" style="margin-top:8px">
-        <button class="primary small-btn" data-act="edit" data-id="${p.id}">Editar</button>
-        <button class="primary small-btn" data-act="dup" data-id="${p.id}">Duplicar</button>
-        <button class="primary small-btn" data-act="del" data-id="${p.id}">Eliminar</button>
-        <button class="primary small-btn" data-act="exp" data-id="${p.id}">Exportar</button>
-      </div>`;
-
-      li.innerHTML = html;
-      ul.appendChild(li);
-    });
-
-    // eventos
-    ul.querySelectorAll('button').forEach(btn=>{
-      const id=Number(btn.dataset.id);
-      const act=btn.dataset.act;
-      btn.addEventListener('click',()=>{
-        if(act==='edit') abrirEditarPedido(id);
-        if(act==='dup') abrirDuplicarPedido(id);
-        if(act==='del'){
-          if(confirm('Eliminar pedido?')){
-            state.pedidos=state.pedidos.filter(p=>p.id!==id);
-            save();
-            renderPedidos();
-            registrarAccion('eliminar_pedido',{id});
-          }
-        }
-        if(act==='exp'){
-          const p=state.pedidos.find(x=>x.id===id);
-          exportPedidoAsImageAndPDF(p);
-        }
-      });
-    });
-  };
-
-  /* ===============================================================
-        EXPORTAR RECIBO EN PNG + PDF
-     =============================================================== */
-  window.exportPedidoAsImageAndPDF = function(pedido){
-    const area = document.createElement('div');
-    area.style.padding='20px';
-    area.style.background='#fff';
-    area.style.width='600px';
-
-    const conductorTxt = pedido.driver ? (pedido.driver.name + (pedido.driver.document?' — '+pedido.driver.document:'')) : '—';
-    const placaTxt = pedido.plate ? (pedido.plate.plate + (pedido.plate.type?' ('+pedido.plate.type+')':'')) : '—';
-
-    let html=`
-      <h2>Recibo #${pedido.numero}</h2>
-      <div><b>Fundación:</b> ${pedido.foundation} (${pedido.foundationNIT})</div>
-      <div><b>Sucursal:</b> ${pedido.point.barrio}, ${pedido.point.localidad}, ${pedido.point.ciudad}</div>
-      <div><b>Encargado:</b> ${pedido.point.encargada||''} — Tel: ${pedido.point.tel1||''}</div>
-      <hr>
-      <table border="1" cellspacing="0" cellpadding="4" style="width:100%">
-        <tr><th>Item</th><th>Cant.</th><th>Kilos</th><th>Precio</th></tr>
+function refreshPdItems() {
+  let html = "";
+  currentPedidoItems.forEach((it, i) => {
+    html += `
+      <div>
+        ${it.name} — ${it.kgs} kg
+        <button class="danger small-btn" onclick="deletePdItem(${i})">X</button>
+      </div>
     `;
-    pedido.items.forEach(it=>{
-      html+=`<tr>
-        <td>${it.name}</td>
-        <td>${it.qty||1}</td>
-        <td>${it.kgs}</td>
-        <td>${it.price}</td>
-      </tr>`;
-    });
-    html+=`</table>
-      <hr>
-      <div><b>Peaje:</b> $${pedido.peaje}</div>
-      <div><b>Transporte:</b> $${pedido.trans}</div>
-      <div><b>Total:</b> $${pedido.total}</div>
-      <hr>
-      <div><b>Conductor:</b> ${conductorTxt}</div>
-      <div><b>Placa:</b> ${placaTxt}</div>
+  });
+  $("pd_items_list").innerHTML = html || "No hay items";
+}
+
+function deletePdItem(i) {
+  currentPedidoItems.splice(i, 1);
+  refreshPdItems();
+}
+
+/* Guardar pedido */
+$("pd_save").addEventListener("click", () => {
+  if (!currentPedidoItems.length) return alert("Debe agregar items");
+
+  const fi = Number($("pd_fund_sel").value);
+  const pi = Number($("pd_point_sel").value);
+  const di = Number($("pd_driver_sel").value);
+  const hi = Number($("pd_plate_sel").value);
+
+  const fund = state.foundations[fi];
+  const point = fund.points[pi];
+  const driver = state.drivers[di];
+  const plate = state.plates[hi];
+
+  const pedido = {
+    id: Date.now(),
+    fund: fund.name,
+    point: point.barrio,
+    driver: driver.name,
+    plate: plate.plate,
+    items: currentPedidoItems,
+    fecha: new Date().toLocaleString()
+  };
+
+  state.pedidos.push(pedido);
+  save();
+
+  registrarAccion("crear_pedido", { id: pedido.id });
+
+  currentPedidoItems = [];
+  refreshPdItems();
+  renderPedidos();
+
+  alert("Pedido creado");
+});
+
+/* Mostrar pedidos */
+function renderPedidos() {
+  let html = "";
+  state.pedidos.forEach(p => {
+    html += `
+      <tr>
+        <td>${p.id}</td>
+        <td>${p.fund}</td>
+        <td>${p.point}</td>
+        <td>${p.driver}</td>
+        <td>${p.plate}</td>
+        <td>
+          <button class="primary small-btn" onclick="exportPedido(${p.id})">Exportar</button>
+          <button class="primary small-btn" onclick="duplicatePedido(${p.id})">Duplicar</button>
+          <button class="danger small-btn" onclick="deletePedido(${p.id})">Eliminar</button>
+        </td>
+      </tr>
     `;
+  });
+  $("pd_list").innerHTML = html;
+}
 
-    area.innerHTML=html;
-    document.body.appendChild(area);
+function duplicatePedido(id) {
+  const p = state.pedidos.find(x => x.id == id);
+  if (!p) return;
 
-    html2canvas(area).then(canvas=>{
-      const link=document.createElement('a');
-      link.download=`Recibo_${pedido.numero}.png`;
-      link.href=canvas.toDataURL('image/png');
-      link.click();
-      area.remove();
-    });
-  };
+  const nuevo = JSON.parse(JSON.stringify(p));
+  nuevo.id = Date.now();
 
-  /* ===============================================================
-        AUDITORÍA, ROLES, SEGUIMIENTO (solo render)
-     =============================================================== */
-  window.renderAudit = function(){
-    const box = $('auditList');
-    if(!box) return;
-    box.innerHTML='';
-    state.audit.forEach(a=>{
-      const div=document.createElement('div');
-      div.className='card';
-      div.style.marginBottom='8px';
-      div.innerHTML=`<b>${a.fecha}</b> — ${a.usuario} — <u>${a.accion}</u>
-      <div class="small">${JSON.stringify(a.detalle)}</div>`;
-      box.appendChild(div);
-    });
-  };
+  state.pedidos.push(nuevo);
+  save();
+  renderPedidos();
+}
 
-  window.renderRoles = function(){
-    const box = $('rolesList');
-    if(!box) return;
+function deletePedido(id) {
+  if (!confirm("¿Eliminar pedido?")) return;
+  state.pedidos = state.pedidos.filter(x => x.id != id);
+  save();
+  renderPedidos();
+}
 
-    box.innerHTML='';
-    state.users.forEach(u=>{
-      const row=document.createElement('div');
-      row.className='card';
-      row.style.marginBottom='8px';
+/* Exportar pedido a imagen */
+function exportPedido(id) {
+  const p = state.pedidos.find(x => x.id == id);
+  if (!p) return;
 
-      row.innerHTML=`<div><b>${u.username}</b> — Rol: ${u.role}</div>`;
+  const div = document.createElement("div");
+  div.style.padding = "20px";
+  div.style.background = "#fff";
+  div.innerHTML = `
+    <h2>Pedido #${p.id}</h2>
+    <p><strong>Fundación:</strong> ${p.fund}</p>
+    <p><strong>Punto:</strong> ${p.point}</p>
+    <p><strong>Conductor:</strong> ${p.driver}</p>
+    <p><strong>Placa:</strong> ${p.plate}</p>
 
-      box.appendChild(row);
-    });
-  };
+    <h3>Items</h3>
+    ${p.items.map(it => `
+      <div>${it.name} - ${it.kgs} kg</div>
+    `).join("")}
+  `;
 
-  window.renderSeguimiento = function(){
-    const box = $('seguimientoList');
-    if(!box) return;
+  document.body.appendChild(div);
 
-    box.innerHTML='';
-    state.pedidos.forEach(p=>{
-      const div=document.createElement('div');
-      div.className='card';
-      div.innerHTML=`<b>${p.numero}</b> — ${p.foundation}
-      <div class="small">Llegada: ${p.horaLlegada||'—'} | Salida: ${p.horaSalida||'—'}</div>`;
-      box.appendChild(div);
-    });
-  };
+  html2canvas(div).then(canvas => {
+    const link = document.createElement("a");
+    link.download = `pedido_${id}.jpg`;
+    link.href = canvas.toDataURL("image/jpeg");
+    link.click();
+    div.remove();
+  });
+}
 
-  /* ===============================================================
-        RENDER ALL FINAL
-     =============================================================== */
-  window.renderAll = function(){
-    try{
-      renderFund();
-    }catch(e){}
-    try{
-      renderDrivers();
-    }catch(e){}
-    try{
-      renderPlates();
-    }catch(e){}
-    try{
-      fillDriverPlate();
-    }catch(e){}
-    try{
-      renderPedidos();
-    }catch(e){}
-    try{
-      renderAudit();
-    }catch(e){}
-    try{
-      renderRoles();
-    }catch(e){}
-    try{
-      renderSeguimiento();
-    }catch(e){}
-  };
+/* ====================================================== */
+/* ======================= BÚSQUEDA ===================== */
+/* ====================================================== */
 
-  // render inicial
-  renderAll();
+$("btnSearchPedidos").addEventListener("click", () => {
+  const nit = $("srch_nit").value.trim();
+  let html = "";
 
-})();
+  state.pedidos.forEach(p => {
+    const f = state.foundations.find(x => x.name === p.fund && String(x.nit) === nit);
+    if (f) {
+      html += `
+        <tr>
+          <td>${p.id}</td>
+          <td>${p.fund}</td>
+          <td>${p.point}</td>
+          <td>${p.fecha}</td>
+        </tr>
+      `;
+    }
+  });
+
+  $("srch_results").innerHTML = html;
+});
+
+/* ====================================================== */
+/* ======================= AUDITORÍA ==================== */
+/* ====================================================== */
+
+function renderAudit() {
+  let html = "";
+  state.audit.forEach(a => {
+    html += `
+      <tr>
+        <td>${a.fecha}</td>
+        <td>${a.accion}</td>
+        <td>${a.detalle}</td>
+      </tr>
+    `;
+  });
+  $("audit_list").innerHTML = html;
+}
+
+/* CARGA INICIAL */
+renderFund();
+renderItems();
+renderDrivers();
+renderPlates();
+renderPedidos();
+renderAudit();
+
 </script>
+<!-- ====================================================== -->
+<!--   OPTIMIZADORES Y CORRECCIONES FINALES DEL SISTEMA    -->
+<!-- ====================================================== -->
+
+<script>
+// Corregir selects vacíos al cargar
+setTimeout(() => {
+  fillFundSelects();
+  fillItemSelect();
+  fillDriverPlate();
+  fillPointsSelect();
+}, 300);
+
+// Volver a renderizar cuando cambie el NIT buscado en sucursales
+$("p_nit_lookup").addEventListener("blur", () => {
+  fillFundSelects();
+});
+
+// Evitar errores cuando no hay datos cargados aún
+if (!state.foundations) state.foundations = [];
+if (!state.items) state.items = [];
+if (!state.drivers) state.drivers = [];
+if (!state.plates) state.plates = [];
+if (!state.pedidos) state.pedidos = [];
+if (!state.audit) state.audit = [];
+
+// Cargar dashboard por defecto después del login
+if (state.currentUser) {
+  showSection("dashboard");
+}
+
+// Reparación: mantener sidebar sincronizado al cambiar tamaño
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 900) {
+    $("sidebar").classList.remove("open");
+  }
+});
+</script>
+
+</main>
+
+</div> <!-- cierre .app -->
+
 </body>
 </html>
