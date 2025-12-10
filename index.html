@@ -1,415 +1,445 @@
-<!-- PARTE 1/5 - INICIO DEL ARCHIVO: head, estilos y estructura base -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ERP Corabastos — V5</title>
+<meta charset="UTF-8">
+<title>ERP CORABASTOS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Estilos principales -->
-  <style>
-    :root{
-      --bg:#f4f6f9;
-      --panel:#0b1220;
-      --accent:#0a57ff;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --danger:#ef4444;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,Arial,sans-serif;
-      background:var(--bg);
-      color:#0f172a;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+<style>
 
-    header{
-      background:#071025;
-      color:#fff;
-      padding:12px 16px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      border-bottom:1px solid rgba(255,255,255,0.03);
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand h1{font-size:18px;margin:0}
+:root {
+  --bg: #f4f6f9;
+  --card: #fff;
+  --accent: #0a57ff;
+  --accent-dark: #0041c9;
+  --border: #d7d7d7;
+  --text: #222;
+}
 
-    .app{display:flex;height:calc(100vh - 60px);min-height:500px}
-    #sidebar{
-      width:260px;
-      background:var(--panel);
-      color:#fff;
-      padding:16px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      transition:transform .18s ease;
-    }
-    #sidebar button{
-      background:transparent;
-      border:0;
-      color:#cbd5e1;
-      text-align:left;
-      padding:10px 12px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:600;
-    }
-    #sidebar button:hover{ background: rgba(255,255,255,0.03); color:#fff; }
-    #sidebar button.active{ background: rgba(255,255,255,0.06); color:#fff; font-weight:700; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
 
-    main{flex:1;padding:20px;overflow:auto}
-    .card{
-      background:var(--card);
-      padding:16px;
-      border-radius:10px;
-      box-shadow:0 6px 20px rgba(2,6,23,0.06);
-      margin-bottom:16px;
-    }
+h2 { margin-top:0; }
 
-    input,select,textarea{
-      width:100%;
-      padding:8px;
-      margin-top:6px;
-      border-radius:8px;
-      border:1px solid #e2e8f0;
-      font-size:14px;
-    }
+.hidden { display:none !important; }
 
-    button.primary{
-      background:var(--accent);
-      color:#fff;
-      padding:8px 12px;
-      border:0;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:700;
-    }
+/* LOGIN */
+#loginContainer {
+  width:100%;
+  height:100vh;
+  background:#eef1f5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.login-box {
+  width:350px;
+  padding:30px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+.login-box h2 { text-align:center; margin-bottom:20px; }
 
-    .small{ font-size:13px; color:var(--muted); }
-    .hidden{ display:none!important; }
+/* MENÚ */
+#mainLayout { display:flex; }
+#sidebar {
+  width:240px;
+  background:#fff;
+  border-right:1px solid #ccc;
+  height:100vh;
+  position:fixed;
+  left:0; top:0;
+  overflow-y:auto;
+  padding-top:10px;
+}
+#sidebar h2 { font-size:18px; text-align:center; margin-bottom:10px; }
 
-    .table{ width:100%; border-collapse:collapse; margin-top:8px; }
-    .table th, .table td{ padding:8px; border-bottom:1px solid #eef4fb; text-align:left; }
+#sidebar button {
+  width:90%;
+  margin:5px auto;
+  padding:12px;
+  border:none;
+  font-size:15px;
+  border-radius:6px;
+  cursor:pointer;
+  background:#f2f2f2;
+}
+#sidebar button:hover { background:#e5e5e5; }
 
-    .modal{
-      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-      background:rgba(0,0,0,0.45); z-index:1000;
-    }
-    .modal .card{ width:100%; max-width:520px; }
+#content {
+  margin-left:240px;
+  padding:20px;
+  width:calc(100% - 240px);
+}
 
-    @media(max-width:900px){
-      #sidebar{ position:fixed; left:0; top:60px; bottom:0; transform:translateX(-100%); z-index:1200 }
-      #sidebar.open{ transform:translateX(0) }
-      main{ padding:12px }
-    }
+/* TARJETAS */
+.card {
+  background:var(--card);
+  padding:18px;
+  border-radius:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom:20px;
+}
 
-    /* Helpers for lists/cards */
-    .badge{ display:inline-block; padding:4px 8px; border-radius:999px; background:#eef2ff; color:var(--accent); font-weight:600; font-size:12px; }
-    .actions-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .item-row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
-    .card-title{ font-size:16px; margin:0 0 8px 0; font-weight:700; }
-    .muted-line{ font-size:13px; color:var(--muted); margin-top:6px; }
+/* TABLAS */
+.table {
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+}
+.table th, .table td {
+  border:1px solid #ccc;
+  padding:6px 8px;
+  font-size:14px;
+}
+.table th {
+  background:#f0f0f0;
+}
 
-    /* conductor card */
-    .drv-card{
-      border-radius:10px; padding:12px; background:linear-gradient(180deg,#ffffff,#fbfdff);
-      box-shadow:0 6px 14px rgba(2,6,23,0.04); margin-bottom:10px;
-    }
-    .drv-row{ display:flex; align-items:center; gap:12px; }
-    .drv-actions{ margin-left:auto; display:flex; gap:8px; }
-    .danger{ background:var(--danger); color:#fff }
-  </style>
+/* INPUTS */
+input, select {
+  width:100%;
+  padding:8px;
+  margin:4px 0 10px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+  font-size:15px;
+}
 
-  <!-- Librerías usadas (xlsx + html2canvas) -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+/* BOTONES */
+.primary {
+  background:var(--accent);
+  color:#fff;
+}
+.primary:hover { background:var(--accent-dark); }
+
+.small-btn {
+  padding:4px 8px;
+  font-size:13px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.delete-btn { background:#e74c3c; color:#fff; }
+.delete-btn:hover { background:#c0392b; }
+
+.edit-btn { background:#3498db; color:#fff; }
+.edit-btn:hover { background:#2980b9; }
+
+/* TARJETAS DE CONDUCTORES */
+.driver-card {
+  background:#fff;
+  padding:12px;
+  border-radius:6px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.1);
+  margin-bottom:10px;
+  border-left:4px solid var(--accent);
+}
+
+/* ROL BADGE */
+.role-badge {
+  display:inline-block;
+  background:#eaeaea;
+  padding:3px 8px;
+  border-radius:6px;
+  font-size:12px;
+  margin-left:6px;
+}
+
+/* Secciones */
+section { margin-top:10px; }
+
+</style>
+
 </head>
+
 <body>
-  <!-- HEADER -->
-  <header>
-    <div class="brand">
-      <button id="btnMenu" class="primary" style="background:transparent;border:0;color:#fff;font-size:18px">☰</button>
-      <h1>ERP Corabastos — V5</h1>
-      <div class="badge">Estable</div>
-    </div>
 
-    <div style="display:flex;align-items:center;gap:12px">
-      <div class="small" id="headerUser">Invitado</div>
-      <button id="btnLogout" class="primary hidden">Cerrar sesión</button>
-    </div>
-  </header>
+<!-- LOGIN -->
+<div id="loginContainer">
+  <div class="login-box">
+    <h2>Acceder al ERP</h2>
+    <label>Usuario</label>
+    <input id="login_user">
 
-  <!-- APLICACIÓN: SIDEBAR + MAIN -->
-  <div class="app">
-    <aside id="sidebar" aria-label="Navegación principal">
-      <button data-sec="dashboard" id="nav_dashboard">Dashboard</button>
-      <button data-sec="fundaciones" id="nav_fundaciones">Fundaciones</button>
-      <button data-sec="items" id="nav_items">Items</button>
-      <button data-sec="conductores" id="nav_conductores">Conductores</button>
-      <button data-sec="recibos" id="nav_recibos">Pedidos</button>
-      <button data-sec="search" id="nav_search">Buscar</button>
-      <hr style="border-color:rgba(255,255,255,0.04);margin:8px 0">
-      <button data-sec="usuarios" id="nav_usuario">Mi Cuenta</button>
-      <button data-sec="admin_users" id="nav_admin_users">Usuarios (Admin)</button>
-      <button data-sec="auditoria" id="nav_auditoria">Auditoría</button>
-      <button data-sec="seguimiento" id="nav_seguimiento">Seguimiento</button>
-      <button data-sec="roles" id="nav_roles">Gestión Roles</button>
-    </aside>
+    <label>Contraseña</label>
+    <input type="password" id="login_pass">
 
-    <main id="main">
-      <!-- Aquí inician las secciones; el contenido completo estará en las PARTES 2..5 -->
-      <!-- PARTE 1 termina aquí; continuar con PARTE 2/5 -->
-<!-- ========================= -->
-<!-- DASHBOARD -->
-<!-- ========================= -->
-<section id="dashboard" class="card">
-  <h2 class="card-title">Dashboard</h2>
-  <p class="muted-line">Bienvenido al sistema ERP. Seleccione un módulo en el menú.</p>
+    <button id="btnLogin" class="primary" style="width:100%;margin-top:10px;">Ingresar</button>
+
+    <p style="text-align:center;margin-top:12px;cursor:pointer;color:#0a57ff;"
+       id="recoverPassBtn">Recuperar Contraseña</p>
+  </div>
+</div>
+
+
+<!-- LAYOUT PRINCIPAL -->
+<div id="mainLayout" class="hidden">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <h2>ERP CORABASTOS</h2>
+
+    <button data-target="dashboard">Dashboard</button>
+    <button data-target="fundaciones">Fundaciones</button>
+    <button data-target="items">Items</button>
+    <button data-target="conductores">Conductores</button>
+    <button data-target="pedidos">Pedidos</button>
+    <button data-target="usuarios">Usuarios</button>
+    <button data-target="roles">Roles</button>
+    <button data-target="auditoria">Auditoría</button>
+    <button data-target="miCuenta">Mi Cuenta</button>
+
+    <button id="btnLogout" style="background:#ffdddd;margin-top:20px;">Cerrar Sesión</button>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div id="content">
+<!-- ================= DASHBOARD ================= -->
+<section id="dashboard" class="hidden">
+  <h2>Dashboard</h2>
+
+  <div class="card">
+    <p>Bienvenido al ERP CORABASTOS.</p>
+    <p>Seleccione un módulo en el menú lateral.</p>
+  </div>
 </section>
 
-<!-- ========================= -->
-<!-- FUNDACIONES -->
-<!-- ========================= -->
+
+
+<!-- ================= FUNDACIONES ================= -->
 <section id="fundaciones" class="hidden">
-  <div class="card">
-    <h2 class="card-title">Fundaciones</h2>
 
-    <!-- Crear fundación -->
+  <h2>Fundaciones</h2>
+
+  <div class="card">
     <h3>Crear Fundación</h3>
-    <div class="item-row">
-      <div style="flex:1">
-        <label>NIT</label>
-        <input id="f_nit" placeholder="Digite NIT" />
-      </div>
-      <div style="flex:2">
-        <label>Nombre</label>
-        <input id="f_name" placeholder="Nombre de fundación" />
-      </div>
-    </div>
-    <button class="primary" id="btnFundCreate">Guardar Fundación</button>
+
+    <label>NIT</label>
+    <input id="f_nit">
+
+    <label>Nombre</label>
+    <input id="f_name">
+
+    <button id="btnFundCreate" class="primary">Crear Fundación</button>
   </div>
 
-  <!-- Listado de fundaciones -->
   <div class="card">
-    <h3>Listado</h3>
-
-    <!-- Buscador -->
-    <label>Buscar Fundación</label>
-    <div class="item-row">
-      <input id="fund_search" placeholder="Buscar por NIT o nombre..." style="flex:1">
-      <button id="fund_search_btn" class="primary small-btn">Buscar</button>
-    </div>
-
-    <table class="table" id="fund_table">
-      <thead>
-        <tr>
-          <th>NIT</th>
-          <th>Nombre</th>
-          <th>Sucursales</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="fund_list"></tbody>
-    </table>
+    <h3>Buscar Fundación</h3>
+    <input id="f_search" placeholder="Buscar por nombre o NIT...">
   </div>
 
-  <!-- Crear Sucursal -->
   <div class="card">
-    <h2 class="card-title">Crear Sucursal</h2>
-
-    <!-- Paso 1: Buscar Fundación por NIT -->
-    <label>Ingrese NIT de Fundación</label>
-    <input id="p_nit_lookup" placeholder="Ej: 900123456" />
-
-    <div class="muted-line" id="p_nit_info"></div>
-
-    <!-- Nombre auto-detectado (NO editable) -->
-    <label>Nombre de Fundación</label>
-    <input id="p_fund_name" disabled
-      style="background:#e5e7eb;font-weight:bold;border:1px solid #cbd5e1;">    
-
-    <!-- Datos de sucursal -->
-    <div class="item-row" style="margin-top:12px">
-      <div style="flex:2">
-        <label>Barrio</label>
-        <input id="p_barrio" placeholder="Barrio" />
-      </div>
-      <div style="flex:1">
-        <label>Localidad</label>
-        <input id="p_localidad" placeholder="Localidad" />
-      </div>
-    </div>
-
-    <div class="item-row">
-      <div style="flex:2">
-        <label>Ciudad</label>
-        <input id="p_ciudad" placeholder="Ciudad" />
-      </div>
-      <div style="flex:1">
-        <label>Teléfono 1</label>
-        <input id="p_tel1" placeholder="Teléfono principal" />
-      </div>
-    </div>
-
-    <div class="item-row">
-      <div style="flex:1">
-        <label>Teléfono 2</label>
-        <input id="p_tel2" placeholder="Otro teléfono" />
-      </div>
-      <div style="flex:2">
-        <label>Persona encargada</label>
-        <input id="p_encargada" placeholder="Nombre encargado" />
-      </div>
-    </div>
-
-    <button class="primary" id="btnPointCreate" style="margin-top:12px">
-      Crear Sucursal
-    </button>
+    <h3>Listado de Fundaciones</h3>
+    <div id="fundList"></div>
   </div>
 
-  <!-- Sucursales de fundación seleccionada -->
-  <div class="card">
-    <h3>Sucursales Registradas</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Fundación</th>
-          <th>Barrio</th>
-          <th>Localidad</th>
-          <th>Ciudad</th>
-          <th>Encargado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="fund_points_list"></tbody>
-    </table>
+  <!-- CREAR SUCURSAL -->
+  <div class="card" id="sucursalCreateCard" style="display:none;">
+    <h3>Crear Sucursal</h3>
+
+    <label>NIT Fundación (No editable)</label>
+    <input id="p_nit" readonly style="background:#eee;">
+
+    <label>Fundación</label>
+    <input id="p_fundName" readonly style="background:#eee;">
+
+    <label>Dirección / Barrio</label>
+    <input id="p_barrio">
+
+    <label>Localidad</label>
+    <input id="p_localidad">
+
+    <label>Ciudad</label>
+    <input id="p_ciudad">
+
+    <label>Teléfono 1</label>
+    <input id="p_tel1">
+
+    <label>Teléfono 2</label>
+    <input id="p_tel2">
+
+    <label>Encargada</label>
+    <input id="p_encargada">
+
+    <button id="btnPointCreate" class="primary">Crear Sucursal</button>
   </div>
+
+
+  <!-- EDITAR SUCURSAL -->
+  <div class="card" id="sucursalEditCard" style="display:none;">
+    <h3>Editar Sucursal</h3>
+
+    <input type="hidden" id="editPointFundIndex">
+    <input type="hidden" id="editPointIndex">
+
+    <label>Fundación</label>
+    <input id="edit_p_fundName" readonly style="background:#eee;">
+
+    <label>Dirección / Barrio</label>
+    <input id="edit_p_barrio">
+
+    <label>Localidad</label>
+    <input id="edit_p_localidad">
+
+    <label>Ciudad</label>
+    <input id="edit_p_ciudad">
+
+    <label>Teléfono 1</label>
+    <input id="edit_p_tel1">
+
+    <label>Teléfono 2</label>
+    <input id="edit_p_tel2">
+
+    <label>Encargada</label>
+    <input id="edit_p_encargada">
+
+    <button id="btnPointSaveEdit" class="primary">Guardar Cambios</button>
+  </div>
+
 </section>
-
-<!-- ========================= -->
-<!-- ITEMS -->
-<!-- ========================= -->
+<!-- ================= ITEMS ================= -->
 <section id="items" class="hidden">
-  <div class="card">
-    <h2 class="card-title">Items</h2>
 
-    <div class="item-row">
-      <div style="flex:1">
-        <label>Referencia</label>
-        <input id="item_ref" placeholder="Referencia" />
-      </div>
-      <div style="flex:2">
-        <label>Nombre</label>
-        <input id="item_name" placeholder="Nombre del item" />
-      </div>
-    </div>
+  <h2>Items</h2>
+
+  <div class="card">
+    <h3>Crear Item</h3>
+
+    <label>Referencia</label>
+    <input id="item_ref">
+
+    <label>Nombre</label>
+    <input id="item_name">
 
     <label>Descripción</label>
-    <input id="item_desc" placeholder="Descripción" />
+    <input id="item_desc">
 
     <label>Precio</label>
-    <input id="item_price" type="number" placeholder="Precio" />
+    <input id="item_price" type="number" min="0">
 
-    <button class="primary" id="btnCreateItem">Crear Item</button>
+    <button id="btnCreateItem" class="primary" style="margin-top:10px;">Crear Item</button>
   </div>
 
   <div class="card">
-    <h3>Lista de Items</h3>
-    <table class="table">
+    <h3>Gestionar Embalajes</h3>
+
+    <input id="new_pack" placeholder="Nuevo embalaje...">
+    <button id="btnAddPack" class="primary" style="margin-top:10px;">Agregar embalaje</button>
+
+    <ul id="packList" style="margin-top:15px; padding-left:18px;"></ul>
+  </div>
+
+  <div class="card">
+    <h3>Listado de Items</h3>
+
+    <input id="searchItems" placeholder="Buscar item..." style="margin-bottom:10px;">
+
+    <table class="table" id="itemsTable">
       <thead>
         <tr>
           <th>Ref</th>
           <th>Nombre</th>
+          <th>Descripción</th>
           <th>Precio</th>
-          <th>Acciones</th>
+          <th></th>
         </tr>
       </thead>
-      <tbody id="items_list"></tbody>
+      <tbody></tbody>
     </table>
+
   </div>
+
 </section>
 
-<!-- ========================= -->
-<!-- CONDUCTORES -->
-<!-- ========================= -->
+
+
+<!-- ================= CONDUCTORES ================= -->
 <section id="conductores" class="hidden">
+
+  <h2>Conductores</h2>
+
   <div class="card">
-    <h2 class="card-title">Conductores</h2>
+    <h3>Registrar Conductor</h3>
 
     <label>Nombre</label>
-    <input id="drv_name" placeholder="Nombre completo" />
+    <input id="drv_name">
 
-    <div class="item-row">
-      <div style="flex:1">
-        <label>Documento</label>
-        <input id="drv_doc" placeholder="Documento" />
-      </div>
-      <div style="flex:1">
-        <label>Teléfono</label>
-        <input id="drv_tel" placeholder="Teléfono" />
-      </div>
-    </div>
+    <label>Documento</label>
+    <input id="drv_doc">
 
-    <label>Empresa</label>
-    <input id="drv_cmp" placeholder="Empresa transportadora" />
+    <label>Teléfono</label>
+    <input id="drv_tel">
 
-    <button class="primary" id="btnAddDriver">Agregar conductor</button>
+    <label>Empresa / Transportadora</label>
+    <input id="drv_cmp">
+
+    <button id="btnAddDriver" class="primary">Agregar Conductor</button>
   </div>
 
   <div class="card">
-    <h3>Conductores Registrados</h3>
-    <div id="driver_list"></div>
+    <h3>Listado de Conductores</h3>
+    <div id="driverList"></div>
   </div>
+
+</section>
+
+
+
+<!-- ================= PLACAS / VEHÍCULOS ================= -->
+<section id="vehiculos" class="hidden">
+
+  <h2>Placas</h2>
 
   <div class="card">
     <h3>Registrar Placa</h3>
 
-    <div class="item-row">
-      <div style="flex:1">
-        <label>Placa</label>
-        <input id="pl_plate" placeholder="Placa" />
-      </div>
-      <div style="flex:1">
-        <label>Tipo Vehículo</label>
-        <input id="pl_type" placeholder="Ej: Turbo, Furgón..." />
-      </div>
-    </div>
+    <label>Placa</label>
+    <input id="pl_plate">
 
-    <button class="primary" id="btnAddPlate">Agregar Placa</button>
+    <label>Tipo de vehículo</label>
+    <input id="pl_type">
+
+    <button id="btnAddPlate" class="primary">Agregar Placa</button>
   </div>
 
   <div class="card">
-    <h3>Placas Registradas</h3>
+    <h3>Listado de Placas</h3>
+
     <table class="table">
       <thead>
         <tr>
           <th>Placa</th>
           <th>Tipo</th>
+          <th></th>
         </tr>
       </thead>
-      <tbody id="plate_list"></tbody>
+      <tbody id="platesTable"></tbody>
     </table>
+
   </div>
+
 </section>
+<!-- ================= PEDIDOS ================= -->
+<section id="pedidos" class="hidden">
 
-<!-- ========================= -->
-<!-- PEDIDOS -->
-<!-- ========================= -->
-<section id="recibos" class="hidden">
+  <h2>Gestión de Pedidos</h2>
+
+  <!-- CREAR PEDIDO -->
   <div class="card">
-    <h2 class="card-title">Crear Pedido</h2>
+    <h3>Crear Pedido</h3>
 
-    <label>Cliente / Fundación</label>
+    <label>Fundación</label>
     <select id="pd_fund_sel"></select>
 
-    <label>Punto de Envío</label>
+    <label>Sucursal / Punto de entrega</label>
     <select id="pd_point_sel"></select>
 
     <label>Conductor</label>
@@ -418,435 +448,494 @@
     <label>Placa</label>
     <select id="pd_plate_sel"></select>
 
+    <label>Peaje</label>
+    <input id="pd_peaje" type="number" min="0" value="0">
+
+    <label>Transporte</label>
+    <input id="pd_trans" type="number" min="0" value="0">
+
     <hr>
 
-    <h3>Agregar Productos</h3>
-    <div class="item-row">
-      <select id="pd_item_sel" style="flex:2"></select>
-      <select id="pd_pack_sel" style="flex:1"></select>
-      <input id="pd_pack_qty" type="number" style="width:70px" placeholder="Cant">
-      <input id="pd_kilos" type="number" placeholder="Kilos" style="width:100px" />
-      <button class="primary small-btn" id="pd_add_item">+</button>
-    </div>
+    <h3>Agregar Items al Pedido</h3>
 
-    <div id="pd_items_list" class="muted-line" style="margin-top:10px">No hay items</div>
+    <label>Item</label>
+    <select id="pd_item_sel"></select>
 
-    <button class="primary" id="pd_save" style="margin-top:12px;">Guardar Pedido</button>
+    <label>Embalaje</label>
+    <select id="pd_pack_sel"></select>
+
+    <label>Cantidad (bultos / cajas)</label>
+    <input id="pd_pack_qty" type="number" min="1" value="1">
+
+    <label>Kilos</label>
+    <input id="pd_kilos" type="number" min="0">
+
+    <button id="pd_add_item" class="primary">Agregar al Pedido</button>
+
+    <div id="pd_items_list" style="margin-top:15px;"></div>
+
+    <h3 style="margin-top:20px;">Totales</h3>
+    <p><b>Subtotal:</b> $<span id="pd_subtotal">0</span></p>
+    <p><b>Total:</b> $<span id="pd_total">0</span></p>
+
+    <button id="pd_save" class="primary" style="margin-top:10px;">Guardar Pedido</button>
   </div>
 
+  <!-- HISTORIAL -->
   <div class="card">
-    <h3>Lista de Pedidos</h3>
+    <h3>Historial de Pedidos</h3>
+
     <table class="table">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>Número</th>
           <th>Fundación</th>
-          <th>Punto</th>
-          <th>Conductor</th>
-          <th>Placa</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="pd_list"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ========================= -->
-<!-- BÚSQUEDA -->
-<!-- ========================= -->
-<section id="search" class="hidden">
-  <div class="card">
-    <h2 class="card-title">Buscar Pedidos</h2>
-
-    <label>NIT Fundación</label>
-    <input id="srch_nit" placeholder="Buscar por NIT" />
-
-    <button class="primary" id="btnSearchPedidos">Buscar</button>
-
-    <table class="table" style="margin-top:14px">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Fundación</th>
-          <th>Punto</th>
+          <th>Sucursal</th>
           <th>Fecha</th>
+          <th>Total</th>
+          <th></th>
         </tr>
       </thead>
-      <tbody id="srch_results"></tbody>
+      <tbody id="pdHistoryTable"></tbody>
     </table>
   </div>
+
 </section>
 
-<!-- ========================= -->
-<!-- MI CUENTA -->
-<!-- ========================= -->
+
+
+<!-- ================= EXPORTACIÓN (PLANTILLA VISUAL) ================= -->
+<div id="exportContainer" style="display:none;"></div>
+<!-- ================= USUARIOS ================= -->
 <section id="usuarios" class="hidden">
-  <div class="card">
-    <h2>Mi Cuenta</h2>
-    <p class="muted-line">Aquí aparecerá la configuración del usuario actual.</p>
-  </div>
-</section>
 
-<!-- ========================= -->
-<!-- ADMIN USUARIOS -->
-<!-- ========================= -->
-<section id="admin_users" class="hidden">
-  <div class="card">
-    <h2>Usuario Administrador</h2>
-    <p>Gestión futura de usuarios.</p>
-  </div>
-</section>
+  <h2>Gestión de Usuarios</h2>
 
-<!-- ========================= -->
-<!-- AUDITORÍA -->
-<!-- ========================= -->
-<section id="auditoria" class="hidden">
   <div class="card">
-    <h2>Auditoría</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Acción</th>
-          <th>Detalle</th>
-        </tr>
-      </thead>
-      <tbody id="audit_list"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ========================= -->
-<!-- SEGUIMIENTO -->
-<!-- ========================= -->
-<section id="seguimiento" class="hidden">
-  <div class="card">
-    <h2>Seguimiento</h2>
-    <p>En construcción.</p>
-  </div>
-</section>
-
-<!-- ========================= -->
-<!-- ROLES -->
-<!-- ========================= -->
-<section id="roles" class="hidden">
-  <div class="card">
-    <h2>Gestión de Roles</h2>
-    <p>En construcción.</p>
-  </div>
-</section>
-
-<!-- FIN DE PARTE 2 — Continúa PARTE 3 con el LOGIN y navegación -->
-<!-- ========================= -->
-<!-- LOGIN (modal) -->
-<!-- ========================= -->
-<div id="loginModal" class="modal">
-  <div class="card">
-    <h2 class="card-title">Iniciar Sesión</h2>
+    <h3>Crear Usuario</h3>
 
     <label>Usuario</label>
-    <input id="lg_user" placeholder="Usuario" />
+    <input id="usr_user">
+
+    <label>Nombre Completo</label>
+    <input id="usr_name">
 
     <label>Contraseña</label>
-    <input id="lg_pass" type="password" placeholder="Contraseña" />
+    <input id="usr_pass" type="password">
 
-    <button class="primary" id="btnLogin" style="margin-top:12px;">Ingresar</button>
+    <label>Rol</label>
+    <select id="usr_role">
+      <option value="admin">Administrador</option>
+      <option value="operador">Operador</option>
+      <option value="visor">Visor</option>
+    </select>
 
-    <p class="small" style="margin-top:10px;text-align:center;cursor:pointer;color:#0a57ff"
-       id="btnForgot">¿Olvidaste tu contraseña?</p>
+    <button id="btnUserCreate" class="primary" style="margin-top:10px;">Crear Usuario</button>
   </div>
-</div>
 
-<!-- ========================= -->
-<!-- RECUPERAR CONTRASEÑA -->
-<!-- ========================= -->
-<div id="recoverModal" class="modal hidden">
   <div class="card">
-    <h2 class="card-title">Recuperar Contraseña</h2>
+    <h3>Listado de Usuarios</h3>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Rol</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="userListTable"></tbody>
+    </table>
+  </div>
+
+</section>
+
+
+
+<!-- =============== MI CUENTA ================= -->
+<section id="miCuenta" class="hidden">
+
+  <h2>Mi Cuenta</h2>
+
+  <div class="card">
+    <h3>Datos Personales</h3>
 
     <label>Usuario</label>
-    <input id="rc_user" placeholder="Usuario registrado" />
+    <input id="cuenta_user" readonly style="background:#eee;">
 
-    <button class="primary" id="btnRecoverSend" style="margin-top:12px;">Enviar</button>
-    <button class="primary" style="background:#6b7280;margin-top:8px;" id="btnRecoverBack">
-      Volver
+    <label>Nombre</label>
+    <input id="cuenta_name">
+
+    <button id="btnCuentaSave" class="primary" style="margin-top:10px;">
+      Guardar Cambios
     </button>
-
-    <p class="small" id="recover_msg" style="margin-top:10px;"></p>
   </div>
-</div>
 
-<!-- ========================= -->
-<!-- SCRIPT DE LOGIN + NAVEGACIÓN -->
-<!-- ========================= -->
+  <div class="card">
+    <h3>Cambiar Contraseña</h3>
+
+    <label>Contraseña Actual</label>
+    <input id="cuenta_old" type="password">
+
+    <label>Nueva Contraseña</label>
+    <input id="cuenta_new" type="password">
+
+    <button id="btnCuentaPass" class="primary" style="margin-top:10px;">
+      Cambiar Contraseña
+    </button>
+  </div>
+
+</section>
+
+
+
+<!-- ================= AUDITORÍA ================= -->
+<section id="auditoria" class="hidden">
+
+  <h2>Auditoría</h2>
+
+  <div class="card">
+    <h3>Registro de Actividades</h3>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Acción</th>
+          <th>Detalle</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody id="auditTable"></tbody>
+    </table>
+
+  </div>
+
+</section>
+<!-- ================= ROLES ================= -->
+<section id="roles" class="hidden">
+
+  <h2>Gestión de Roles</h2>
+
+  <div class="card">
+    <h3>Crear / Editar Rol</h3>
+
+    <input type="hidden" id="role_edit_index">
+
+    <label>Nombre del Rol</label>
+    <input id="role_name">
+
+    <h4>Permisos del Rol</h4>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+
+      <label><input type="checkbox" class="rolePerm" value="dashboard"> Acceder a Dashboard</label>
+      <label><input type="checkbox" class="rolePerm" value="fundaciones"> Gestionar Fundaciones</label>
+      <label><input type="checkbox" class="rolePerm" value="items"> Gestionar Items</label>
+      <label><input type="checkbox" class="rolePerm" value="conductores"> Gestionar Conductores</label>
+      <label><input type="checkbox" class="rolePerm" value="pedidos"> Crear Pedidos</label>
+      <label><input type="checkbox" class="rolePerm" value="usuarios"> Gestionar Usuarios</label>
+      <label><input type="checkbox" class="rolePerm" value="roles"> Gestionar Roles</label>
+      <label><input type="checkbox" class="rolePerm" value="auditoria"> Ver Auditoría</label>
+      <label><input type="checkbox" class="rolePerm" value="vehiculos"> Gestionar Placas</label>
+      <label><input type="checkbox" class="rolePerm" value="miCuenta"> Ver Mi Cuenta</label>
+
+    </div>
+
+    <button id="btnRoleSave" class="primary" style="margin-top:10px;">Guardar Rol</button>
+  </div>
+
+  <div class="card">
+    <h3>Listado de Roles</h3>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Rol</th>
+          <th>Permisos</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="roleListTable"></tbody>
+    </table>
+
+  </div>
+
+</section>
 <script>
-/* ========================================= */
-/* VARIABLES GLOBALES DEL SISTEMA            */
-/* ========================================= */
+
+// ======================================================
+//  SISTEMA DE ESTADO
+// ======================================================
 let state = {
   currentUser: null,
   users: [],
+  roles: [],
   foundations: [],
   items: [],
   drivers: [],
   plates: [],
-  pedidos: [],
-  audit: []
+  packs: [],
+  pedidos: []
 };
 
-let currentPedidoItems = [];
 
-/* ========================================= */
-/* UTILIDADES                                */
-/* ========================================= */
-const $ = id => document.getElementById(id);
-
+// ======================================================
+//  LOCALSTORAGE
+// ======================================================
 function save() {
   localStorage.setItem("erp_data", JSON.stringify(state));
 }
 
 function load() {
-  let d = localStorage.getItem("erp_data");
-  if (d) {
-    state = JSON.parse(d);
-  } else {
-    // crear usuario admin por defecto
-    state.users = [
-      { user: "admin", pass: "123", role: "admin", name:"Administrador" }
-    ];
-    save();
-  }
-}
+  const d = localStorage.getItem("erp_data");
+  if (d) state = JSON.parse(d);
 
-function registrarAccion(accion, detalle) {
-  state.audit.push({
-    fecha: new Date().toLocaleString(),
-    accion,
-    detalle: JSON.stringify(detalle)
-  });
+  // Usuarios por defecto si no existen
+  if (!state.users || state.users.length === 0) {
+    state.users = [
+      { user: "admin", pass: "123", role: "admin", name: "Administrador" }
+    ];
+  }
+
+  // Roles por defecto
+  if (!state.roles || state.roles.length === 0) {
+    state.roles = [
+      {
+        name: "admin",
+        perms: [
+          "dashboard","fundaciones","items","conductores",
+          "pedidos","usuarios","roles","auditoria","vehiculos","miCuenta"
+        ]
+      },
+      {
+        name: "operador",
+        perms: ["dashboard","fundaciones","items","conductores","pedidos","vehiculos","miCuenta"]
+      },
+      {
+        name: "visor",
+        perms: ["dashboard","fundaciones","items","conductores","vehiculos","pedidos","miCuenta"]
+      }
+    ];
+  }
+
   save();
 }
 
-/* ========================================= */
-/* LOGIN                                     */
-/* ========================================= */
-function showLogin() {
-  $("loginModal").classList.remove("hidden");
+
+// ======================================================
+//  AUDITORÍA
+// ======================================================
+function registrarAccion(accion, detalle = {}) {
+  if (!state.audit) state.audit = [];
+
+  state.audit.push({
+    user: state.currentUser?.user || "desconocido",
+    accion,
+    detalle,
+    fecha: new Date().toLocaleString()
+  });
+
+  save();
 }
 
-function hideLogin() {
-  $("loginModal").classList.add("hidden");
-}
 
-function doLogin() {
-  let u = $("lg_user").value.trim();
-  let p = $("lg_pass").value.trim();
+// ======================================================
+//  LOGIN
+// ======================================================
+$("btnLogin").addEventListener("click", () => {
+  const u = $("login_user").value.trim();
+  const p = $("login_pass").value.trim();
 
-  const usr = state.users.find(x => x.user === u && x.pass === p);
+  const found = state.users.find(x => x.user === u && x.pass === p);
+  if (!found) return alert("Usuario o clave incorrectos");
 
-  if (!usr) return alert("Usuario o contraseña incorrecta");
+  state.currentUser = found;
+  save();
 
-  state.currentUser = usr;
-  $("headerUser").innerText = usr.name || usr.user;
-  $("btnLogout").classList.remove("hidden");
+  registrarAccion("login", { user: u });
 
-  hideLogin();
-  showSection("dashboard");
-  registrarAccion("login", {user: usr.user});
-}
+  $("loginContainer").classList.add("hidden");
+  $("mainLayout").classList.remove("hidden");
 
-$("btnLogin").addEventListener("click", doLogin);
+  applyRolePermissions();
+  renderAll();
+});
 
-/* ========================================= */
-/* LOGOUT                                    */
-/* ========================================= */
 $("btnLogout").addEventListener("click", () => {
+  registrarAccion("logout", { user: state.currentUser?.user });
   state.currentUser = null;
-  $("headerUser").innerText = "Invitado";
-  $("btnLogout").classList.add("hidden");
-  showLogin();
+  save();
+  location.reload();
 });
 
-/* ========================================= */
-/* RECUPERAR CONTRASEÑA                      */
-/* ========================================= */
-$("btnForgot").addEventListener("click", () => {
-  $("loginModal").classList.add("hidden");
-  $("recoverModal").classList.remove("hidden");
-});
 
-$("btnRecoverBack").addEventListener("click", () => {
-  $("recoverModal").classList.add("hidden");
-  $("loginModal").classList.remove("hidden");
-});
+// ======================================================
+//  UTILIDADES
+// ======================================================
+function $(id) { return document.getElementById(id); }
 
-$("btnRecoverSend").addEventListener("click", () => {
-  const user = $("rc_user").value.trim();
-  const u = state.users.find(x => x.user === user);
+function clear(elem) { elem.innerHTML = ""; }
 
-  if (!u) {
-    $("recover_msg").innerText = "Usuario no encontrado.";
-  } else {
-    $("recover_msg").innerText =
-      "Tu contraseña es: " + u.pass + " (mostrar solo para pruebas)";
-  }
-});
 
-/* ========================================= */
-/* MOSTRAR SECCIÓN                           */
-/* ========================================= */
-function showSection(id) {
-  if (!state.currentUser) return showLogin();
-
-  document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
-
-  const t = document.getElementById(id);
-  if (t) t.classList.remove("hidden");
-
-  document
-    .querySelectorAll("#sidebar button")
-    .forEach(b => b.classList.remove("active"));
-
-  const btn = document.querySelector(`#sidebar button[data-sec="${id}"]`);
-  if (btn) btn.classList.add("active");
-
-  window.scrollTo(0, 0);
-}
-
-/* ========================================= */
-/* SIDEBAR NAVIGATION                         */
-/* ========================================= */
-document.querySelectorAll("#sidebar button").forEach(btn => {
+// ======================================================
+//  MOSTRAR UNA SECCIÓN
+// ======================================================
+document.querySelectorAll("#sidebar button[data-target]").forEach(btn => {
   btn.addEventListener("click", () => {
-    showSection(btn.dataset.sec);
-    if (window.innerWidth < 900) {
-      $("sidebar").classList.remove("open");
-    }
+    const t = btn.dataset.target;
+    document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+    $(t).classList.remove("hidden");
+    registrarAccion("abrir_modulo", { modulo: t });
   });
 });
 
-$("btnMenu").addEventListener("click", () => {
-  $("sidebar").classList.toggle("open");
-});
 
-/* ========================================= */
-/* MOSTRAR LOGIN AL CARGAR                   */
-/* ========================================= */
-load();
-if (!state.currentUser) {
-  showLogin();
-} else {
-  $("headerUser").innerText = state.currentUser.name || state.currentUser.user;
-  $("btnLogout").classList.remove("hidden");
-  showSection("dashboard");
-}
-</script>
-
-<!-- FIN DE PARTE 3/5 - SIGUE PARTE 4 (CRUD COMPLETO) -->
-<script>
-/* ====================================================== */
-/* ==================  CRUD FUNDACIONES ================= */
-/* ====================================================== */
-
+// ======================================================
+//  FUNDACIONES – RENDER
+// ======================================================
 function renderFund() {
-  let html = "";
+  const cont = $("fundList");
+  clear(cont);
+
   state.foundations.forEach((f, i) => {
-    html += `
-    <tr>
-      <td>${f.nit}</td>
-      <td>${f.name}</td>
-      <td>${(f.points || []).length}</td>
-      <td>
-        <button class="primary small-btn" onclick="editFoundation(${i})">Editar</button>
-        <button class="danger small-btn" onclick="deleteFoundation(${i})">Eliminar</button>
-      </td>
-    </tr>
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.borderLeft = "4px solid #0a57ff";
+
+    div.innerHTML = `
+      <h3>${f.name} <span style="font-size:12px;color:#666;">(NIT: ${f.nit})</span></h3>
+      <button class="edit-btn small-btn" onclick="editFoundation(${i})">Editar</button>
+      <button class="delete-btn small-btn" onclick="deleteFoundation(${i})">Eliminar</button>
+      <hr>
+      <button class="primary small-btn" onclick="showSucursalCreate(${i})">Crear Sucursal</button>
+      <div id="fundPoints_${i}" style="margin-top:12px;"></div>
     `;
-  });
-  $("fund_list").innerHTML = html;
 
-  renderFoundationPoints();
-  fillFundSelects();
+    cont.appendChild(div);
+    renderSucursales(i);
+  });
 }
 
-function renderFoundationPoints() {
-  let html = "";
-  state.foundations.forEach(f => {
-    (f.points || []).forEach((p, idx) => {
-      html += `
-        <tr>
-          <td>${f.name}</td>
-          <td>${p.barrio}</td>
-          <td>${p.localidad}</td>
-          <td>${p.ciudad}</td>
-          <td>${p.encargada}</td>
-          <td>
-            <button class="primary small-btn" onclick="editPoint('${f.nit}', ${idx})">Editar</button>
-            <button class="danger small-btn" onclick="deletePoint('${f.nit}', ${idx})">Eliminar</button>
-          </td>
-        </tr>
-      `;
-    });
+
+// ======================================================
+//  SUCURSALES – RENDER
+// ======================================================
+function renderSucursales(fi) {
+  const f = state.foundations[fi];
+  const div = $("fundPoints_" + fi);
+  clear(div);
+
+  if (!f.points || f.points.length === 0) {
+    div.innerHTML = `<p style="color:#777;">Sin sucursales registradas</p>`;
+    return;
+  }
+
+  f.points.forEach((p, j) => {
+    const c = document.createElement("div");
+    c.style.padding = "10px";
+    c.style.border = "1px solid #ddd";
+    c.style.borderRadius = "6px";
+    c.style.marginBottom = "8px";
+
+    c.innerHTML = `
+      <b>${p.barrio}</b> — ${p.localidad} — ${p.ciudad}<br>
+      Tel: ${p.tel1} / ${p.tel2}<br>
+      Encargada: ${p.encargada}<br>
+      <button class="edit-btn small-btn" onclick="editSucursal(${fi},${j})">Editar</button>
+      <button class="delete-btn small-btn" onclick="deleteSucursal(${fi},${j})">Eliminar</button>
+    `;
+
+    div.appendChild(c);
   });
-  $("fund_points_list").innerHTML = html;
 }
 
-/* Crear fundación */
+
+// ======================================================
+//  CREAR FUNDACIÓN
+// ======================================================
 $("btnFundCreate").addEventListener("click", () => {
   if (!state.currentUser) return alert("Inicie sesión");
 
   const nit = $("f_nit").value.trim();
   const name = $("f_name").value.trim();
 
-  if (!nit || !name) return alert("Complete NIT y Nombre");
+  if (!nit || !name) return alert("Complete los datos");
 
-  state.foundations.push({
-    nit,
-    name,
-    points: []
-  });
-
+  state.foundations.push({ nit, name, points: [] });
   save();
-  renderFund();
-  registrarAccion("crear_fundacion", {nit, name});
+
+  registrarAccion("crear_fundacion", { nit, name });
 
   $("f_nit").value = "";
   $("f_name").value = "";
+
+  renderFund();
+  fillFundSelects();
 });
 
-/* Buscar fundación al escribir NIT para crear sucursal */
-$("p_nit_lookup").addEventListener("input", function () {
-  const nit = this.value.trim();
-  const info = $("p_nit_info");
-  const nameInput = $("p_fund_name");
 
-  info.innerText = "";
-  nameInput.value = "";
+// ======================================================
+//  EDITAR FUNDACIÓN
+// ======================================================
+function editFoundation(i) {
+  const f = state.foundations[i];
+  const newName = prompt("Nuevo nombre:", f.name);
+  if (!newName) return;
 
-  if (!nit) return;
+  f.name = newName;
+  save();
 
-  const f = state.foundations.find(ff => String(ff.nit) === nit);
+  registrarAccion("editar_fundacion", { i, newName });
 
-  if (f) {
-    info.innerText = f.name;
-    nameInput.value = f.name;
+  renderFund();
+  fillFundSelects();
+}
 
-    // Esto permite saber a qué fundación se agregará la sucursal
-    $("p_fund_name").dataset.findex = state.foundations.findIndex(x => x.nit === f.nit);
-  } else {
-    info.innerText = "NIT no registrado";
-    $("p_fund_name").dataset.findex = "";
-  }
-});
 
-/* Crear Sucursal */
-$("btnPointCreate").addEventListener("click", () => {
-  if (!state.currentUser) return alert("Inicie sesión");
+// ======================================================
+//  ELIMINAR FUNDACIÓN
+// ======================================================
+function deleteFoundation(i) {
+  if (!confirm("¿Eliminar fundación?")) return;
 
-  const fi = Number($("p_fund_name").dataset.findex);
-  if (isNaN(fi) || fi < 0) return alert("Primero ingrese un NIT válido");
+  registrarAccion("eliminar_fundacion", state.foundations[i]);
+  state.foundations.splice(i, 1);
 
+  save();
+  renderFund();
+  fillFundSelects();
+}
+
+
+// ======================================================
+//  MOSTRAR FORMULARIO CREAR SUCURSAL
+// ======================================================
+function showSucursalCreate(fi) {
+  const f = state.foundations[fi];
+
+  $("sucursalCreateCard").style.display = "block";
+  $("sucursalEditCard").style.display = "none";
+
+  $("p_nit").value = f.nit;
+  $("p_fundName").value = f.name;
+
+  $("p_barrio").value = "";
+  $("p_localidad").value = "";
+  $("p_ciudad").value = "";
+  $("p_tel1").value = "";
+  $("p_tel2").value = "";
+  $("p_encargada").value = "";
+
+  $("btnPointCreate").onclick = () => createSucursal(fi);
+}
+
+
+// ======================================================
+//  CREAR SUCURSAL
+// ======================================================
+function createSucursal(fi) {
   const f = state.foundations[fi];
 
   const p = {
@@ -858,529 +947,976 @@ $("btnPointCreate").addEventListener("click", () => {
     encargada: $("p_encargada").value.trim()
   };
 
-  if (!p.barrio) return alert("Complete la información de la sucursal");
-
   f.points.push(p);
   save();
-  renderFoundationPoints();
+
+  registrarAccion("crear_sucursal", { fund: f.name, ...p });
+
+  $("sucursalCreateCard").style.display = "none";
+  renderFund();
   fillFundSelects();
+}
 
-  registrarAccion("crear_sucursal", { fundacion: f.name, punto: p.barrio });
 
-  $("p_barrio").value = "";
-  $("p_localidad").value = "";
-  $("p_ciudad").value = "";
-  $("p_tel1").value = "";
-  $("p_tel2").value = "";
-  $("p_encargada").value = "";
+// ======================================================
+//  EDITAR SUCURSAL
+// ======================================================
+function editSucursal(fi, pi) {
+  const f = state.foundations[fi];
+  const p = f.points[pi];
+
+  $("sucursalEditCard").style.display = "block";
+  $("sucursalCreateCard").style.display = "none";
+
+  $("editPointFundIndex").value = fi;
+  $("editPointIndex").value = pi;
+
+  $("edit_p_fundName").value = f.name;
+  $("edit_p_barrio").value = p.barrio;
+  $("edit_p_localidad").value = p.localidad;
+  $("edit_p_ciudad").value = p.ciudad;
+  $("edit_p_tel1").value = p.tel1;
+  $("edit_p_tel2").value = p.tel2;
+  $("edit_p_encargada").value = p.encargada;
+}
+
+
+// ======================================================
+//  GUARDAR SUCURSAL EDITADA
+// ======================================================
+$("btnPointSaveEdit").addEventListener("click", () => {
+  const fi = Number($("editPointFundIndex").value);
+  const pi = Number($("editPointIndex").value);
+
+  const p = state.foundations[fi].points[pi];
+
+  p.barrio = $("edit_p_barrio").value;
+  p.localidad = $("edit_p_localidad").value;
+  p.ciudad = $("edit_p_ciudad").value;
+  p.tel1 = $("edit_p_tel1").value;
+  p.tel2 = $("edit_p_tel2").value;
+  p.encargada = $("edit_p_encargada").value;
+
+  save();
+
+  registrarAccion("editar_sucursal", { fi, pi });
+
+  $("sucursalEditCard").style.display = "none";
+  renderFund();
+  fillFundSelects();
 });
 
-/* Editar fundación */
-function editFoundation(index) {
-  const f = state.foundations[index];
-  const nuevo = prompt("Nuevo nombre:", f.name);
-  if (!nuevo) return;
-  f.name = nuevo;
-  save();
-  renderFund();
-}
 
-/* Eliminar fundación */
-function deleteFoundation(i) {
-  if (!confirm("¿Eliminar fundación y sus sucursales?")) return;
-  state.foundations.splice(i, 1);
-  save();
-  renderFund();
-}
+// ======================================================
+//  ELIMINAR SUCURSAL
+// ======================================================
+function deleteSucursal(fi, pi) {
+  if (!confirm("¿Eliminar sucursal?")) return;
 
-/* Editar sucursal */
-function editPoint(nit, idx) {
-  const f = state.foundations.find(x => x.nit == nit);
-  const p = f.points[idx];
-
-  const nuevo = prompt("Nuevo nombre del barrio:", p.barrio);
-  if (!nuevo) return;
-
-  p.barrio = nuevo;
-  save();
-  renderFoundationPoints();
-}
-
-/* Eliminar sucursal */
-function deletePoint(nit, idx) {
-  const f = state.foundations.find(x => x.nit == nit);
-  if (!confirm("¿Eliminar esta sucursal?")) return;
-
-  f.points.splice(idx, 1);
-  save();
-  renderFoundationPoints();
-}
-
-/* ====================================================== */
-/* ======================= ITEMS ======================== */
-/* ====================================================== */
-
-function renderItems() {
-  let html = "";
-  state.items.forEach((it, i) => {
-    html += `
-      <tr>
-        <td>${it.ref}</td>
-        <td>${it.name}</td>
-        <td>$${it.price}</td>
-        <td>
-          <button class="primary small-btn" onclick="editItem(${i})">Editar</button>
-          <button class="danger small-btn" onclick="deleteItem(${i})">Eliminar</button>
-        </td>
-      </tr>
-    `;
+  registrarAccion("eliminar_sucursal", {
+    fund: state.foundations[fi].name,
+    suc: state.foundations[fi].points[pi]
   });
-  $("items_list").innerHTML = html;
 
-  fillItemSelect();
+  state.foundations[fi].points.splice(pi, 1);
+  save();
+
+  renderFund();
+  fillFundSelects();
 }
 
-$("btnCreateItem").addEventListener("click", () => {
-  if (!state.currentUser) return alert("Inicie sesión");
 
-  const ref = $("item_ref").value.trim();
-  const name = $("item_name").value.trim();
-  const desc = $("item_desc").value.trim();
-  const price = Number($("item_price").value) || 0;
+// ======================================================
+//  POBLAR SELECTS (FUNDACIONES + SUCURSALES)
+// ======================================================
+function fillFundSelects() {
+  const s = $("pd_fund_sel");
+  const p = $("pd_point_sel");
+  if (!s) return;
 
-  if (!name) return alert("Nombre requerido");
+  s.innerHTML = "<option value=''>Seleccione...</option>";
+  state.foundations.forEach((f, i) => {
+    s.innerHTML += `<option value="${i}">${f.name}</option>`;
+  });
 
-  state.items.push({ ref, name, desc, price });
-  save();
-  renderItems();
+  p.innerHTML = "<option value=''>Seleccione...</option>";
+}
 
-  registrarAccion("crear_item", { name });
+$("pd_fund_sel")?.addEventListener("change", () => {
+  const i = Number($("pd_fund_sel").value);
+  const p = $("pd_point_sel");
 
-  $("item_ref").value = "";
-  $("item_name").value = "";
-  $("item_desc").value = "";
-  $("item_price").value = "";
+  p.innerHTML = "<option value=''>Seleccione...</option>";
+
+  if (!state.foundations[i]?.points) return;
+
+  state.foundations[i].points.forEach((pt, j) => {
+    p.innerHTML += `<option value="${j}">${pt.barrio} — ${pt.localidad}</option>`;
+  });
 });
 
-function editItem(i) {
-  const it = state.items[i];
-  const nuevo = prompt("Nuevo nombre del item:", it.name);
-  if (!nuevo) return;
-  it.name = nuevo;
-  save();
-  renderItems();
+
+// ======================================================
+//  RENDER GENERAL
+// ======================================================
+function renderAll() {
+  renderFund();
+  fillFundSelects();
 }
 
-function deleteItem(i) {
-  if (!confirm("¿Eliminar item?")) return;
-  state.items.splice(i, 1);
-  save();
-  renderItems();
+load();
+renderAll();
+
+</script>
+<script>
+// ===================== PARTE 7B =====================
+// Items, embalajes, conductores, placas, usuarios, roles, pedidos y exportación
+// Complementa la PARTE 7A. Comprueba que los elementos del DOM con las IDs usadas existan.
+// =====================================================
+
+
+/* ---------- UTIL: safe $ que ignora elementos ausentes ---------- */
+function $safe(id){ return document.getElementById(id) || null; }
+
+/* ---------- ITEMS y EMBALAJES ---------- */
+function renderItems(){
+  const tbody = $safe('itemsTable')?.querySelector('tbody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  state.items = state.items || [];
+  state.items.forEach((it, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${it.ref||''}</td>
+      <td>${it.name||''}</td>
+      <td>${it.desc||''}</td>
+      <td>$${Number(it.price||0).toLocaleString()}</td>
+      <td>
+        <button class="small" data-i="${i}" data-act="editItem">Editar</button>
+        <button class="small" data-i="${i}" data-act="delItem">Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // editar / eliminar handlers
+  tbody.querySelectorAll('button[data-act]').forEach(btn=>{
+    const i = Number(btn.dataset.i);
+    const act = btn.dataset.act;
+    btn.addEventListener('click', ()=>{
+      if(act === 'delItem'){
+        if(!confirm('Eliminar item?')) return;
+        state.items.splice(i,1);
+        save(); renderItems(); fillItemSelect(); registrarAccion('eliminar_item',{index:i});
+      } else if(act === 'editItem'){
+        const it = state.items[i];
+        const newName = prompt('Nombre', it.name);
+        if(newName===null) return;
+        it.name = newName;
+        it.ref = prompt('Referencia', it.ref) || it.ref;
+        it.desc = prompt('Descripción', it.desc) || it.desc;
+        it.price = Number(prompt('Precio', it.price) || it.price);
+        save(); renderItems(); fillItemSelect(); registrarAccion('editar_item',{index:i});
+      }
+    });
+  });
 }
 
-/* ====================================================== */
-/* ===================== CONDUCTORES ==================== */
-/* ====================================================== */
+$safe('btnCreateItem')?.addEventListener('click', ()=>{
+  if(!state.currentUser) return alert('Inicie sesión');
+  const ref = ($safe('item_ref')?.value||'').trim();
+  const name = ($safe('item_name')?.value||'').trim();
+  if(!name) return alert('Nombre requerido');
+  const desc = ($safe('item_desc')?.value||'').trim();
+  const price = Number($safe('item_price')?.value) || 0;
+  state.items = state.items || [];
+  state.items.push({ref,name,desc,price});
+  save(); renderItems(); fillItemSelect(); registrarAccion('crear_item',{ref,name});
+  if($safe('item_ref')) $safe('item_ref').value='';
+  if($safe('item_name')) $safe('item_name').value='';
+  if($safe('item_desc')) $safe('item_desc').value='';
+  if($safe('item_price')) $safe('item_price').value='';
+});
 
-function renderDrivers() {
-  let html = "";
+$safe('btnImportItems')?.addEventListener('click', ()=>{
+  const f = $safe('excel_items')?.files?.[0];
+  if(!f) return alert('Seleccione Excel');
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
+      rows.forEach((r,i)=>{
+        if(i===0) return; // header
+        const ref = String(r[0]||'').trim();
+        const name = String(r[1]||'').trim();
+        const price = Number(r[2]||0);
+        const desc = String(r[3]||'').trim();
+        if(!ref && !name) return;
+        if(!state.items.some(x=>x.ref===ref && ref!==''))
+          state.items.push({ref,name,desc,price});
+      });
+      save(); renderItems(); fillItemSelect(); registrarAccion('importar_items_excel',{rows:rows.length});
+      alert('Items importados');
+    }catch(err){ alert('Error leer Excel: '+err.message); }
+  };
+  reader.readAsArrayBuffer(f);
+});
 
-  state.drivers.forEach((d, i) => {
-    html += `
-      <div class="drv-card">
-        <div class="drv-row">
-          <div>
-            <strong>${d.name}</strong><br>
-            <span class="small">Doc: ${d.document}</span><br>
-            <span class="small">Tel: ${d.phone}</span><br>
-            <span class="small">Empresa: ${d.company}</span>
-          </div>
-          <div class="drv-actions">
-            <button class="small-btn primary" onclick="editDriver(${i})">Editar</button>
-            <button class="small-btn danger" onclick="deleteDriver(${i})">Eliminar</button>
-          </div>
+/* Embalajes */
+function renderPacks(){
+  const ul = $safe('packList');
+  if(!ul) return;
+  ul.innerHTML = '';
+  state.packs = state.packs || ['Atado','Bulto','Canastilla','Caja','Unidad'];
+  state.packs.forEach((p,i)=>{
+    const li = document.createElement('li');
+    li.innerText = p + ' ';
+    const del = document.createElement('button');
+    del.innerText = 'Eliminar';
+    del.className = 'small';
+    del.addEventListener('click', ()=>{
+      if(!confirm('Eliminar embalaje?')) return;
+      state.packs.splice(i,1); save(); renderPacks(); fillPackSelect(); registrarAccion('eliminar_embalaje',{pack:p});
+    });
+    li.appendChild(del);
+    ul.appendChild(li);
+  });
+}
+
+$safe('btnAddPack')?.addEventListener('click', ()=>{
+  if(!state.currentUser) return alert('Inicie sesión');
+  const v = ($safe('new_pack')?.value||'').trim();
+  if(!v) return alert('Ingrese nombre');
+  state.packs = state.packs || [];
+  state.packs.push(v);
+  save(); renderPacks(); fillPackSelect(); registrarAccion('crear_embalaje',{pack:v});
+  if($safe('new_pack')) $safe('new_pack').value='';
+});
+
+/* ---------- Conductores + Placas ---------- */
+function renderDrivers(){
+  const ul = $safe('driversList');
+  if(!ul) return;
+  ul.innerHTML = '';
+  state.drivers = state.drivers || [];
+  state.drivers.forEach((d,i)=>{
+    const li = document.createElement('li');
+    li.className = 'card';
+    li.style.marginBottom = '8px';
+    li.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <b>${d.name}</b><div class="small">Documento: ${d.document||''} — Tel: ${d.phone||''} — Empresa: ${d.company||''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="small" data-i="${i}" data-act="editD">Editar</button>
+          <button class="small" data-i="${i}" data-act="delD">Eliminar</button>
         </div>
       </div>
     `;
+    ul.appendChild(li);
   });
-
-  $("driver_list").innerHTML = html;
-
-  fillDriverPlate();
-}
-
-$("btnAddDriver").addEventListener("click", () => {
-  const d = {
-    name: $("drv_name").value.trim(),
-    document: $("drv_doc").value.trim(),
-    phone: $("drv_tel").value.trim(),
-    company: $("drv_cmp").value.trim()
-  };
-
-  if (!d.name) return alert("Nombre requerido");
-
-  state.drivers.push(d);
-  save();
-  renderDrivers();
-
-  registrarAccion("crear_conductor", d);
-
-  $("drv_name").value = "";
-  $("drv_doc").value = "";
-  $("drv_tel").value = "";
-  $("drv_cmp").value = "";
-});
-
-function editDriver(i) {
-  const d = state.drivers[i];
-  const nuevo = prompt("Nuevo nombre:", d.name);
-  if (!nuevo) return;
-  d.name = nuevo;
-  save();
-  renderDrivers();
-}
-
-function deleteDriver(i) {
-  if (!confirm("¿Eliminar conductor?")) return;
-  state.drivers.splice(i, 1);
-  save();
-  renderDrivers();
-}
-
-/* ====================================================== */
-/* ======================== PLACAS ====================== */
-/* ====================================================== */
-
-function renderPlates() {
-  let html = "";
-  state.plates.forEach(p => {
-    html += `
-      <tr>
-        <td>${p.plate}</td>
-        <td>${p.type}</td>
-      </tr>
-    `;
-  });
-  $("plate_list").innerHTML = html;
-}
-
-$("btnAddPlate").addEventListener("click", () => {
-  const p = {
-    plate: $("pl_plate").value.trim(),
-    type: $("pl_type").value.trim()
-  };
-
-  if (!p.plate) return alert("Placa requerida");
-
-  state.plates.push(p);
-  save();
-  renderPlates();
-  fillDriverPlate();
-
-  registrarAccion("crear_placa", p);
-
-  $("pl_plate").value = "";
-  $("pl_type").value = "";
-});
-
-/* ====================================================== */
-/* ======================== PEDIDOS ===================== */
-/* ====================================================== */
-
-function fillFundSelects() {
-  let html = "";
-  state.foundations.forEach((f, i) => {
-    html += `<option value="${i}">${f.name}</option>`;
-  });
-  $("pd_fund_sel").innerHTML = html;
-
-  fillPointsSelect();
-}
-
-function fillPointsSelect() {
-  const fi = Number($("pd_fund_sel").value);
-  const f = state.foundations[fi];
-  let html = "";
-
-  if (f && f.points) {
-    f.points.forEach((p, i) => {
-      html += `<option value="${i}">${p.barrio}</option>`;
+  // handlers
+  ul.querySelectorAll('button[data-act]').forEach(b=>{
+    const i = Number(b.dataset.i); const act = b.dataset.act;
+    b.addEventListener('click', ()=>{
+      if(act==='delD'){
+        if(!confirm('Eliminar conductor?')) return;
+        registrarAccion('eliminar_conductor', state.drivers[i]);
+        state.drivers.splice(i,1); save(); renderDrivers(); fillDriverPlate();
+      } else {
+        // editar
+        const d = state.drivers[i];
+        const name = prompt('Nombre',d.name); if(name===null) return;
+        d.name = name;
+        d.document = prompt('Documento', d.document) || d.document;
+        d.phone = prompt('Teléfono', d.phone) || d.phone;
+        d.company = prompt('Empresa', d.company) || d.company;
+        save(); renderDrivers(); fillDriverPlate(); registrarAccion('editar_conductor',{index:i});
+      }
     });
-  }
-
-  $("pd_point_sel").innerHTML = html;
+  });
 }
 
-$("pd_fund_sel").addEventListener("change", fillPointsSelect);
-
-function fillItemSelect() {
-  let html = "";
-  state.items.forEach((it, i) => {
-    html += `<option value="${i}">${it.name}</option>`;
-  });
-  $("pd_item_sel").innerHTML = html;
-}
-
-function fillDriverPlate() {
-  let drivers = "";
-  state.drivers.forEach((d, i) => {
-    drivers += `<option value="${i}">${d.name}</option>`;
-  });
-  $("pd_driver_sel").innerHTML = drivers;
-
-  let plates = "";
-  state.plates.forEach((p, i) => {
-    plates += `<option value="${i}">${p.plate}</option>`;
-  });
-  $("pd_plate_sel").innerHTML = plates;
-}
-
-/* Agregar items al pedido */
-$("pd_add_item").addEventListener("click", () => {
-  const idx = Number($("pd_item_sel").value);
-  const item = state.items[idx];
-
-  if (!item) return alert("Seleccione un item");
-
-  const pack = $("pd_pack_sel").value;
-  const qty = Number($("pd_pack_qty").value) || 1;
-  const kgs = Number($("pd_kilos").value);
-
-  if (!kgs) return alert("Kilos requeridos");
-
-  currentPedidoItems.push({
-    codigo: item.ref || "",
-    name: item.name,
-    price: item.price,
-    qty,
-    pack,
-    kgs
-  });
-
-  refreshPdItems();
+$safe('btnAddDriver')?.addEventListener('click', ()=>{
+  if(!state.currentUser) return alert('Inicie sesión');
+  const d = {
+    name: ($safe('drv_name')?.value||'').trim(),
+    document: ($safe('drv_doc')?.value||'').trim(),
+    phone: ($safe('drv_tel')?.value||'').trim(),
+    company: ($safe('drv_cmp')?.value||'').trim()
+  };
+  if(!d.name) return alert('Nombre requerido');
+  state.drivers = state.drivers || [];
+  state.drivers.push(d);
+  save(); renderDrivers(); fillDriverPlate(); registrarAccion('crear_conductor',d);
+  if($safe('drv_name')) $safe('drv_name').value='';
+  if($safe('drv_doc')) $safe('drv_doc').value='';
+  if($safe('drv_tel')) $safe('drv_tel').value='';
+  if($safe('drv_cmp')) $safe('drv_cmp').value='';
 });
 
-function refreshPdItems() {
-  let html = "";
-  currentPedidoItems.forEach((it, i) => {
-    html += `
-      <div>
-        ${it.name} — ${it.kgs} kg
-        <button class="danger small-btn" onclick="deletePdItem(${i})">X</button>
+function renderPlates(){
+  const ul = $safe('platesList');
+  if(!ul) return;
+  ul.innerHTML = '';
+  state.plates = state.plates || [];
+  state.plates.forEach((p,i)=>{
+    const li = document.createElement('li');
+    li.className = 'card';
+    li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><b>${p.plate}</b><div class="small">${p.type||''}</div></div><div><button class="small" data-i="${i}" data-act="editP">Editar</button><button class="small" data-i="${i}" data-act="delP">Eliminar</button></div></div>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('button[data-act]').forEach(b=>{
+    const i = Number(b.dataset.i); const act = b.dataset.act;
+    b.addEventListener('click', ()=>{
+      if(act==='delP'){
+        if(!confirm('Eliminar placa?')) return;
+        registrarAccion('eliminar_placa', state.plates[i]);
+        state.plates.splice(i,1); save(); renderPlates(); fillDriverPlate();
+      } else {
+        const p = state.plates[i];
+        p.plate = prompt('Placa', p.plate) || p.plate;
+        p.type = prompt('Tipo', p.type) || p.type;
+        save(); renderPlates(); fillDriverPlate(); registrarAccion('editar_placa',{index:i});
+      }
+    });
+  });
+}
+
+$safe('btnAddPlate')?.addEventListener('click', ()=>{
+  if(!state.currentUser) return alert('Inicie sesión');
+  const p = { plate: ($safe('pl_plate')?.value||'').trim(), type: ($safe('pl_type')?.value||'').trim() };
+  if(!p.plate) return alert('Placa requerida');
+  state.plates = state.plates || [];
+  state.plates.push(p);
+  save(); renderPlates(); fillDriverPlate(); registrarAccion('crear_placa',p);
+  if($safe('pl_plate')) $safe('pl_plate').value='';
+  if($safe('pl_type')) $safe('pl_type').value='';
+});
+
+
+/* ---------- SELECT FILL HELPERS (compatibilidad) ---------- */
+function fillItemSelect(){
+  const sel1 = $safe('pd_item_sel');
+  if(!sel1) return;
+  sel1.innerHTML = '';
+  state.items = state.items || [];
+  state.items.forEach((it,i)=> sel1.appendChild(new Option((it.name||'') + ' - $' + (it.price||0), i)));
+}
+
+function fillPackSelect(){
+  const sel = $safe('pd_pack_sel');
+  if(!sel) return;
+  sel.innerHTML = ''; sel.appendChild(new Option('', ''));
+  state.packs = state.packs || ['Atado','Bulto','Canastilla','Caja','Unidad'];
+  state.packs.forEach(p=> sel.appendChild(new Option(p, p)));
+}
+
+function fillDriverPlate(){
+  const sd = $safe('pd_driver');
+  const sp = $safe('pd_plate');
+  if(sd){
+    sd.innerHTML = '<option value="">Seleccione</option>';
+    (state.drivers||[]).forEach((d,i)=> sd.appendChild(new Option(d.name, i)));
+  }
+  if(sp){
+    sp.innerHTML = '<option value="">Seleccione</option>';
+    (state.plates||[]).forEach((p,i)=> sp.appendChild(new Option(p.plate, i)));
+  }
+}
+
+
+/* ---------- USUARIOS y ROLES (Admin) ---------- */
+function renderAdminUsers(){
+  const ul = $safe('adm_user_list');
+  if(!ul) return;
+  ul.innerHTML = '';
+  (state.users||[]).forEach((u,i)=>{
+    const li = document.createElement('li');
+    li.style.marginBottom='8px';
+    li.innerHTML = `<b>${u.user}</b> — ${u.role} <button class="small" data-i="${i}" data-act="editU">Editar</button> <button class="small" data-i="${i}" data-act="delU">Eliminar</button>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('button[data-act]').forEach(b=>{
+    const i = Number(b.dataset.i); const act = b.dataset.act;
+    b.addEventListener('click', ()=>{
+      if(act==='delU'){
+        if(state.users[i].user === 'admin') return alert('No eliminar admin principal');
+        if(!confirm('Eliminar usuario?')) return;
+        registrarAccion('eliminar_usuario', state.users[i]);
+        state.users.splice(i,1); save(); renderAdminUsers();
+      } else {
+        const newRole = prompt('Rol (admin/operador/visor)', state.users[i].role);
+        if(!newRole) return;
+        state.users[i].role = newRole; save(); renderAdminUsers(); registrarAccion('editar_usuario',{user:state.users[i].user,role:newRole});
+      }
+    });
+  });
+}
+
+$safe('adm_add_user')?.addEventListener('click', ()=>{
+  if(!state.currentUser || state.currentUser.role !== 'admin') return alert('Solo admin');
+  const user = ($safe('adm_new_user')?.value||'').trim();
+  const pass = ($safe('adm_new_pass')?.value||'').trim();
+  const role = ($safe('adm_new_role')?.value||'general').trim();
+  if(!user || !pass) return alert('Complete');
+  if(state.users.some(x=>x.user === user)) return alert('Usuario existe');
+  state.users.push({user, pass, role, name:''});
+  save(); renderAdminUsers(); registrarAccion('crear_usuario',{user,role});
+  if($safe('adm_new_user')) $safe('adm_new_user').value='';
+  if($safe('adm_new_pass')) $safe('adm_new_pass').value='';
+});
+
+
+/* ---------- PEDIDOS (flow) ---------- */
+let currentPedidoItems = []; // items del formulario
+let modoPedido = 'crear'; // 'crear'|'editar'|'duplicar'
+let pedidoEditId = null;
+
+function refreshPdItems(){
+  const ul = $safe('pd_items_list');
+  if(!ul) return;
+  ul.innerHTML = '';
+  currentPedidoItems.forEach((it, idx)=>{
+    const li = document.createElement('li');
+    li.style.marginBottom='6px';
+    li.innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="edit_codigo" placeholder="Código" value="${it.codigo||''}" style="width:110px" />
+        <input class="edit_nombre" placeholder="Nombre" value="${it.name||''}" style="flex:1" />
+        <input class="edit_qty" type="number" min="1" value="${it.qty||1}" style="width:80px" />
+        <input class="edit_kgs" type="number" min="0" value="${it.kgs||0}" style="width:80px" />
+        <input class="edit_price" type="number" min="0" value="${it.price||0}" style="width:100px" />
+        <button class="eliminar_item small">Eliminar</button>
       </div>
     `;
+    ul.appendChild(li);
+
+    li.querySelector('.eliminar_item').addEventListener('click', ()=>{
+      currentPedidoItems.splice(idx,1); refreshPdItems();
+    });
+    li.querySelector('.edit_codigo').addEventListener('input', e => currentPedidoItems[idx].codigo = e.target.value);
+    li.querySelector('.edit_nombre').addEventListener('input', e => currentPedidoItems[idx].name = e.target.value);
+    li.querySelector('.edit_qty').addEventListener('input', e => currentPedidoItems[idx].qty = Number(e.target.value) || 1);
+    li.querySelector('.edit_kgs').addEventListener('input', e => currentPedidoItems[idx].kgs = Number(e.target.value) || 0);
+    li.querySelector('.edit_price').addEventListener('input', e => currentPedidoItems[idx].price = Number(e.target.value) || 0);
   });
-  $("pd_items_list").innerHTML = html || "No hay items";
 }
 
-function deletePdItem(i) {
-  currentPedidoItems.splice(i, 1);
+/* agregar item desde select */
+$safe('pd_add_item')?.addEventListener('click', ()=>{
+  if(!state.currentUser) return alert('Inicie sesión');
+  const idx = Number($safe('pd_item_sel')?.value);
+  if(isNaN(idx) || !state.items[idx]) return alert('Seleccione item');
+  const pack = $safe('pd_pack_sel')?.value || '';
+  const packQty = Number($safe('pd_pack_qty')?.value) || 0;
+  const kgs = Number($safe('pd_kilos')?.value); if(!kgs) return alert('Kilos obligatorios');
+  const it = state.items[idx];
+  const qty = packQty || 1;
+  currentPedidoItems.push({codigo: it.ref || '', name: it.name, price: it.price, qty, pack, kgs});
   refreshPdItems();
-}
-
-/* Guardar pedido */
-$("pd_save").addEventListener("click", () => {
-  if (!currentPedidoItems.length) return alert("Debe agregar items");
-
-  const fi = Number($("pd_fund_sel").value);
-  const pi = Number($("pd_point_sel").value);
-  const di = Number($("pd_driver_sel").value);
-  const hi = Number($("pd_plate_sel").value);
-
-  const fund = state.foundations[fi];
-  const point = fund.points[pi];
-  const driver = state.drivers[di];
-  const plate = state.plates[hi];
-
-  const pedido = {
-    id: Date.now(),
-    fund: fund.name,
-    point: point.barrio,
-    driver: driver.name,
-    plate: plate.plate,
-    items: currentPedidoItems,
-    fecha: new Date().toLocaleString()
-  };
-
-  state.pedidos.push(pedido);
-  save();
-
-  registrarAccion("crear_pedido", { id: pedido.id });
-
-  currentPedidoItems = [];
-  refreshPdItems();
-  renderPedidos();
-
-  alert("Pedido creado");
 });
 
-/* Mostrar pedidos */
-function renderPedidos() {
-  let html = "";
-  state.pedidos.forEach(p => {
-    html += `
-      <tr>
-        <td>${p.id}</td>
-        <td>${p.fund}</td>
-        <td>${p.point}</td>
-        <td>${p.driver}</td>
-        <td>${p.plate}</td>
-        <td>
-          <button class="primary small-btn" onclick="exportPedido(${p.id})">Exportar</button>
-          <button class="primary small-btn" onclick="duplicatePedido(${p.id})">Duplicar</button>
-          <button class="danger small-btn" onclick="deletePedido(${p.id})">Eliminar</button>
-        </td>
-      </tr>
-    `;
-  });
-  $("pd_list").innerHTML = html;
+/* agregar fila manual */
+$safe('btnAddProducto')?.addEventListener('click', ()=>{
+  if(!state.currentUser) return alert('Inicie sesión');
+  currentPedidoItems.push({codigo:'', name:'', price:0, qty:1, pack:'', kgs:0});
+  refreshPdItems();
+});
+
+/* Autocompletar funda por NIT si existe (compatibilidad con pd_nit) */
+$safe('pd_nit')?.addEventListener('input', function(){
+  const val = this.value.trim();
+  const info = $safe('pd_fund_info');
+  if(!val){ if($safe('pd_fund')) $safe('pd_fund').value=''; if($safe('pd_fund_sel')) $safe('pd_fund_sel').value=''; fillPdPointsByFundIndex(null); if(info) info.innerText=''; return; }
+  const f = (state.foundations||[]).find(x=> String(x.nit) === val);
+  if(f){
+    if(info) info.innerText = f.name;
+    // seleccionar en pd_fund / pd_fund_sel
+    const idx = state.foundations.findIndex(x=> x.nit === f.nit);
+    if($safe('pd_fund')) { $safe('pd_fund').value = idx; fillPdPointsByFundIndex(idx); }
+    if($safe('pd_fund_sel')) { $safe('pd_fund_sel').value = idx; fillPdPointsByFundIndex(idx); }
+  } else {
+    if(info) info.innerText = 'NIT no registrado';
+  }
+});
+
+function fillPdPointsByFundIndex(idx){
+  const selA = $safe('pd_point'); const selB = $safe('pd_point_sel');
+  const points = (state.foundations[idx] && state.foundations[idx].points) || [];
+  if(selA){
+    selA.innerHTML = '';
+    points.forEach((pt,j)=> selA.appendChild(new Option(pt.barrio + ' ('+pt.localidad+')', j)));
+  }
+  if(selB){
+    selB.innerHTML = '<option value="">Seleccione...</option>';
+    points.forEach((pt,j)=> selB.appendChild(new Option(pt.barrio + ' — ' + pt.ciudad, j)));
+  }
 }
 
-function duplicatePedido(id) {
-  const p = state.pedidos.find(x => x.id == id);
-  if (!p) return;
+/* Guardar pedido (crear/editar) */
+$safe('btnAddPedido')?.addEventListener('click', ()=>{
+  if(!state.currentUser) return alert('Inicie sesión');
+  // prefer pd_fund then pd_fund_sel
+  const fundIndex = (()=> {
+    if($safe('pd_fund') && $safe('pd_fund').value !== '') return Number($safe('pd_fund').value);
+    if($safe('pd_fund_sel') && $safe('pd_fund_sel').value !== '') return Number($safe('pd_fund_sel').value);
+    return null;
+  })();
 
-  const nuevo = JSON.parse(JSON.stringify(p));
-  nuevo.id = Date.now();
+  if(fundIndex === null || !state.foundations[fundIndex]) return alert('Seleccione fundación válida');
 
-  state.pedidos.push(nuevo);
-  save();
-  renderPedidos();
-}
+  const pointIndex = (()=> {
+    if($safe('pd_point') && $safe('pd_point').value !== '') return Number($safe('pd_point').value);
+    if($safe('pd_point_sel') && $safe('pd_point_sel').value !== '') return Number($safe('pd_point_sel').value);
+    return null;
+  })();
 
-function deletePedido(id) {
-  if (!confirm("¿Eliminar pedido?")) return;
-  state.pedidos = state.pedidos.filter(x => x.id != id);
-  save();
-  renderPedidos();
-}
+  const f = state.foundations[fundIndex];
+  const point = (f.points || [])[pointIndex];
+  if(!point) return alert('Seleccione punto válido');
+  if(currentPedidoItems.length === 0) return alert('Agregue items');
 
-/* Exportar pedido a imagen */
-function exportPedido(id) {
-  const p = state.pedidos.find(x => x.id == id);
-  if (!p) return;
+  const peaje = Number($safe('pd_peaje')?.value) || 0;
+  const trans = Number($safe('pd_trans')?.value) || 0;
+  const subtotal = currentPedidoItems.reduce((s,it)=> s + ((it.price||0)*(it.qty||1)), 0);
+  const total = subtotal + peaje + trans;
 
-  const div = document.createElement("div");
-  div.style.padding = "20px";
-  div.style.background = "#fff";
-  div.innerHTML = `
-    <h2>Pedido #${p.id}</h2>
-    <p><strong>Fundación:</strong> ${p.fund}</p>
-    <p><strong>Punto:</strong> ${p.point}</p>
-    <p><strong>Conductor:</strong> ${p.driver}</p>
-    <p><strong>Placa:</strong> ${p.plate}</p>
+  if(modoPedido === 'crear' || modoPedido === 'duplicar'){
+    const nuevo = {
+      id: Date.now(),
+      numero: (function(){ // simple consecutivo
+        const key = 'consec_pedidos';
+        const data = JSON.parse(localStorage.getItem(key) || '{}');
+        const year = new Date().getFullYear();
+        if(!data.year || data.year !== year){ data.year = year; data.num = 1; } else data.num = (data.num||0) + 1;
+        localStorage.setItem(key, JSON.stringify(data));
+        return `PED-${data.year}-${String(data.num).padStart(4,'0')}`;
+      })(),
+      foundation: f.name,
+      foundationNIT: f.nit,
+      point: JSON.parse(JSON.stringify(point)),
+      items: JSON.parse(JSON.stringify(currentPedidoItems)),
+      peaje, trans, subtotal, total,
+      driver: (state.drivers[$safe('pd_driver')?.value] ? state.drivers[$safe('pd_driver')?.value] : null),
+      plate: (state.plates[$safe('pd_plate')?.value] ? state.plates[$safe('pd_plate')?.value] : null),
+      createdAt: new Date().toISOString()
+    };
+    state.pedidos = state.pedidos || [];
+    state.pedidos.unshift(nuevo);
+    save(); registrarAccion('crear_pedido',{id:nuevo.id,numero:nuevo.numero,foundation:nuevo.foundation,total:nuevo.total});
+    alert('Pedido creado: ' + nuevo.numero);
+  } else if(modoPedido === 'editar'){
+    state.pedidos = state.pedidos.map(p=>{
+      if(p.id === pedidoEditId){
+        return {
+          ...p,
+          foundation: f.name,
+          foundationNIT: f.nit,
+          point: JSON.parse(JSON.stringify(point)),
+          items: JSON.parse(JSON.stringify(currentPedidoItems)),
+          peaje, trans, subtotal, total,
+          driver: (state.drivers[$safe('pd_driver')?.value] ? state.drivers[$safe('pd_driver')?.value] : null),
+          plate: (state.plates[$safe('pd_plate')?.value] ? state.plates[$safe('pd_plate')?.value] : null)
+        };
+      }
+      return p;
+    });
+    save(); registrarAccion('editar_pedido',{id:pedidoEditId});
+    alert('Pedido modificado');
+  }
 
-    <h3>Items</h3>
-    ${p.items.map(it => `
-      <div>${it.name} - ${it.kgs} kg</div>
-    `).join("")}
-  `;
+  // limpiar
+  modoPedido = 'crear'; pedidoEditId = null; currentPedidoItems = [];
+  refreshPdItems();
+  if($safe('pd_nit')) $safe('pd_nit').value = '';
+  if($safe('pd_peaje')) $safe('pd_peaje').value = '';
+  if($safe('pd_trans')) $safe('pd_trans').value = '';
+  if($safe('formTitle')) $safe('formTitle').innerText = 'Crear Pedido';
+  if($safe('pedidoModoBadge')) $safe('pedidoModoBadge').innerText = '';
+  renderPedidos(); showSection && typeof showSection === 'function' && showSection('recibos');
+});
 
-  document.body.appendChild(div);
-
-  html2canvas(div).then(canvas => {
-    const link = document.createElement("a");
-    link.download = `pedido_${id}.jpg`;
-    link.href = canvas.toDataURL("image/jpeg");
-    link.click();
-    div.remove();
-  });
-}
-
-/* ====================================================== */
-/* ======================= BÚSQUEDA ===================== */
-/* ====================================================== */
-
-$("btnSearchPedidos").addEventListener("click", () => {
-  const nit = $("srch_nit").value.trim();
-  let html = "";
-
-  state.pedidos.forEach(p => {
-    const f = state.foundations.find(x => x.name === p.fund && String(x.nit) === nit);
-    if (f) {
-      html += `
-        <tr>
-          <td>${p.id}</td>
-          <td>${p.fund}</td>
-          <td>${p.point}</td>
-          <td>${p.fecha}</td>
-        </tr>
-      `;
+/* abrir editar pedido */
+function abrirEditarPedido(id){
+  const pedido = (state.pedidos||[]).find(p => p.id === id);
+  if(!pedido) return alert('Pedido no encontrado');
+  modoPedido = 'editar'; pedidoEditId = id;
+  currentPedidoItems = JSON.parse(JSON.stringify(pedido.items || []));
+  refreshPdItems();
+  // set selects
+  if($safe('pd_nit')) $safe('pd_nit').value = pedido.foundationNIT || '';
+  // find fund index
+  const fi = state.foundations.findIndex(x => x.nit === pedido.foundationNIT);
+  if(fi >= 0){
+    if($safe('pd_fund')) $safe('pd_fund').value = fi;
+    if($safe('pd_fund_sel')) $safe('pd_fund_sel').value = fi;
+    fillPdPointsByFundIndex(fi);
+    // select point
+    const pi = (state.foundations[fi].points||[]).findIndex(pp => pp.barrio === pedido.point?.barrio && pp.ciudad === pedido.point?.ciudad);
+    if(pi >= 0){
+      if($safe('pd_point')) $safe('pd_point').value = pi;
+      if($safe('pd_point_sel')) $safe('pd_point_sel').value = pi;
     }
-  });
-
-  $("srch_results").innerHTML = html;
-});
-
-/* ====================================================== */
-/* ======================= AUDITORÍA ==================== */
-/* ====================================================== */
-
-function renderAudit() {
-  let html = "";
-  state.audit.forEach(a => {
-    html += `
-      <tr>
-        <td>${a.fecha}</td>
-        <td>${a.accion}</td>
-        <td>${a.detalle}</td>
-      </tr>
-    `;
-  });
-  $("audit_list").innerHTML = html;
+  }
+  if($safe('pd_peaje')) $safe('pd_peaje').value = pedido.peaje || 0;
+  if($safe('pd_trans')) $safe('pd_trans').value = pedido.trans || 0;
+  if($safe('pd_driver') && pedido.driver){
+    const di = state.drivers.findIndex(d => d.name === pedido.driver.name && d.document === pedido.driver.document);
+    if(di >= 0) $safe('pd_driver').value = di;
+  }
+  if($safe('pd_plate') && pedido.plate){
+    const pi2 = state.plates.findIndex(pl => pl.plate === pedido.plate.plate);
+    if(pi2 >= 0) $safe('pd_plate').value = pi2;
+  }
+  if($safe('formTitle')) $safe('formTitle').innerText = 'Editar Pedido — ' + (pedido.numero || '');
+  if($safe('pedidoModoBadge')) $safe('pedidoModoBadge').innerText = 'Modo: editar';
+  showSection && typeof showSection === 'function' && showSection('recibos');
 }
 
-/* CARGA INICIAL */
-renderFund();
-renderItems();
-renderDrivers();
-renderPlates();
-renderPedidos();
-renderAudit();
+/* duplicar */
+function abrirDuplicarPedido(id){
+  const pedido = (state.pedidos||[]).find(p => p.id === id);
+  if(!pedido) return alert('No encontrado');
+  modoPedido = 'duplicar'; pedidoEditId = null;
+  currentPedidoItems = JSON.parse(JSON.stringify(pedido.items || []));
+  refreshPdItems();
+  if($safe('pd_nit')) $safe('pd_nit').value = pedido.foundationNIT || '';
+  const fi = state.foundations.findIndex(x => x.nit === pedido.foundationNIT);
+  if(fi>=0){
+    if($safe('pd_fund')) $safe('pd_fund').value = fi;
+    if($safe('pd_fund_sel')) $safe('pd_fund_sel').value = fi;
+    fillPdPointsByFundIndex(fi);
+    const pi = (state.foundations[fi].points||[]).findIndex(pp => pp.barrio === pedido.point?.barrio && pp.ciudad === pedido.point?.ciudad);
+    if(pi>=0){ if($safe('pd_point')) $safe('pd_point').value = pi; if($safe('pd_point_sel')) $safe('pd_point_sel').value = pi; }
+  }
+  if($safe('formTitle')) $safe('formTitle').innerText = 'Duplicar Pedido — ' + (pedido.numero || '');
+  if($safe('pedidoModoBadge')) $safe('pedidoModoBadge').innerText = 'Modo: duplicar (no guardado)';
+  showSection && typeof showSection === 'function' && showSection('recibos');
+}
+
+
+/* renderPedidos (lista e acciones) */
+function renderPedidos(){
+  const ul = $safe('pedidosList');
+  if(!ul) return;
+  ul.innerHTML = '';
+  state.pedidos = state.pedidos || [];
+  const q = ($safe('searchPedidos')?.value||'').trim().toLowerCase();
+  state.pedidos.forEach(p=>{
+    if(q){
+      const hay = (p.numero + p.foundation + (p.foundationNIT||'') + (p.id||'')).toString().toLowerCase().includes(q);
+      if(!hay) return;
+    }
+    const li = document.createElement('li'); li.style.marginBottom='10px';
+    const created = new Date(p.createdAt).toLocaleString();
+    const driverTxt = p.driver ? (p.driver.name || '') : (p.driver === null ? '--' : '--');
+    const placaTxt = p.plate ? (p.plate.plate || '') : '--';
+    li.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>${p.numero}</strong> — ${p.foundation} — $${(p.total||0).toLocaleString()}</div>
+        <div class="small">${created}</div>
+      </div>
+      <div class="small" style="margin-top:6px">Conductor: ${driverTxt} | Placa: ${placaTxt} | Punto: ${p.point?.barrio || ''}</div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="small" data-act="edit" data-id="${p.id}">Editar</button>
+        <button class="small" data-act="dup" data-id="${p.id}">Duplicar</button>
+        <button class="small" data-act="del" data-id="${p.id}">Eliminar</button>
+        <button class="small" data-act="exp" data-id="${p.id}">Exportar</button>
+      </div>
+    `;
+    ul.appendChild(li);
+  });
+
+  ul.querySelectorAll('button[data-act]').forEach(b=>{
+    const act = b.dataset.act; const id = Number(b.dataset.id);
+    b.addEventListener('click', ()=> {
+      if(act==='edit') abrirEditarPedido(id);
+      if(act==='dup') abrirDuplicarPedido(id);
+      if(act==='del'){ if(!confirm('Eliminar pedido?')) return; state.pedidos = state.pedidos.filter(x=> x.id !== id); save(); renderPedidos(); registrarAccion('eliminar_pedido',{id}); }
+      if(act==='exp'){ const p = state.pedidos.find(x=> x.id === id); if(p) exportPedidoAsImageAndPDF(p); }
+    });
+  });
+}
+
+/* Export pedido — respetando conductor y placa */
+function exportPedidoAsImageAndPDF(pedido){
+  // create offscreen
+  const wrap = document.createElement('div');
+  wrap.style.width='1123px'; wrap.style.minHeight='794px'; wrap.style.background='#fff'; wrap.style.padding='28px'; wrap.style.boxSizing='border-box'; wrap.style.fontFamily='Inter, Arial, sans-serif'; wrap.style.color='#0f172a';
+  const header = document.createElement('div'); header.style.display='flex'; header.style.justifyContent='space-between'; header.style.alignItems='center';
+  header.innerHTML = `<div><h2 style="margin:0">Pedido ${pedido.numero}</h2><div class="small">Creado: ${new Date(pedido.createdAt).toLocaleString()}</div></div><div><img src="" id="logo_export" style="height:64px;object-fit:contain"></div>`;
+  wrap.appendChild(header);
+
+  // Info
+  const info = document.createElement('div');
+  info.style.marginTop='12px';
+  info.innerHTML = `<div><b>Fundación:</b> ${pedido.foundation} <br><b>NIT:</b> ${pedido.foundationNIT}</div>
+    <div style="margin-top:6px"><b>Punto:</b> ${pedido.point?.barrio || ''} — ${pedido.point?.localidad || ''} — ${pedido.point?.ciudad || ''} <br><b>Encargada:</b> ${pedido.point?.encargada || ''} <br><b>Contactos:</b> ${pedido.point?.tel1 || ''} ${pedido.point?.tel2 || ''}</div>`;
+  wrap.appendChild(info);
+
+  const transport = document.createElement('div'); transport.style.marginTop='12px';
+  transport.innerHTML = `<b>Conductor:</b> ${(pedido.driver && pedido.driver.name) ? pedido.driver.name : '--'} &nbsp; <b>Placa:</b> ${(pedido.plate && pedido.plate.plate) ? pedido.plate.plate : '--'}<br><b>Peaje:</b> $${(pedido.peaje||0)} &nbsp; <b>Transporte:</b> $${(pedido.trans||0)}`;
+  wrap.appendChild(transport);
+
+  // Table
+  const tbl = document.createElement('table'); tbl.style.width='100%'; tbl.style.borderCollapse='collapse'; tbl.style.marginTop='12px';
+  const thead = document.createElement('thead'); thead.innerHTML = '<tr><th style="border:1px solid #ddd;padding:6px">Item</th><th style="border:1px solid #ddd;padding:6px">Embalaje</th><th style="border:1px solid #ddd;padding:6px">Cantidad</th><th style="border:1px solid #ddd;padding:6px">Kilos</th><th style="border:1px solid #ddd;padding:6px">Precio</th></tr>';
+  tbl.appendChild(thead);
+  const tb = document.createElement('tbody');
+  (pedido.items||[]).forEach(it=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="border:1px solid #ddd;padding:6px">${it.name||''}</td><td style="border:1px solid #ddd;padding:6px">${it.pack||''}</td><td style="border:1px solid #ddd;padding:6px;text-align:right">${it.qty||1}</td><td style="border:1px solid #ddd;padding:6px;text-align:right">${it.kgs||0}</td><td style="border:1px solid #ddd;padding:6px;text-align:right">$${it.price||0}</td>`;
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb);
+  wrap.appendChild(tbl);
+
+  const subtotal = (pedido.items||[]).reduce((s,it)=> s + ((it.price||0) * (it.qty||1)), 0);
+  const sumDiv = document.createElement('div'); sumDiv.style.marginTop='12px'; sumDiv.style.textAlign='right'; sumDiv.innerHTML = `<div><b>Subtotal:</b> $${subtotal}</div><div><b>Peaje:</b> $${pedido.peaje||0}</div><div><b>Transporte:</b> $${pedido.trans||0}</div><div style="font-size:18px;margin-top:6px"><b>Total:</b> $${pedido.total||0}</div>`;
+  wrap.appendChild(sumDiv);
+
+  document.body.appendChild(wrap); wrap.style.position='fixed'; wrap.style.left='200%';
+  html2canvas(wrap, {scale:2}).then(canvas=>{
+    const link = document.createElement('a'); link.download = (pedido.numero || pedido.id) + '.png'; link.href = canvas.toDataURL('image/png'); link.click();
+    const dataUrl = canvas.toDataURL('image/png'); const win = window.open(''); if(win){ win.document.write('<html><head><title>'+pedido.numero+'</title></head><body style="margin:0"><img src="'+dataUrl+'" style="width:100%"></body></html>'); win.document.close(); }
+    setTimeout(()=>{ document.body.removeChild(wrap); },500);
+    registrarAccion('export_pedido_image',{id:pedido.id});
+  }).catch(err=>{ alert('Error export: '+err.message); document.body.removeChild(wrap); });
+}
+
+
+/* ---------- INICIO: carga inicial y renderizado final ---------- */
+function inicializarParte7B(){
+  // asegurar arrays
+  state.items = state.items || [];
+  state.packs = state.packs || ['Atado','Bulto','Canastilla','Caja','Unidad'];
+  state.drivers = state.drivers || [];
+  state.plates = state.plates || [];
+  state.pedidos = state.pedidos || [];
+  state.users = state.users || state.users;
+
+  renderItems();
+  renderPacks();
+  renderDrivers();
+  renderPlates();
+  fillItemSelect();
+  fillPackSelect();
+  fillDriverPlate();
+  renderAdminUsers();
+  renderPedidos();
+}
+
+/* si el DOM ya cargó en 7A, ejecutar; si no, esperar */
+if(document.readyState === 'complete' || document.readyState === 'interactive'){
+  inicializarParte7B();
+} else {
+  document.addEventListener('DOMContentLoaded', inicializarParte7B);
+}
 
 </script>
-<!-- ====================================================== -->
-<!--   OPTIMIZADORES Y CORRECCIONES FINALES DEL SISTEMA    -->
-<!-- ====================================================== -->
-
 <script>
-// Corregir selects vacíos al cargar
-setTimeout(() => {
-  fillFundSelects();
-  fillItemSelect();
-  fillDriverPlate();
-  fillPointsSelect();
-}, 300);
+/* ==================================================
+   ==========   PARTE 8: ROLES + AUDITORÍA   ==========
+   ================================================== */
 
-// Volver a renderizar cuando cambie el NIT buscado en sucursales
-$("p_nit_lookup").addEventListener("blur", () => {
-  fillFundSelects();
+/* -------------------------------------------
+   1. CONTROL DE ACCESO POR ROL
+------------------------------------------- */
+
+/*
+Roles del sistema:
+- admin    → Acceso TOTAL
+- operador → Puede crear/editar pedidos, items, fundaciones, sucursales, conductores, placas
+- visor    → Puede ver todo pero NO editar ni crear
+- general  → Solo ver dashboard y pedidos SUYOS (si en el futuro se asignan)
+*/
+
+function aplicarPermisosPorRol() {
+  if (!state.currentUser) return;
+
+  const role = state.currentUser.role;
+
+  // Ocultar/mostrar menú según rol
+  const hide = id => { if (document.getElementById(id)) document.getElementById(id).style.display = 'none'; };
+  const show = id => { if (document.getElementById(id)) document.getElementById(id).style.display = ''; };
+
+  // Primero mostramos todo
+  [
+    "menu_dashboard", "menu_items", "menu_fundaciones",
+    "menu_pedidos", "menu_usuarios", "menu_roles",
+    "menu_conductores", "menu_placas", "menu_auditoria"
+  ].forEach(show);
+
+  // Ahora aplicamos restricciones:
+  if (role === "operador") {
+    hide("menu_roles");
+    hide("menu_usuarios");
+  }
+
+  if (role === "visor") {
+    // Visor NO puede editar nada
+    hide("menu_items");
+    hide("menu_fundaciones");
+    hide("menu_usuarios");
+    hide("menu_roles");
+    hide("menu_conductores");
+    hide("menu_placas");
+  }
+
+  if (role === "general") {
+    // General: visión mínima
+    hide("menu_items");
+    hide("menu_fundaciones");
+    hide("menu_usuarios");
+    hide("menu_roles");
+    hide("menu_conductores");
+    hide("menu_placas");
+    hide("menu_auditoria");
+  }
+
+  if (role !== "admin") {
+    // No admin → sin acceso a auditoría avanzada
+    hide("menu_roles");
+    hide("menu_usuarios");
+  }
+}
+
+
+/* -------------------------------------------
+   2. REGISTRO DE AUDITORÍA
+------------------------------------------- */
+
+state.auditoria = state.auditoria || [];
+
+function registrarAccion(accion, detalle) {
+  if (!state.currentUser) return;
+
+  const entrada = {
+    fecha: new Date().toISOString(),
+    usuario: state.currentUser.user,
+    accion,
+    detalle: JSON.stringify(detalle || {})
+  };
+
+  state.auditoria.push(entrada);
+  save();
+}
+
+/* Render auditoría */
+function renderAuditoria() {
+  const cont = document.getElementById("auditoriaList");
+  if (!cont) return;
+
+  cont.innerHTML = "";
+
+  const filtro = (document.getElementById("auditBuscar")?.value || "").toLowerCase();
+
+  (state.auditoria || []).slice().reverse().forEach(a => {
+    if (filtro) {
+      const txt = (a.usuario + a.accion + a.detalle).toLowerCase();
+      if (!txt.includes(filtro)) return;
+    }
+
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.marginBottom = "8px";
+    div.innerHTML = `
+      <div><b>${a.usuario}</b> — ${new Date(a.fecha).toLocaleString()}</div>
+      <div class="small">${a.accion}</div>
+      <pre style="font-size:11px;background:#f8fafc;padding:6px;border-radius:6px;white-space:pre-wrap">${a.detalle}</pre>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+/* Filtro auditoría */
+document.getElementById("auditBuscar")?.addEventListener("input", renderAuditoria);
+
+
+/* -------------------------------------------
+   3. RESET TOTAL DEL SISTEMA (solo admin)
+------------------------------------------- */
+function resetSistemaCompleto() {
+  if (!state.currentUser || state.currentUser.role !== "admin")
+    return alert("Solo el administrador puede reiniciar el sistema.");
+
+  if (!confirm("¿Seguro que desea borrar TODO el sistema?")) return;
+
+  localStorage.clear();
+  alert("Sistema reiniciado. Recargando...");
+  location.reload();
+}
+
+document.getElementById("btnResetERP")?.addEventListener("click", resetSistemaCompleto);
+
+
+/* -------------------------------------------
+   4. LOGIN / LOGOUT FINAL
+------------------------------------------- */
+document.getElementById("btnLogout")?.addEventListener("click", () => {
+  registrarAccion("logout", {});
+  state.currentUser = null;
+  save();
+  location.reload();
 });
 
-// Evitar errores cuando no hay datos cargados aún
-if (!state.foundations) state.foundations = [];
-if (!state.items) state.items = [];
-if (!state.drivers) state.drivers = [];
-if (!state.plates) state.plates = [];
-if (!state.pedidos) state.pedidos = [];
-if (!state.audit) state.audit = [];
-
-// Cargar dashboard por defecto después del login
-if (state.currentUser) {
+function onLoginExitoso() {
+  aplicarPermisosPorRol();
+  renderAuditoria();
+  renderPedidos();
   showSection("dashboard");
 }
 
-// Reparación: mantener sidebar sincronizado al cambiar tamaño
-window.addEventListener("resize", () => {
-  if (window.innerWidth > 900) {
-    $("sidebar").classList.remove("open");
-  }
-});
+
+/* -------------------------------------------
+   5. PROTECCIÓN DE FORMULARIOS SEGÚN ROL
+------------------------------------------- */
+function bloquearCamposPorRol() {
+  if (!state.currentUser) return;
+
+  const role = state.currentUser.role;
+  const readonly = (role === "visor" || role === "general");
+
+  const inputs = document.querySelectorAll("input, select, textarea, button");
+  
+  inputs.forEach(x => {
+    const id = x.id || "";
+
+    // Dejar botones de navegación
+    if (id.startsWith("menu_")) return;
+
+    // Botón logout sí debe quedar
+    if (id === "btnLogout") return;
+
+    // En modo visor/general: bloquear inputs que cambian datos
+    if (readonly) {
+      if (x.tagName === "BUTTON") {
+        x.disabled = true;
+      } else {
+        x.setAttribute("disabled", "disabled");
+      }
+    }
+  });
+}
+
+/* -------------------------------------------
+   6. LLAMADO FINAL DESPUÉS DE TODO EL INDEX
+------------------------------------------- */
+function iniciarParte8() {
+  aplicarPermisosPorRol();
+  bloquearCamposPorRol();
+  renderAuditoria();
+}
+
+if (document.readyState === "complete" || document.readyState === "interactive") {
+  iniciarParte8();
+} else {
+  document.addEventListener("DOMContentLoaded", iniciarParte8);
+}
+
 </script>
-
-</main>
-
-</div> <!-- cierre .app -->
-
-</body>
-</html>
