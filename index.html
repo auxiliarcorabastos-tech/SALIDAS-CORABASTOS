@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<<<<<<< HEAD
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ERP Corabastos — V4 (Estable)</title>
 <style>
@@ -29,8 +30,75 @@ button.primary{background:var(--accent);color:#fff;padding:8px 12px;border:0;bor
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+=======
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERP Corabastos</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f4f6f9;
+}
+header{
+  background:#0b1220;
+  color:#fff;
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.app{
+  display:flex;
+  height:calc(100vh - 50px);
+}
+#sidebar{
+  width:230px;
+  background:#111827;
+  color:#fff;
+  padding:10px;
+}
+#sidebar button{
+  width:100%;
+  background:none;
+  border:none;
+  color:#cbd5e1;
+  padding:10px;
+  text-align:left;
+  cursor:pointer;
+  border-radius:6px;
+}
+#sidebar button:hover{
+  background:rgba(255,255,255,.05);
+}
+#sidebar button.active{
+  background:#1f2933;
+  color:#fff;
+  font-weight:bold;
+}
+main{
+  flex:1;
+  padding:20px;
+  overflow:auto;
+}
+.hidden{display:none}
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+hr{
+  border:0;
+  border-top:1px solid rgba(255,255,255,.1);
+  margin:10px 0;
+}
+</style>
+>>>>>>> 3b23564212cb0774e8d8a659b9e0c823cb51ec60
 </head>
+
 <body>
+<<<<<<< HEAD
 <header>
   <div style="display:flex;align-items:center;gap:12px">
     <button id="btnMenu" class="primary" style="background:transparent;border:0;color:#fff">☰</button>
@@ -103,10 +171,50 @@ button.primary{background:var(--accent);color:#fff;padding:8px 12px;border:0;bor
         <input id="searchFund" placeholder="Buscar fundaciones..." style="margin-bottom:10px">
         <div id="fundList"></div>
       
+=======
+
+<header>
+  <div><strong>ERP Corabastos</strong></div>
+  <div id="headerUser">Invitado</div>
+</header>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <button data-sec="dashboard" class="active">Dashboard</button>
+    <button data-sec="fundaciones">Fundaciones</button>
+    <button data-sec="items">Items</button>
+    <button data-sec="conductores">Conductores</button>
+    <button data-sec="pedidos">Pedidos</button>
+
+    <hr>
+
+    <button data-sec="mi_cuenta">Mi Cuenta</button>
+    <button data-sec="usuarios">Usuarios (Admin)</button>
+    <button data-sec="roles">Gestión Roles</button>
+    <button data-sec="auditoria">Auditoría</button>
+    <button data-sec="seguimiento">Seguimiento</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main">
+
+    <section id="dashboard" class="card">
+      <h2>Dashboard</h2>
+      <p>Resumen general del sistema.</p>
+    </section>
+
+    <section id="fundaciones" class="hidden">
+      <div class="card">
+        <h2>Fundaciones</h2>
+        <p>Gestión de fundaciones y sucursales.</p>
+>>>>>>> 3b23564212cb0774e8d8a659b9e0c823cb51ec60
       </div>
     </section>
 
     <section id="items" class="hidden">
+<<<<<<< HEAD
       <h2>Items</h2>
       <div class="card">
         <label>Referencia</label><input id="item_ref">
@@ -138,10 +246,16 @@ button.primary{background:var(--accent);color:#fff;padding:8px 12px;border:0;bor
           </thead>
           <tbody></tbody>
         </table>
+=======
+      <div class="card">
+        <h2>Items</h2>
+        <p>Gestión de productos.</p>
+>>>>>>> 3b23564212cb0774e8d8a659b9e0c823cb51ec60
       </div>
     </section>
 
     <section id="conductores" class="hidden">
+<<<<<<< HEAD
       <h2>Conductores y Placas</h2>
       <div class="card">
         <label>Nombre</label><input id="drv_name">
@@ -224,10 +338,30 @@ button.primary{background:var(--accent);color:#fff;padding:8px 12px;border:0;bor
         <h3>Listado de Pedidos (historial)</h3>
         <input id="searchPedidos" placeholder="Buscar..." style="margin-bottom:10px">
         <ul id="pedidosList"></ul>
+=======
+      <div class="card">
+        <h2>Conductores</h2>
+        <p>Gestión de conductores y placas.</p>
+      </div>
+    </section>
+
+    <section id="pedidos" class="hidden">
+      <div class="card">
+        <h2>Pedidos</h2>
+        <p>Creación y seguimiento de pedidos.</p>
+      </div>
+    </section>
+
+    <section id="mi_cuenta" class="hidden">
+      <div class="card">
+        <h2>Mi Cuenta</h2>
+        <p>Configuración del usuario actual.</p>
+>>>>>>> 3b23564212cb0774e8d8a659b9e0c823cb51ec60
       </div>
     </section>
 
     <section id="usuarios" class="hidden">
+<<<<<<< HEAD
       <h2>Mi Cuenta</h2>
       <div class="card">
         <label>Usuario (no editable)</label>
@@ -272,17 +406,44 @@ button.primary{background:var(--accent);color:#fff;padding:8px 12px;border:0;bor
       <h2>Seguimiento</h2>
       <div class="card">
         <table class="table" id="segTable"><thead><tr><th>Fecha</th><th>Fundación</th><th>Barrio</th><th>Kilos</th><th>Conductor</th></tr></thead><tbody></tbody></table>
+=======
+      <div class="card">
+        <h2>Usuarios (Admin)</h2>
+        <p>Gestión de usuarios del sistema.</p>
+>>>>>>> 3b23564212cb0774e8d8a659b9e0c823cb51ec60
       </div>
     </section>
 
     <section id="roles" class="hidden">
+<<<<<<< HEAD
       <h2>Roles</h2>
       <div class="card small">Gestión de roles disponible para administrador.</div>
+=======
+      <div class="card">
+        <h2>Gestión de Roles</h2>
+        <p>Asignación de permisos.</p>
+      </div>
+    </section>
+
+    <section id="auditoria" class="hidden">
+      <div class="card">
+        <h2>Auditoría</h2>
+        <p>Registro de movimientos y cambios.</p>
+      </div>
+    </section>
+
+    <section id="seguimiento" class="hidden">
+      <div class="card">
+        <h2>Seguimiento</h2>
+        <p>Estado de pedidos y entregas.</p>
+      </div>
+>>>>>>> 3b23564212cb0774e8d8a659b9e0c823cb51ec60
     </section>
 
   </main>
 </div>
 
+<<<<<<< HEAD
 <!-- LOGIN modal (required) -->
 <div id="loginModal" class="modal hidden">
   <div class="card">
@@ -747,5 +908,23 @@ document.addEventListener('DOMContentLoaded',function(){
 
 });
 </script>
+=======
+<script>
+function showSection(id){
+  document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+
+  document.querySelectorAll("#sidebar button").forEach(b=>b.classList.remove("active"));
+  document.querySelector(`#sidebar button[data-sec="${id}"]`).classList.add("active");
+}
+
+document.querySelectorAll("#sidebar button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    showSection(btn.dataset.sec);
+  });
+});
+</script>
+
+>>>>>>> 3b23564212cb0774e8d8a659b9e0c823cb51ec60
 </body>
 </html>
