@@ -1,61 +1,76 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ERP Corabastos</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERP Corabastos</title>
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="css/style.css">
-
-  <style>
-    body { margin:0; font-family: Arial, Helvetica, sans-serif; background:#f4f6f9; }
-    header {
-      background:#071025; color:#fff; padding:10px 16px;
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .app { display:flex; height:calc(100vh - 50px); }
-    #sidebar {
-      width:240px; background:#0b1220; color:#fff;
-      padding:10px; display:flex; flex-direction:column; gap:6px;
-    }
-    #sidebar button {
-      background:none; border:0; color:#cbd5e1;
-      text-align:left; padding:10px; border-radius:6px;
-      cursor:pointer;
-    }
-    #sidebar button:hover { background:#1e293b; }
-    #sidebar.sidebar-hidden { display:none; }
-
-    main { flex:1; padding:16px; overflow:auto; }
-    section.hidden { display:none; }
-
-    .card {
-      background:#fff; border-radius:8px;
-      padding:16px; margin-bottom:16px;
-      box-shadow:0 2px 6px rgba(0,0,0,.08);
-    }
-
-    .primary {
-      background:#0a57ff; color:#fff; border:0;
-      padding:8px 12px; border-radius:6px;
-      cursor:pointer;
-    }
-
-    label { font-weight:600; margin-top:8px; display:block; }
-    input, select {
-      width:100%; padding:6px; margin-top:4px;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f4f6f9;
+}
+header{
+  background:#0b1220;
+  color:#fff;
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.app{
+  display:flex;
+  height:calc(100vh - 50px);
+}
+#sidebar{
+  width:230px;
+  background:#111827;
+  color:#fff;
+  padding:10px;
+}
+#sidebar button{
+  width:100%;
+  background:none;
+  border:none;
+  color:#cbd5e1;
+  padding:10px;
+  text-align:left;
+  cursor:pointer;
+  border-radius:6px;
+}
+#sidebar button:hover{
+  background:rgba(255,255,255,.05);
+}
+#sidebar button.active{
+  background:#1f2933;
+  color:#fff;
+  font-weight:bold;
+}
+main{
+  flex:1;
+  padding:20px;
+  overflow:auto;
+}
+.hidden{display:none}
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+hr{
+  border:0;
+  border-top:1px solid rgba(255,255,255,.1);
+  margin:10px 0;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:12px">
-    <button id="btnMenu" class="primary">☰</button>
-    <strong>ERP Corabastos</strong>
-  </div>
+  <div><strong>ERP Corabastos</strong></div>
   <div id="headerUser">Invitado</div>
 </header>
 
@@ -63,136 +78,110 @@
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
-    <button data-sec="dashboard">Dashboard</button>
+    <button data-sec="dashboard" class="active">Dashboard</button>
     <button data-sec="fundaciones">Fundaciones</button>
     <button data-sec="items">Items</button>
     <button data-sec="conductores">Conductores</button>
-    <button data-sec="recibos">Pedidos</button>
+    <button data-sec="pedidos">Pedidos</button>
+
+    <hr>
+
+    <button data-sec="mi_cuenta">Mi Cuenta</button>
+    <button data-sec="usuarios">Usuarios (Admin)</button>
+    <button data-sec="roles">Gestión Roles</button>
+    <button data-sec="auditoria">Auditoría</button>
+    <button data-sec="seguimiento">Seguimiento</button>
   </aside>
 
-  <!-- CONTENIDO -->
+  <!-- MAIN -->
   <main id="main">
 
     <section id="dashboard" class="card">
-      <h2>Bienvenido</h2>
-      <p>Sistema ERP Corabastos</p>
+      <h2>Dashboard</h2>
+      <p>Resumen general del sistema.</p>
     </section>
 
-    <!-- FUNDACIONES -->
     <section id="fundaciones" class="hidden">
       <div class="card">
         <h2>Fundaciones</h2>
-
-        <label>NIT</label>
-        <input id="fund_nit">
-
-        <label>Nombre</label>
-        <input id="fund_name">
-
-        <button id="btnCreateFund" class="primary" style="margin-top:10px">
-          Guardar Fundación
-        </button>
-      </div>
-
-      <div class="card">
-        <h3>Listado</h3>
-        <ul id="fundList"></ul>
+        <p>Gestión de fundaciones y sucursales.</p>
       </div>
     </section>
 
-    <!-- ITEMS -->
     <section id="items" class="hidden">
       <div class="card">
         <h2>Items</h2>
-
-        <label>Referencia</label>
-        <input id="item_ref">
-
-        <label>Nombre</label>
-        <input id="item_name">
-
-        <label>Precio</label>
-        <input id="item_price" type="number">
-
-        <button id="btnCreateItem" class="primary" style="margin-top:10px">
-          Guardar Item
-        </button>
-      </div>
-
-      <div class="card">
-        <h3>Listado</h3>
-        <ul id="itemsList"></ul>
+        <p>Gestión de productos.</p>
       </div>
     </section>
 
-    <!-- CONDUCTORES -->
     <section id="conductores" class="hidden">
       <div class="card">
         <h2>Conductores</h2>
-
-        <label>Nombre</label>
-        <input id="drv_name">
-
-        <label>Documento</label>
-        <input id="drv_doc">
-
-        <label>Teléfono</label>
-        <input id="drv_tel">
-
-        <button id="btnAddDriver" class="primary" style="margin-top:10px">
-          Guardar Conductor
-        </button>
-      </div>
-
-      <div class="card">
-        <h3>Placas</h3>
-        <label>Placa</label>
-        <input id="pl_plate">
-        <label>Tipo</label>
-        <input id="pl_type">
-        <button id="btnAddPlate" class="primary">Agregar Placa</button>
-        <ul id="platesList"></ul>
+        <p>Gestión de conductores y placas.</p>
       </div>
     </section>
 
-    <!-- PEDIDOS -->
-    <section id="recibos" class="hidden">
+    <section id="pedidos" class="hidden">
       <div class="card">
         <h2>Pedidos</h2>
-
-        <label>NIT Fundación</label>
-        <input id="pd_nit">
-
-        <label>Fundación</label>
-        <select id="pd_fund"></select>
-
-        <label>Punto de Envío</label>
-        <select id="pd_point"></select>
-
-        <button id="btnAddPedido" class="primary" style="margin-top:10px">
-          Guardar Pedido
-        </button>
+        <p>Creación y seguimiento de pedidos.</p>
       </div>
+    </section>
 
+    <section id="mi_cuenta" class="hidden">
       <div class="card">
-        <h3>Historial</h3>
-        <ul id="pedidosList"></ul>
+        <h2>Mi Cuenta</h2>
+        <p>Configuración del usuario actual.</p>
+      </div>
+    </section>
+
+    <section id="usuarios" class="hidden">
+      <div class="card">
+        <h2>Usuarios (Admin)</h2>
+        <p>Gestión de usuarios del sistema.</p>
+      </div>
+    </section>
+
+    <section id="roles" class="hidden">
+      <div class="card">
+        <h2>Gestión de Roles</h2>
+        <p>Asignación de permisos.</p>
+      </div>
+    </section>
+
+    <section id="auditoria" class="hidden">
+      <div class="card">
+        <h2>Auditoría</h2>
+        <p>Registro de movimientos y cambios.</p>
+      </div>
+    </section>
+
+    <section id="seguimiento" class="hidden">
+      <div class="card">
+        <h2>Seguimiento</h2>
+        <p>Estado de pedidos y entregas.</p>
       </div>
     </section>
 
   </main>
 </div>
 
-<!-- LIBRERÍA EXCEL -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+function showSection(id){
+  document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
 
-<!-- JS DEL ERP -->
-<script type="module" src="js/state.js"></script>
-<script type="module" src="js/ui.js"></script>
-<script type="module" src="js/fundaciones.js"></script>
-<script type="module" src="js/conductores.js"></script>
-<script type="module" src="js/pedidos.js"></script>
-<script type="module" src="js/app.js"></script>
+  document.querySelectorAll("#sidebar button").forEach(b=>b.classList.remove("active"));
+  document.querySelector(`#sidebar button[data-sec="${id}"]`).classList.add("active");
+}
+
+document.querySelectorAll("#sidebar button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    showSection(btn.dataset.sec);
+  });
+});
+</script>
 
 </body>
 </html>
