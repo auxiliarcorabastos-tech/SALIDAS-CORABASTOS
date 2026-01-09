@@ -317,24 +317,14 @@ document.addEventListener('DOMContentLoaded',function(){
   state.plates = Array.isArray(state.plates)? state.plates : [];
   state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
   state.audit = Array.isArray(state.audit)? state.audit : [];
+
 function save(){
+  // 💾 Guardar SOLO en localStorage (estable y sin CORS)
   localStorage.setItem('erp_state', JSON.stringify(state));
 
   lastLocalChange = Date.now();
-  syncing = true;
 
-  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ state })
-  })
-  .then(() => {
-    syncing = false;
-  })
-  .catch(err => {
-    syncing = false;
-    console.warn('Error guardando en Google', err);
-  });
+  console.log('💾 Guardado local OK');
 }
 
 async function loadFromGoogle(){
@@ -344,7 +334,7 @@ async function loadFromGoogle(){
 
   try{
     const res = await fetch(
-      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load',
+      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load&_=' + Date.now(),
       { cache: 'no-store' }
     );
 
@@ -353,27 +343,30 @@ async function loadFromGoogle(){
       remote = JSON.parse(remote);
     }
 
+    // 🧱 Validación fuerte
     if(!remote || typeof remote !== 'object'){
       throw new Error('Estado remoto inválido');
     }
 
-    // 🛡️ MERGE SOLO SI REMOTE TIENE DATOS
-    if(Array.isArray(remote.users))       state.users       = remote.users;
-    if(Array.isArray(remote.funds))       state.funds       = remote.funds;
-    if(Array.isArray(remote.products))    state.products    = remote.products;
-    if(Array.isArray(remote.movimientos)) state.movimientos = remote.movimientos;
-    if(Array.isArray(remote.salidas))     state.salidas     = remote.salidas;
-    if(Array.isArray(remote.audit))       state.audit       = remote.audit;
+    // 🛡️ MERGE SEGURO (NO sobrescribir con undefined)
+    if(Array.isArray(remote.users))        state.users        = remote.users;
+    if(Array.isArray(remote.funds))        state.funds        = remote.funds;
+    if(Array.isArray(remote.products))     state.products     = remote.products;
+    if(Array.isArray(remote.movimientos))  state.movimientos  = remote.movimientos;
+    if(Array.isArray(remote.salidas))      state.salidas      = remote.salidas;
+    if(Array.isArray(remote.audit))        state.audit        = remote.audit;
     if(remote.settings && typeof remote.settings === 'object'){
       state.settings = remote.settings;
     }
 
-    // 👤 Usuario → respetar sesión local
+    // 👤 Mantener sesión local si existe
     if(!state.currentUser && remote.currentUser){
       state.currentUser = remote.currentUser;
     }
 
+    // 💾 Guardar copia local
     localStorage.setItem('erp_state', JSON.stringify(state));
+
     renderAll();
 
     console.log('✔ Sync Google OK');
