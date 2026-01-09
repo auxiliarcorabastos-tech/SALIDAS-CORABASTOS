@@ -329,31 +329,33 @@ document.addEventListener('DOMContentLoaded',function(){
   }).catch(err => console.warn('Error sync Google', err));
 }
 
-  async function loadFromGoogle(){
+async function loadFromGoogle(){
   try{
     const res = await fetch(
       'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load'
     );
 
-    let data = await res.json();
-    if(typeof data === 'string') data = JSON.parse(data);
+    let remote = await res.json();
+    if(typeof remote === 'string') remote = JSON.parse(remote);
 
-    // 🛡️ NORMALIZAR STATE (CLAVE)
-    state = {
-      users: Array.isArray(data.users) ? data.users : [],
-      currentUser: data.currentUser || null,
-      funds: Array.isArray(data.funds) ? data.funds : [],
-      products: Array.isArray(data.products) ? data.products : [],
-      movimientos: Array.isArray(data.movimientos) ? data.movimientos : [],
-      salidas: Array.isArray(data.salidas) ? data.salidas : [],
-      audit: Array.isArray(data.audit) ? data.audit : [],
-      settings: data.settings || {}
-    };
+    // 🛡️ BLINDAJE TOTAL: nunca romper state
+    state.users        = Array.isArray(remote.users)        ? remote.users        : state.users || [];
+    state.funds        = Array.isArray(remote.funds)        ? remote.funds        : state.funds || [];
+    state.products     = Array.isArray(remote.products)     ? remote.products     : state.products || [];
+    state.movimientos  = Array.isArray(remote.movimientos)  ? remote.movimientos  : state.movimientos || [];
+    state.salidas      = Array.isArray(remote.salidas)      ? remote.salidas      : state.salidas || [];
+    state.audit        = Array.isArray(remote.audit)        ? remote.audit        : state.audit || [];
+    state.settings     = remote.settings || state.settings || {};
+
+    // ⚠️ USUARIO: nunca forzar logout
+    if(remote.currentUser){
+      state.currentUser = remote.currentUser;
+    }
 
     localStorage.setItem('erp_state', JSON.stringify(state));
     renderAll();
 
-    console.log('✔ Datos cargados desde Google (state normalizado)');
+    console.log('✔ Sync Google OK (state merge)');
   }catch(err){
     console.warn('No se pudo cargar desde Google', err);
   }
