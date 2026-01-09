@@ -349,7 +349,13 @@ async function loadFromGoogle(){
     }
 
     // 🛡️ MERGE SEGURO (NO sobrescribir con undefined)
-    if(Array.isArray(remote.users))        state.users        = remote.users;
+    if (
+  Array.isArray(remote.users) &&
+  remote.users.length > 0
+) {
+  state.users = remote.users;
+}
+
     if(Array.isArray(remote.funds))        state.funds        = remote.funds;
     if(Array.isArray(remote.products))     state.products     = remote.products;
     if(Array.isArray(remote.movimientos))  state.movimientos  = remote.movimientos;
@@ -827,7 +833,7 @@ loadFromGoogle();
 
   // CSV export (todos)
   $('btnExportPedidoCSV').addEventListener('click', ()=>{ const rows=[['id','numero','fundacion','nit','punto','item','pack','qty','kgs','precio','peaje','trans','total','fecha']]; state.pedidos.forEach(p=> p.items.forEach(it=> rows.push([p.id,p.numero,p.foundation,p.foundationNIT,p.point?.barrio||'',it.name,it.pack,it.qty,it.kgs,it.price,p.peaje,p.trans,p.total,p.createdAt]))); const csv = rows.map(r=> r.map(c=> '"'+(''+c).replace(/"/g,'""')+'"').join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='pedidos.csv'; a.click(); URL.revokeObjectURL(url); });
-setInterval(loadFromGoogle, 10000); // cada 10 segundos
+ loadFromGoogle();
 });
 </script>
 </body>
