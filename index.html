@@ -318,26 +318,34 @@ document.addEventListener('DOMContentLoaded',function(){
   state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
   state.audit = Array.isArray(state.audit)? state.audit : [];
   function save(){
-  // 1️⃣ Guardado local (NO se pierde nada)
   localStorage.setItem('erp_state', JSON.stringify(state));
 
-  // 2️⃣ Guardado en Google Apps Script
-  fetch('https://script.google.com/macros/s/AKfycbxUe96tg3-vI4fEK-FrOkCRpjw2GgRJbh9gpnIa2D5S8FfCimQWx-HO71oHfG0chM63yg/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
     body: JSON.stringify({
       action: 'save',
       data: state
     })
-  }).catch(err => {
-    console.warn('No se pudo guardar en Google (offline)', err);
-  });
+  }).catch(err => console.warn('Error sync Google', err));
 }
 
+  async function loadFromGoogle(){
+  try{
+    const res = await fetch(
+      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load'
+    );
+    const json = await res.json();
 
-  function registrarAccion(accion,detalle){ const rec={fecha:new Date().toISOString(),usuario: state.currentUser?state.currentUser.username:'-',accion,detalle}; state.audit.unshift(rec); save(); renderAudit(); }
+    if(json && json.data){
+      state = json.data;
+      localStorage.setItem('erp_state', JSON.stringify(state));
+      renderAll();
+      console.log('✔ Datos sincronizados desde Google');
+    }
+  }catch(e){
+    console.warn('No se pudo cargar desde Google', e);
+  }
+}
 
   // --- NUEVAS VARIABLES GLOBALES PARA PEDIDOS ---
   // modoPedido: 'crear' | 'editar' | 'duplicar'
@@ -393,7 +401,15 @@ document.addEventListener('DOMContentLoaded',function(){
   $('btnLogout').addEventListener('click', function(){ if(confirm('Cerrar sesión?')){ state.currentUser = null; save(); $('headerUser').innerText = 'Invitado'; $('btnLogout').classList.add('hidden'); openLogin(); } });
 
   // If no user, force login
-  if(!state.currentUser){ openLogin(); } else { setCurrentUser(state.currentUser); }
+   if (!state.currentUser) {
+  openLogin();
+} else {
+  setCurrentUser(state.currentUser);
+}
+
+// cargar datos desde Google Sheets
+loadFromGoogle();
+
 
   // Fillers and renderers
   function fillFundSelects(){ const sel = $('selFund'); if(sel){ sel.innerHTML=''; state.foundations.forEach((f,i)=> sel.appendChild(new Option(f.name+' ('+f.nit+')', i))); } const pf = $('pd_fund'); if(pf){ pf.innerHTML=''; state.foundations.forEach((f,i)=> pf.appendChild(new Option(f.name, i))); fillPedidoPoints(); } }
@@ -762,7 +778,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
   // CSV export (todos)
   $('btnExportPedidoCSV').addEventListener('click', ()=>{ const rows=[['id','numero','fundacion','nit','punto','item','pack','qty','kgs','precio','peaje','trans','total','fecha']]; state.pedidos.forEach(p=> p.items.forEach(it=> rows.push([p.id,p.numero,p.foundation,p.foundationNIT,p.point?.barrio||'',it.name,it.pack,it.qty,it.kgs,it.price,p.peaje,p.trans,p.total,p.createdAt]))); const csv = rows.map(r=> r.map(c=> '"'+(''+c).replace(/"/g,'""')+'"').join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='pedidos.csv'; a.click(); URL.revokeObjectURL(url); });
-
+setInterval(loadFromGoogle, 10000); // cada 10 segundos
 });
 </script>
 </body>
