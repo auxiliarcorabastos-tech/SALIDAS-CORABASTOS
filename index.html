@@ -338,8 +338,8 @@ function save(){
 }
 
 async function loadFromGoogle(){
-  // 🚫 Evitar doble sync
-  if(window.syncing) return;
+  // 🚫 Evitar doble sync o sync mientras se guarda
+  if(window.syncing || window.saving) return;
   window.syncing = true;
 
   try{
@@ -353,33 +353,30 @@ async function loadFromGoogle(){
       remote = JSON.parse(remote);
     }
 
-    // 🧱 Blindaje: remote debe ser objeto
     if(!remote || typeof remote !== 'object'){
       throw new Error('Estado remoto inválido');
     }
 
-    // 🛡️ MERGE SEGURO (nunca undefined)
-    state.users        = Array.isArray(remote.users)        ? remote.users        : (state.users || []);
-    state.funds        = Array.isArray(remote.funds)        ? remote.funds        : (state.funds || []);
-    state.products     = Array.isArray(remote.products)     ? remote.products     : (state.products || []);
-    state.movimientos  = Array.isArray(remote.movimientos)  ? remote.movimientos  : (state.movimientos || []);
-    state.salidas      = Array.isArray(remote.salidas)      ? remote.salidas      : (state.salidas || []);
-    state.audit        = Array.isArray(remote.audit)        ? remote.audit        : (state.audit || []);
-    state.settings     = (remote.settings && typeof remote.settings === 'object')
-                          ? remote.settings
-                          : (state.settings || {});
+    // 🛡️ MERGE SOLO SI REMOTE TIENE DATOS
+    if(Array.isArray(remote.users))       state.users       = remote.users;
+    if(Array.isArray(remote.funds))       state.funds       = remote.funds;
+    if(Array.isArray(remote.products))    state.products    = remote.products;
+    if(Array.isArray(remote.movimientos)) state.movimientos = remote.movimientos;
+    if(Array.isArray(remote.salidas))     state.salidas     = remote.salidas;
+    if(Array.isArray(remote.audit))       state.audit       = remote.audit;
+    if(remote.settings && typeof remote.settings === 'object'){
+      state.settings = remote.settings;
+    }
 
-    // 👤 Usuario: NUNCA forzar logout
-    if(remote.currentUser && typeof remote.currentUser === 'object'){
+    // 👤 Usuario → respetar sesión local
+    if(!state.currentUser && remote.currentUser){
       state.currentUser = remote.currentUser;
     }
 
-    // 💾 Persistir local
     localStorage.setItem('erp_state', JSON.stringify(state));
-
     renderAll();
 
-    console.log('✔ Sync Google OK (merge seguro)');
+    console.log('✔ Sync Google OK');
 
   }catch(err){
     console.warn('No se pudo cargar desde Google', err);
