@@ -318,33 +318,42 @@ document.addEventListener('DOMContentLoaded',function(){
   state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
   state.audit = Array.isArray(state.audit)? state.audit : [];
   function save(){
-  // Guardado local
   localStorage.setItem('erp_state', JSON.stringify(state));
 
-  // Guardado en Google Sheets
-  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=save', {
+  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      state: state
+      action: 'save',
+      data: state
     })
   }).catch(err => console.warn('Error sync Google', err));
 }
 
- async function loadFromGoogle(){
+  async function loadFromGoogle(){
   try{
     const res = await fetch(
       'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load'
     );
 
-    const data = await res.json();
+    let data = await res.json();
+    if(typeof data === 'string') data = JSON.parse(data);
 
-    if(data){
-      state = typeof data === 'string' ? JSON.parse(data) : data;
-      localStorage.setItem('erp_state', JSON.stringify(state));
-      renderAll();
-      console.log('✔ Datos cargados desde Google');
-    }
+    // 🛡️ NORMALIZAR STATE (CLAVE)
+    state = {
+      users: Array.isArray(data.users) ? data.users : [],
+      currentUser: data.currentUser || null,
+      funds: Array.isArray(data.funds) ? data.funds : [],
+      products: Array.isArray(data.products) ? data.products : [],
+      movimientos: Array.isArray(data.movimientos) ? data.movimientos : [],
+      salidas: Array.isArray(data.salidas) ? data.salidas : [],
+      audit: Array.isArray(data.audit) ? data.audit : [],
+      settings: data.settings || {}
+    };
+
+    localStorage.setItem('erp_state', JSON.stringify(state));
+    renderAll();
+
+    console.log('✔ Datos cargados desde Google (state normalizado)');
   }catch(err){
     console.warn('No se pudo cargar desde Google', err);
   }
