@@ -318,32 +318,35 @@ document.addEventListener('DOMContentLoaded',function(){
   state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
   state.audit = Array.isArray(state.audit)? state.audit : [];
   function save(){
+  // Guardado local
   localStorage.setItem('erp_state', JSON.stringify(state));
 
-  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec', {
+  // Guardado en Google Sheets
+  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=save', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      action: 'save',
-      data: state
+      state: state
     })
   }).catch(err => console.warn('Error sync Google', err));
 }
 
-  async function loadFromGoogle(){
+ async function loadFromGoogle(){
   try{
     const res = await fetch(
       'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load'
     );
-    const json = await res.json();
 
-    if(json && json.data){
-      state = json.data;
+    const data = await res.json();
+
+    if(data){
+      state = typeof data === 'string' ? JSON.parse(data) : data;
       localStorage.setItem('erp_state', JSON.stringify(state));
       renderAll();
-      console.log('✔ Datos sincronizados desde Google');
+      console.log('✔ Datos cargados desde Google');
     }
-  }catch(e){
-    console.warn('No se pudo cargar desde Google', e);
+  }catch(err){
+    console.warn('No se pudo cargar desde Google', err);
   }
 }
 
