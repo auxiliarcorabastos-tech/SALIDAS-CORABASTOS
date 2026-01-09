@@ -317,49 +317,78 @@ document.addEventListener('DOMContentLoaded',function(){
   state.plates = Array.isArray(state.plates)? state.plates : [];
   state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
   state.audit = Array.isArray(state.audit)? state.audit : [];
-  function save(){
+function save(){
   localStorage.setItem('erp_state', JSON.stringify(state));
 
-  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec', {
+  lastLocalChange = Date.now();
+  syncing = true;
+
+  fetch('https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=save', {
     method: 'POST',
-    body: JSON.stringify({
-      action: 'save',
-      data: state
-    })
-  }).catch(err => console.warn('Error sync Google', err));
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ state })
+  })
+  .then(() => {
+    syncing = false;
+  })
+  .catch(err => {
+    syncing = false;
+    console.warn('Error guardando en Google', err);
+  });
 }
 
 async function loadFromGoogle(){
+  // 🚫 Evitar doble sync
+  if(window.syncing) return;
+  window.syncing = true;
+
   try{
     const res = await fetch(
-      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load'
+      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load',
+      { cache: 'no-store' }
     );
 
     let remote = await res.json();
-    if(typeof remote === 'string') remote = JSON.parse(remote);
+    if(typeof remote === 'string'){
+      remote = JSON.parse(remote);
+    }
 
-    // 🛡️ BLINDAJE TOTAL: nunca romper state
-    state.users        = Array.isArray(remote.users)        ? remote.users        : state.users || [];
-    state.funds        = Array.isArray(remote.funds)        ? remote.funds        : state.funds || [];
-    state.products     = Array.isArray(remote.products)     ? remote.products     : state.products || [];
-    state.movimientos  = Array.isArray(remote.movimientos)  ? remote.movimientos  : state.movimientos || [];
-    state.salidas      = Array.isArray(remote.salidas)      ? remote.salidas      : state.salidas || [];
-    state.audit        = Array.isArray(remote.audit)        ? remote.audit        : state.audit || [];
-    state.settings     = remote.settings || state.settings || {};
+    // 🧱 Blindaje: remote debe ser objeto
+    if(!remote || typeof remote !== 'object'){
+      throw new Error('Estado remoto inválido');
+    }
 
-    // ⚠️ USUARIO: nunca forzar logout
-    if(remote.currentUser){
+    // 🛡️ MERGE SEGURO (nunca undefined)
+    state.users        = Array.isArray(remote.users)        ? remote.users        : (state.users || []);
+    state.funds        = Array.isArray(remote.funds)        ? remote.funds        : (state.funds || []);
+    state.products     = Array.isArray(remote.products)     ? remote.products     : (state.products || []);
+    state.movimientos  = Array.isArray(remote.movimientos)  ? remote.movimientos  : (state.movimientos || []);
+    state.salidas      = Array.isArray(remote.salidas)      ? remote.salidas      : (state.salidas || []);
+    state.audit        = Array.isArray(remote.audit)        ? remote.audit        : (state.audit || []);
+    state.settings     = (remote.settings && typeof remote.settings === 'object')
+                          ? remote.settings
+                          : (state.settings || {});
+
+    // 👤 Usuario: NUNCA forzar logout
+    if(remote.currentUser && typeof remote.currentUser === 'object'){
       state.currentUser = remote.currentUser;
     }
 
+    // 💾 Persistir local
     localStorage.setItem('erp_state', JSON.stringify(state));
+
     renderAll();
 
-    console.log('✔ Sync Google OK (state merge)');
+    console.log('✔ Sync Google OK (merge seguro)');
+
   }catch(err){
     console.warn('No se pudo cargar desde Google', err);
+
+  }finally{
+    window.syncing = false;
   }
 }
+
 function registrarAccion(accion, detalle){
   if(!state.audit) state.audit = [];
 
