@@ -358,6 +358,22 @@ document.addEventListener('DOMContentLoaded',function(){
     console.warn('No se pudo cargar desde Google', err);
   }
 }
+function registrarAccion(accion, detalle){
+  if(!state.audit) state.audit = [];
+
+  const registro = {
+    fecha: new Date().toISOString(),
+    usuario: state.currentUser ? state.currentUser.username : 'sistema',
+    accion: accion,
+    detalle: detalle || {}
+  };
+
+  state.audit.push(registro);
+  save();
+}
+
+// exponerla globalmente (IMPORTANTE)
+window.registrarAccion = registrarAccion;
 
   // --- NUEVAS VARIABLES GLOBALES PARA PEDIDOS ---
   // modoPedido: 'crear' | 'editar' | 'duplicar'
