@@ -298,92 +298,89 @@ button.primary{background:var(--accent);color:#fff;padding:8px 12px;border:0;bor
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded',function(){
-  const $ = id => document.getElementById(id);
-  // state init
-  let state = JSON.parse(localStorage.getItem('erp_state')||'null') || {};
-  state.users = Array.isArray(state.users)? state.users : [
-    {username:'admin',pass:'3134630773',role:'admin',fullname:'Administrador'},
-    {username:'jgarnica',pass:'12345',role:'general',fullname:''},
-    {username:'jnonato',pass:'12345',role:'general',fullname:''},
-    {username:'salidas',pass:'12345',role:'general',fullname:''},
-    {username:'mcarabali',pass:'12345',role:'general',fullname:''}
-  ];
-  state.currentUser = state.currentUser || null;
-  state.foundations = Array.isArray(state.foundations)? state.foundations : [];
-  state.items = Array.isArray(state.items)? state.items : [];
-  state.packs = Array.isArray(state.packs)? state.packs : ['Atado','Bulto','Canastilla','Caja','Unidad'];
-  state.drivers = Array.isArray(state.drivers)? state.drivers : [];
-  state.plates = Array.isArray(state.plates)? state.plates : [];
-  state.pedidos = Array.isArray(state.pedidos)? state.pedidos : [];
-  state.audit = Array.isArray(state.audit)? state.audit : [];
+/* =========================
+   🔁 SINCRONIZACIÓN SEGURA
+   ========================= */
 
 function save(){
-  // 💾 Guardar SOLO en localStorage (estable y sin CORS)
+  // 💾 Guardado local inmediato
   localStorage.setItem('erp_state', JSON.stringify(state));
 
-  lastLocalChange = Date.now();
-
-  console.log('💾 Guardado local OK');
+  // ☁️ Guardado remoto (Google Sheets)
+  saveToGoogle();
 }
 
+/* ---------- GUARDAR EN GOOGLE (GET, SIN CORS) ---------- */
+async function saveToGoogle(){
+  if(window.saving) return;
+  window.saving = true;
+
+  try{
+    const payload = encodeURIComponent(JSON.stringify(state));
+
+    await fetch(
+      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec' +
+      '?action=save&state=' + payload +
+      '&_=' + Date.now()
+    );
+
+    console.log('☁️ Guardado en Google OK');
+
+  }catch(err){
+    console.warn('❌ Error guardando en Google', err);
+  }finally{
+    window.saving = false;
+  }
+}
+
+/* ---------- CARGAR DESDE GOOGLE (NO BORRA LOCAL) ---------- */
 async function loadFromGoogle(){
-  // 🚫 Evitar doble sync o sync mientras se guarda
   if(window.syncing || window.saving) return;
   window.syncing = true;
 
   try{
     const res = await fetch(
-      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load&_=' + Date.now(),
-      { cache: 'no-store' }
+      'https://script.google.com/macros/s/AKfycbyKEAdBRpZ2GSQhhn6QwIptFqN9_3Huh33yJvIm2vMChpHgPIRiYPUAsIe5RbtvWmBMOg/exec?action=load&_=' + Date.now()
     );
 
     let remote = await res.json();
-    if(typeof remote === 'string'){
-      remote = JSON.parse(remote);
-    }
+    if(typeof remote === 'string') remote = JSON.parse(remote);
 
-    // 🧱 Validación fuerte
     if(!remote || typeof remote !== 'object'){
-      throw new Error('Estado remoto inválido');
+      console.warn('⚠️ Estado remoto inválido');
+      return;
     }
 
-    // 🛡️ MERGE SEGURO (NO sobrescribir con undefined)
-    if (
-  Array.isArray(remote.users) &&
-  remote.users.length > 0
-) {
-  state.users = remote.users;
-}
-
-    if(Array.isArray(remote.funds))        state.funds        = remote.funds;
-    if(Array.isArray(remote.products))     state.products     = remote.products;
-    if(Array.isArray(remote.movimientos))  state.movimientos  = remote.movimientos;
-    if(Array.isArray(remote.salidas))      state.salidas      = remote.salidas;
-    if(Array.isArray(remote.audit))        state.audit        = remote.audit;
-    if(remote.settings && typeof remote.settings === 'object'){
-      state.settings = remote.settings;
+    // 🔒 SOLO sobrescribir si Google tiene datos reales
+    if(Array.isArray(remote.users) && remote.users.length){
+      state.users = remote.users;
     }
+    if(Array.isArray(remote.foundations)) state.foundations = remote.foundations;
+    if(Array.isArray(remote.items))       state.items       = remote.items;
+    if(Array.isArray(remote.packs))       state.packs       = remote.packs;
+    if(Array.isArray(remote.drivers))     state.drivers     = remote.drivers;
+    if(Array.isArray(remote.plates))      state.plates      = remote.plates;
+    if(Array.isArray(remote.pedidos))     state.pedidos     = remote.pedidos;
+    if(Array.isArray(remote.audit))       state.audit       = remote.audit;
 
-    // 👤 Mantener sesión local si existe
+    // 👤 NO tumbar sesión local
     if(!state.currentUser && remote.currentUser){
       state.currentUser = remote.currentUser;
     }
 
-    // 💾 Guardar copia local
     localStorage.setItem('erp_state', JSON.stringify(state));
-
     renderAll();
 
     console.log('✔ Sync Google OK');
 
   }catch(err){
-    console.warn('No se pudo cargar desde Google', err);
-
+    console.warn('❌ No se pudo cargar desde Google', err);
   }finally{
     window.syncing = false;
   }
 }
+</script>
+
 
 function registrarAccion(accion, detalle){
   if(!state.audit) state.audit = [];
